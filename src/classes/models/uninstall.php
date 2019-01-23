@@ -56,7 +56,7 @@ class Uninstall implements \WP_Framework_Core\Interfaces\Loader {
 	 * @return string
 	 */
 	protected function get_instanceof() {
-		return '\WP_Framework\Interfaces\Uninstall';
+		return '\WP_Framework_Common\Interfaces\Uninstall';
 	}
 
 	/**

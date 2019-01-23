@@ -1,6 +1,6 @@
 <?php
 /**
- * WP_Framework_Common Configs Filter
+ * WP_Framework_Common Configs Setting
  *
  * @version 0.0.1
  * @author technote-space
@@ -16,21 +16,15 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 
 return [
 
-	'uninstall' => [
-		'${prefix}app_activated' => [
-			'register_uninstall' => [],
-		],
-	],
-
-	'upgrade' => [
-		'${prefix}app_initialized' => [
-			'setup_settings' => [],
-		],
-		'init'                     => [
-			'upgrade' => [],
-		],
-		'admin_init'               => [
-			'setup_update' => [],
+	'999' => [
+		'Others' => [
+			'10' => [
+				'check_update' => [
+					'label'   => 'Whether to check develop update.',
+					'type'    => 'bool',
+					'default' => true,
+				],
+			],
 		],
 	],
 

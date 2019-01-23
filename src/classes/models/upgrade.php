@@ -25,6 +25,18 @@ class Upgrade implements \WP_Framework_Core\Interfaces\Loader {
 	use \WP_Framework_Core\Traits\Loader, \WP_Framework_Common\Traits\Package;
 
 	/**
+	 * setup settings
+	 */
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function setup_settings() {
+		$key = $this->app->is_theme ? 'ThemeURI' : 'PluginURI';
+		$uri = $this->app->get_plugin_data( $key );
+		if ( ! empty( $uri ) && $this->app->utility->starts_with( $uri, 'https://wordpress.org' ) ) {
+			$this->app->setting->edit_setting( 'check_update', 'default', false );
+		}
+	}
+
+	/**
 	 * upgrade
 	 */
 	/** @noinspection PhpUnusedPrivateMethodInspection */
@@ -44,7 +56,7 @@ class Upgrade implements \WP_Framework_Core\Interfaces\Loader {
 			$upgrades = [];
 			$count    = 0;
 			foreach ( $this->get_class_list() as $class ) {
-				/** @var \WP_Framework_Core\Interfaces\Upgrade $class */
+				/** @var \WP_Framework_Common\Interfaces\Upgrade $class */
 				foreach ( $class->get_upgrade_methods() as $items ) {
 					if ( ! is_array( $items ) ) {
 						continue;
@@ -117,7 +129,7 @@ class Upgrade implements \WP_Framework_Core\Interfaces\Loader {
 	 * @return string
 	 */
 	protected function get_instanceof() {
-		return '\WP_Framework_Core\Interfaces\Upgrade';
+		return '\WP_Framework_Common\Interfaces\Upgrade';
 	}
 
 	/**
