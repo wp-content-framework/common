@@ -41,10 +41,12 @@ class Package_Common extends Package_Base {
 	 */
 	public function get_configs() {
 		return [
+			'capability',
 			'config',
 			'filter',
 			'map',
 			'setting',
+			'slug',
 		];
 	}
 }

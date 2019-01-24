@@ -25,7 +25,6 @@ return [
 	'upgrade'   => '\WP_Framework_Common\Classes\Models\Upgrade',
 	'option'    => '\WP_Framework_Common\Classes\Models\Option',
 	'user'      => '\WP_Framework_Common\Classes\Models\User',
-	'post'      => '\WP_Framework_Common\Classes\Models\Post',
 	'input'     => '\WP_Framework_Common\Classes\Models\Input',
 
 ];

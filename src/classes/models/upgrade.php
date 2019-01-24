@@ -20,9 +20,9 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  * Class Upgrade
  * @package WP_Framework_Common\Classes\Models
  */
-class Upgrade implements \WP_Framework_Core\Interfaces\Loader {
+class Upgrade implements \WP_Framework_Core\Interfaces\Loader, \WP_Framework_Presenter\Interfaces\Presenter {
 
-	use \WP_Framework_Core\Traits\Loader, \WP_Framework_Common\Traits\Package;
+	use \WP_Framework_Core\Traits\Loader, \WP_Framework_Presenter\Traits\Presenter, \WP_Framework_Common\Traits\Package;
 
 	/**
 	 * setup settings
