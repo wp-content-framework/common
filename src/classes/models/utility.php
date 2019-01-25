@@ -250,6 +250,18 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
+	 * @since 0.0.4
+	 *
+	 * @param string $string
+	 * @param string $delimiter
+	 *
+	 * @return array
+	 */
+	public function explode( $string, $delimiter = ',' ) {
+		return array_filter( array_unique( array_map( 'trim', explode( $delimiter, $string ) ) ) );
+	}
+
+	/**
 	 * @param string $data
 	 * @param string $key
 	 *
