@@ -191,6 +191,8 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 		return ! in_array( $this->method(), [
 			'GET',
 			'HEAD',
+			'TRACE',
+			'OPTIONS',
 		] );
 	}
 
