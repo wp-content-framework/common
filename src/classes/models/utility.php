@@ -335,10 +335,12 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
+	 * @param bool $except_ajax
+	 *
 	 * @return bool
 	 */
-	public function is_admin() {
-		return is_admin() && ! $this->doing_ajax();
+	public function is_admin( $except_ajax = true ) {
+		return is_admin() && ( ! $except_ajax || ! $this->doing_ajax() );
 	}
 
 	/**
