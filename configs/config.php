@@ -15,12 +15,6 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 
 return [
 
-	// update
-	'update_info_file_url'      => '',
-
-	// readme
-	'readme_file_check_url'     => '',
-
 	// cache filter result
 	'cache_filter_result'       => true,
 

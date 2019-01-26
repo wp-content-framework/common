@@ -21,7 +21,6 @@ return [
 	'filter'    => '\WP_Framework_Common\Classes\Models\Filter',
 	'uninstall' => '\WP_Framework_Common\Classes\Models\Uninstall',
 	'utility'   => '\WP_Framework_Common\Classes\Models\Utility',
-	'upgrade'   => '\WP_Framework_Common\Classes\Models\Upgrade',
 	'option'    => '\WP_Framework_Common\Classes\Models\Option',
 	'user'      => '\WP_Framework_Common\Classes\Models\User',
 	'input'     => '\WP_Framework_Common\Classes\Models\Input',
