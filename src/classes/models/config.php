@@ -38,7 +38,7 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 			$plugin_config = $this->load_config_file( $this->app->define->plugin_configs_dir, $name );
 			$configs       = [];
 			foreach ( $this->app->get_packages() as $package ) {
-				$configs = array_replace_recursive( $configs, $package->get_config( $name ) );
+				$configs = array_replace_recursive( $configs, $package->get_config( $name, $this->app ) );
 			}
 			$this->_configs[ $name ] = array_replace_recursive( $configs, $plugin_config );
 		}
