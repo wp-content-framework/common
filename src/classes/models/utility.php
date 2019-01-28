@@ -191,14 +191,19 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param array $array
-	 * @param string $key
-	 * @param string $value
+	 * @param string|null $key
+	 * @param string|null $value
 	 *
 	 * @return array
 	 */
 	public function array_combine( array $array, $key, $value = null ) {
-		$keys   = $this->array_pluck( $array, $key );
-		$values = empty( $value ) ? $array : $this->array_pluck( $array, $value );
+		if ( isset( $key ) ) {
+			$keys   = $this->array_pluck( $array, $key );
+			$values = empty( $value ) ? $array : $this->array_pluck( $array, $value );
+		} else {
+			$keys   = array_unique( $array );
+			$values = $keys;
+		}
 
 		return array_combine( $keys, $values );
 	}
