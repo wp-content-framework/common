@@ -75,7 +75,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	/**
 	 * @return string
 	 */
-	private function get_option_name() {
+	public function get_option_name() {
 		return $this->apply_filters( 'get_option_name', $this->get_slug( 'option_name', '_options' ) );
 	}
 
