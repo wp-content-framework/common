@@ -184,7 +184,24 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @since 0.0.4 #3
+	 * @param string $default
+	 *
+	 * @return string
+	 */
+	public function referer( $default = '' ) {
+		return $this->server( 'HTTP_REFERER', $default );
+	}
+
+	/**
+	 * @param string $default
+	 *
+	 * @return string
+	 */
+	public function host( $default = '' ) {
+		return $this->server( 'HTTP_HOST', $default );
+	}
+
+	/**
 	 * @return bool
 	 */
 	public function is_post() {
