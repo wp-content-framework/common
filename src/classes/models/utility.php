@@ -332,6 +332,36 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function was_admin() {
+		return $this->is_admin_url( $this->app->input->referer() );
+	}
+
+	/**
+	 * @param string $url
+	 *
+	 * @return bool
+	 */
+	public function is_admin_url( $url ) {
+		return $this->starts_with( $url, admin_url() );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_changed_host() {
+		return $this->app->input->host() !== $this->app->input->referer_host();
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_changed_admin() {
+		return $this->is_admin() !== $this->was_admin();
+	}
+
+	/**
 	 * @param array $unset
 	 *
 	 * @return array
