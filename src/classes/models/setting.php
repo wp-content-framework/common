@@ -116,12 +116,6 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 			return true;
 		}
 
-		$priority = $this->_setting_priority[ $setting ];
-		unset( $this->_settings[ $priority ][ $setting ] );
-		unset( $this->_setting_priority[ $setting ] );
-		if ( empty( $this->_settings[ $priority ] ) ) {
-			unset( $this->_settings[ $priority ] );
-		}
 		foreach ( $this->_groups as $group_priority => $groups ) {
 			foreach ( $groups as $group => $settings ) {
 				$key = array_search( $setting, $settings );
