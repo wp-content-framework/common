@@ -476,4 +476,50 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 		return 'string';
 	}
+
+	/**
+	 * @param array|string $tags
+	 *
+	 * @return bool
+	 */
+	public function has_shortcode( $tags ) {
+		if ( empty( $tags ) ) {
+			return false;
+		}
+
+		$post = get_post();
+		if ( empty( $post ) || ! $post instanceof \WP_Post ) {
+			return false;
+		}
+		! is_array( $tags ) and $tags = [ $tags ];
+		$content = $post->post_content;
+		foreach ( $tags as $tag ) {
+			if ( has_shortcode( $content, $tag ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_valid_tinymce_color_picker() {
+		global $wp_version;
+
+		return version_compare( $wp_version, '4.0', '>=' );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_block_editor() {
+		if ( ! is_admin() ) {
+			return false;
+		}
+		$current_screen = get_current_screen();
+
+		return ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) || ( function_exists( 'is_gutenberg_page' ) && is_gutenberg_page() );
+	}
 }
