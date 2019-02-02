@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Define Test
  *
- * @version 0.0.1
+ * @version 0.0.16
  * @author technote-space
  * @copyright technote-space All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -41,7 +41,6 @@ class DefineTest extends \WP_Framework_Common\Tests\TestCase {
 		$this->assertNotEmpty( static::$_define->plugin_configs_dir );
 		$this->assertNotEmpty( static::$_define->plugin_views_dir );
 		$this->assertEmpty( static::$_define->plugin_languages_dir );
-		$this->assertNotEmpty( static::$_define->plugin_logs_dir );
 		$this->assertNotEmpty( static::$_define->plugin_assets_url );
 	}
 }
