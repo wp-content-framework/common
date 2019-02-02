@@ -14,9 +14,6 @@
 
 ``` composer require wp-content-framework/common ```  
 
-## 依存モジュール
-* [core](https://github.com/wp-content-framework/core)  
-
 ## 基本設定
 - configs/config.php  
 
