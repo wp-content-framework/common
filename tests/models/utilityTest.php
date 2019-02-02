@@ -339,4 +339,20 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 			],
 		];
 	}
+
+	public function test_lock_process() {
+		$test1 = 0;
+		$test2 = 0;
+		$this->assertTrue( static::$_utility->lock_process( 'test_lock_process1', function () use ( &$test1, &$test2 ) {
+			$test1 = 1;
+			static::$_utility->lock_process( 'test_lock_process2', function () use ( &$test2 ) {
+				$test2 = 2;
+			} );
+			static::$_utility->lock_process( 'test_lock_process1', function () use ( &$test1 ) {
+				$test1 = 10;
+			} );
+		} ) );
+		$this->assertEquals( 1, $test1 );
+		$this->assertEquals( 2, $test2 );
+	}
 }

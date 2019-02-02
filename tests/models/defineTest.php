@@ -41,7 +41,6 @@ class DefineTest extends \WP_Framework_Common\Tests\TestCase {
 		$this->assertNotEmpty( static::$_define->plugin_configs_dir );
 		$this->assertNotEmpty( static::$_define->plugin_views_dir );
 		$this->assertEmpty( static::$_define->plugin_languages_dir );
-		$this->assertNotEmpty( static::$_define->plugin_logs_dir );
 		$this->assertNotEmpty( static::$_define->plugin_assets_url );
 	}
 }
