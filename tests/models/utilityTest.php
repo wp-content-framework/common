@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Utility Test
  *
- * @version 0.0.16
+ * @version 0.0.18
  * @author technote-space
  * @copyright technote-space All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -343,12 +343,12 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	public function test_lock_process() {
 		$test1 = 0;
 		$test2 = 0;
-		$this->assertTrue( static::$_utility->lock_process( 'test_lock_process1', function () use ( &$test1, &$test2 ) {
+		$this->assertTrue( static::$_utility->lock_process( static::$app, 'test_lock_process1', function () use ( &$test1, &$test2 ) {
 			$test1 = 1;
-			static::$_utility->lock_process( 'test_lock_process2', function () use ( &$test2 ) {
+			static::$_utility->lock_process( static::$app, 'test_lock_process2', function () use ( &$test2 ) {
 				$test2 = 2;
 			} );
-			static::$_utility->lock_process( 'test_lock_process1', function () use ( &$test1 ) {
+			static::$_utility->lock_process( static::$app, 'test_lock_process1', function () use ( &$test1 ) {
 				$test1 = 10;
 			} );
 		} ) );
