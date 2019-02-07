@@ -47,6 +47,29 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	}
 
 	/**
+	 * app deactivated
+	 */
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function app_deactivated() {
+		$this->delete( '__app_activated' );
+	}
+
+	/**
+	 * app activated
+	 */
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function app_activated() {
+		$this->set( '__app_activated', true );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_app_activated() {
+		return ! empty( $this->get( '__app_activated' ) );
+	}
+
+	/**
 	 * reload options
 	 */
 	public function reload_options() {
