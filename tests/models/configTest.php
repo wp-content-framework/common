@@ -68,6 +68,10 @@ EOS
 		$this->assertEquals( 'test4', static::$_config->get( 'test_config', 'test4' ) );
 	}
 
+	public function test_nothing() {
+		$this->assertEmpty( static::$_config->get( 'test_config', 'test5' ) );
+	}
+
 	public function test_default() {
 		$this->assertEquals( 'test6', static::$_config->get( 'test_config', 'test5', 'test6' ) );
 	}
