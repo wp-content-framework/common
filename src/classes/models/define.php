@@ -73,9 +73,9 @@ class Define implements \WP_Framework_Core\Interfaces\Singleton {
 	protected function initialize() {
 		$this->plugin_name = $this->app->plugin_name;
 		$this->plugin_file = $this->app->plugin_file;
+		$this->plugin_dir  = $this->app->plugin_dir;
 
 		$this->plugin_namespace = ucwords( strtolower( $this->plugin_name ), '_' );
-		$this->plugin_dir       = dirname( $this->plugin_file );
 		$this->plugin_dir_name  = basename( $this->plugin_dir );
 		$this->plugin_base_name = $this->app->is_theme ? 'theme/' . $this->plugin_dir : plugin_basename( $this->plugin_file );
 
