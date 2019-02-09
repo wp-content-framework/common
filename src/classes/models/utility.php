@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Classes Models Utility
  *
- * @version 0.0.19
+ * @version 0.0.20
  * @author technote-space
  * @copyright technote-space All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -672,6 +672,29 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	/**
 	 * @param \WP_Framework $app
 	 * @param string $path
+	 * @param callable $generator
+	 *
+	 * @return bool
+	 */
+	public function create_upload_file_if_not_exists( \WP_Framework $app, $path, $generator ) {
+		if ( ! $this->upload_file_exists( $app, $path ) ) {
+			if ( isset( $generator ) && is_callable( $generator ) ) {
+				try {
+					$this->create_upload_file( $app, $path, $generator() );
+				} catch ( \Exception $e ) {
+					return false;
+				}
+			} else {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param \WP_Framework $app
+	 * @param string $path
 	 *
 	 * @return bool
 	 */
@@ -687,19 +710,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return bool|string
 	 */
 	public function get_upload_file_contents( \WP_Framework $app, $path, $generator = null ) {
-		if ( ! $this->upload_file_exists( $app, $path ) ) {
-			if ( isset( $generator ) && is_callable( $generator ) ) {
-				try {
-					$this->create_upload_file( $app, $path, $generator() );
-				} catch ( \Exception $e ) {
-					return false;
-				}
-			} else {
-				return false;
-			}
+		if ( $this->create_upload_file_if_not_exists( $app, $path, $generator ) ) {
+			return @file_get_contents( $this->get_upload_file_path( $app, $path ) );
 		}
 
-		return @file_get_contents( $this->get_upload_file_path( $app, $path ) );
+		return false;
 	}
 
 	/**
@@ -710,18 +725,10 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return string|false
 	 */
 	public function get_upload_file_url( \WP_Framework $app, $path, $generator = null ) {
-		if ( ! $this->upload_file_exists( $app, $path ) ) {
-			if ( isset( $generator ) && is_callable( $generator ) ) {
-				try {
-					$this->create_upload_file( $app, $path, $generator() );
-				} catch ( \Exception $e ) {
-					return false;
-				}
-			} else {
-				return false;
-			}
+		if ( $this->create_upload_file_if_not_exists( $app, $path, $generator ) ) {
+			return $this->get_upload_file_link( $app, $path );
 		}
 
-		return $this->get_upload_file_link( $app, $path );
+		return false;
 	}
 }
