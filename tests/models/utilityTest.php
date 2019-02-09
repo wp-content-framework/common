@@ -29,6 +29,11 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 		static::$_utility = \WP_Framework_Common\Classes\Models\Utility::get_instance( static::$app );
 	}
 
+	public static function tearDownAfterClass() {
+		parent::tearDownAfterClass();
+		static::$_utility->delete_upload_dir( static::$app );
+	}
+
 	/**
 	 * @dataProvider _test_flatten_provider
 	 *
@@ -354,5 +359,72 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 		} ) );
 		$this->assertEquals( 1, $test1 );
 		$this->assertEquals( 2, $test2 );
+	}
+
+	public function test_upload_file_not_exists() {
+		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+	}
+
+	/**
+	 * @depends test_upload_file_not_exists
+	 * @throws \Exception
+	 */
+	public function test_create_upload_file() {
+		static::$_utility->create_upload_file( static::$app, 'test/file1.txt', 'file test' );
+	}
+
+	/**
+	 * @depends test_create_upload_file
+	 */
+	public function test_upload_file_exists() {
+		$this->assertTrue( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+	}
+
+	/**
+	 * @depends test_upload_file_exists
+	 */
+	public function test_delete_upload_file() {
+		$this->assertTrue( static::$_utility->delete_upload_file( static::$app, 'test/file1.txt' ) );
+	}
+
+	/**
+	 * @depends test_delete_upload_file
+	 */
+	public function test_upload_file_not_exists2() {
+		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+	}
+
+	/**
+	 * @depends test_upload_file_not_exists2
+	 */
+	public function test_get_upload_file_contents() {
+		$this->assertFalse( static::$_utility->get_upload_file_contents( static::$app, 'test/file1.txt' ) );
+		$this->assertEquals( 'create test', static::$_utility->get_upload_file_contents( static::$app, 'test/file2.txt', function () {
+			return 'create test';
+		} ) );
+		$this->assertEquals( 'create test', static::$_utility->get_upload_file_contents( static::$app, 'test/file2.txt' ) );
+		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertTrue( static::$_utility->upload_file_exists( static::$app, 'test/file2.txt' ) );
+	}
+
+	/**
+	 * @depends test_get_upload_file_contents
+	 */
+	public function test_get_upload_file_url() {
+		$this->assertFalse( static::$_utility->get_upload_file_url( static::$app, 'test/file1.txt' ) );
+		$this->assertEquals( static::$app->define->upload_url . '/test/file3.txt', static::$_utility->get_upload_file_url( static::$app, 'test/file3.txt', function () {
+			return 'create test';
+		} ) );
+		$this->assertEquals( static::$app->define->upload_url . '/test/file3.txt', static::$_utility->get_upload_file_url( static::$app, 'test/file3.txt' ) );
+		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertTrue( static::$_utility->upload_file_exists( static::$app, 'test/file3.txt' ) );
+	}
+
+	/**
+	 * @depends test_get_upload_file_url
+	 */
+	public function test_delete_upload_dir() {
+		$this->assertTrue( static::$_utility->delete_upload_dir( static::$app ) );
+		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, '' ) );
 	}
 }
