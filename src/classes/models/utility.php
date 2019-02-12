@@ -535,9 +535,9 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		$name         .= '__LOCK_PROCESS__';
 		$timeout_name = $name . 'TIMEOUT__';
 		$app->option->reload_options();
-		$check = $app->option->get( $name );
+		$check = $app->get_option( $name );
 		if ( ! empty( $check ) ) {
-			$expired = $app->option->get( $timeout_name, 0 ) < time();
+			$expired = $app->get_option( $timeout_name, 0 ) < time();
 			if ( ! $expired ) {
 				return false;
 			}
@@ -545,7 +545,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		$rand = md5( uniqid() );
 		$app->option->set( $name, $rand );
 		$app->option->reload_options();
-		if ( $app->option->get( $name ) != $rand ) {
+		if ( $app->get_option( $name ) != $rand ) {
 			return false;
 		}
 		$app->option->set( $timeout_name, time() + $timeout );
