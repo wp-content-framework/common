@@ -17,16 +17,16 @@ return [
 
 	'option' => [
 		'${prefix}app_activated'   => [
-			'app_activated' => [],
+			'app_activated',
 		],
 		'${prefix}app_deactivated' => [
-			'app_deactivated' => [],
+			'app_deactivated',
 		],
 	],
 
 	'uninstall' => [
 		'${prefix}app_activated' => [
-			'register_uninstall' => [],
+			'register_uninstall',
 		],
 	],
 
