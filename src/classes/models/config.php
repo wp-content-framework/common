@@ -48,13 +48,13 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param string $name
-	 * @param string $key
+	 * @param string|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
 	 */
-	public function get( $name, $key, $default = null ) {
-		return $this->app->utility->array_get( $this->load( $name ), $key, $default );
+	public function get( $name, $key = null, $default = null ) {
+		return isset( $key ) ? $this->app->utility->array_get( $this->load( $name ), $key, $default ) : $this->load( $name );
 	}
 
 	/**
