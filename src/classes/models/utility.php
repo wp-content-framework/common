@@ -741,7 +741,6 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function strip_tags( $message, $override_allowed_html = null ) {
 		$allowed_html = [
 			'a'      => [ 'href' => true, 'target' => true, 'rel' => true ],
-			'span'   => [],
 			'b'      => [],
 			'br'     => [],
 			'sub'    => [],
