@@ -3,8 +3,8 @@
  * WP_Framework_Common Models User Test
  *
  * @version 0.0.1
- * @author technote-space
- * @copyright technote-space All Rights Reserved
+ * @author Technote
+ * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
  * @link https://technote.space
  */
@@ -14,7 +14,7 @@ namespace WP_Framework_Common\Tests\Models;
 /**
  * Class UserTest
  * @package WP_Framework_Common\Tests\Models
- * @group technote
+ * @group wp_framework
  * @group models
  */
 class UserTest extends \WP_Framework_Common\Tests\TestCase {
