@@ -771,4 +771,13 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 		return wp_kses( $message, $allowed_html );
 	}
+
+	/**
+	 * @param string $plugin
+	 *
+	 * @return bool
+	 */
+	public function is_active_plugin( $plugin ) {
+		return in_array( $plugin, (array) get_option( 'active_plugins', [] ) ) || ( is_multisite() && ( $plugins = get_site_option( 'active_sitewide_plugins' ) ) && isset( $plugins[ $plugin ] ) );
+	}
 }
