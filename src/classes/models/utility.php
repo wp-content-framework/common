@@ -543,28 +543,29 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function lock_process( \WP_Framework $app, $name, callable $func, $timeout = 60 ) {
 		$name         .= '__LOCK_PROCESS__';
 		$timeout_name = $name . 'TIMEOUT__';
-		$app->option->reload_options();
-		$check = $app->get_option( $name );
+		$option       = $app->option;
+		$option->reload_options();
+		$check = $option->get( $name );
 		if ( ! empty( $check ) ) {
-			$expired = $app->get_option( $timeout_name, 0 ) < time();
+			$expired = $option->get( $timeout_name, 0 ) < time();
 			if ( ! $expired ) {
 				return false;
 			}
 		}
 		$rand = md5( uniqid() );
-		$app->option->set( $name, $rand );
-		$app->option->reload_options();
-		if ( $app->get_option( $name ) != $rand ) {
+		$option->set( $name, $rand );
+		$option->reload_options();
+		if ( $option->get( $name ) != $rand ) {
 			return false;
 		}
-		$app->option->set( $timeout_name, time() + $timeout );
+		$option->set( $timeout_name, time() + $timeout );
 		try {
 			$func();
 		} catch ( \Exception $e ) {
 			$app->log( $e );
 		} finally {
-			$app->option->delete( $name );
-			$app->option->delete( $timeout_name );
+			$option->delete( $name );
+			$option->delete( $timeout_name );
 		}
 
 		return true;
