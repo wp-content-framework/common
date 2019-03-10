@@ -115,10 +115,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param mixed $obj
+	 * @param bool $ignore_value
 	 *
 	 * @return array
 	 */
-	public function get_array_value( $obj ) {
+	public function get_array_value( $obj, $ignore_value = true ) {
 		if ( $obj instanceof \stdClass ) {
 			$obj = get_object_vars( $obj );
 		} elseif ( $obj instanceof \JsonSerializable ) {
@@ -132,6 +133,8 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 				$obj = (array) $obj->toArray();
 			} elseif ( method_exists( $obj, 'toJson' ) ) {
 				$obj = json_decode( $obj->toJson(), true );
+			} elseif ( ! $ignore_value && ( ! empty( $obj ) || (string) $obj !== '' ) ) {
+				$obj = [ $obj ];
 			}
 		}
 		if ( ! is_array( $obj ) || empty( $obj ) ) {

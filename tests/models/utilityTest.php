@@ -95,11 +95,12 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	/**
 	 * @dataProvider _test_get_array_value_provider
 	 *
-	 * @param mixed $obj
 	 * @param array $expected
+	 * @param mixed $obj
+	 * @param bool $ignore_value
 	 */
-	public function test_get_array_value( $obj, $expected ) {
-		$this->assertEquals( $expected, static::$_utility->get_array_value( $obj ) );
+	public function test_get_array_value( $expected, $obj, $ignore_value = true ) {
+		$this->assertEquals( $expected, static::$_utility->get_array_value( $obj, $ignore_value ) );
 	}
 
 	/**
@@ -108,32 +109,62 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	public function _test_get_array_value_provider() {
 		return [
 			[
-				'test',
 				[],
+				'test',
 			],
 			[
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
 				(object) [
 					'test1' => 1,
 					'test2' => 2,
 					'test3' => 3,
 				],
+			],
+			[
 				[
 					'test1' => 1,
 					'test2' => 2,
 					'test3' => 3,
 				],
-			],
-			[
 				new Misc\Collection( [
 					'test1' => 1,
 					'test2' => 2,
 					'test3' => 3,
 				] ),
-				[
-					'test1' => 1,
-					'test2' => 2,
-					'test3' => 3,
-				],
+			],
+			[
+				[ 'test' ],
+				'test',
+				false,
+			],
+			[
+				[ '0' ],
+				'0',
+				false,
+			],
+			[
+				[ 0 ],
+				0,
+				false,
+			],
+			[
+				[],
+				false,
+				false,
+			],
+			[
+				[],
+				null,
+				false,
+			],
+			[
+				[],
+				'',
+				false,
 			],
 		];
 	}
