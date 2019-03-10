@@ -175,7 +175,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		$array = $this->get_array_value( $array );
 
 		foreach ( $array as $key => $value ) {
-			$array[ $key ] = is_callable( $callback ) ? $callback( $value, $key ) : ( is_string( $callback ) && method_exists( $value, $callback ) ? $value->$callback() : null );
+			$array[ $key ] = is_callable( $callback ) ? $callback( $value, $key ) : ( is_string( $callback ) && method_exists( $value, $callback ) ? $value->$callback( $key ) : null );
 		}
 
 		return $array;
