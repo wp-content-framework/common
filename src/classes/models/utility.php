@@ -192,9 +192,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function array_map( $array, $callback ) {
 		$array = $this->get_array_value( $array );
 
-		return array_map( function ( $d ) use ( $callback ) {
-			return is_callable( $callback ) ? $callback( $d ) : ( is_string( $callback ) && method_exists( $d, $callback ) ? $d->$callback() : null );
-		}, $array );
+		foreach ( $array as $key => $value ) {
+			$array[ $key ] = is_callable( $callback ) ? $callback( $value, $key ) : ( is_string( $callback ) && method_exists( $value, $callback ) ? $value->$callback( $key ) : null );
+		}
+
+		return $array;
 	}
 
 	/**
