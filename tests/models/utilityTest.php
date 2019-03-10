@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Utility Test
  *
- * @version 0.0.19
+ * @version 0.0.26
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -10,6 +10,8 @@
  */
 
 namespace WP_Framework_Common\Tests\Models;
+
+require_once __DIR__ . DS . 'misc' . DS . 'collection.php';
 
 /**
  * Class UtilityTest
@@ -91,6 +93,121 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	}
 
 	/**
+	 * @dataProvider _test_get_array_value_provider
+	 *
+	 * @param array $expected
+	 * @param mixed $obj
+	 * @param bool $ignore_value
+	 */
+	public function test_get_array_value( $expected, $obj, $ignore_value = true ) {
+		$this->assertEquals( $expected, static::$_utility->get_array_value( $obj, $ignore_value ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_get_array_value_provider() {
+		return [
+			[
+				[],
+				'test',
+			],
+			[
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+				(object) [
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+			],
+			[
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+				new Misc\Collection( [
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				] ),
+			],
+			[
+				[ 'test' ],
+				'test',
+				false,
+			],
+			[
+				[ '0' ],
+				'0',
+				false,
+			],
+			[
+				[ 0 ],
+				0,
+				false,
+			],
+			[
+				[],
+				false,
+				false,
+			],
+			[
+				[],
+				null,
+				false,
+			],
+			[
+				[],
+				'',
+				false,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_array_wrap_provider
+	 *
+	 * @param $value
+	 * @param $expected
+	 */
+	public function test_array_wrap( $value, $expected ) {
+		$this->assertEquals( $expected, static::$_utility->array_wrap( $value ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_array_wrap_provider() {
+		return [
+			[
+				null,
+				[],
+			],
+			[
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+			],
+			[
+				'test',
+				[ 'test' ],
+			],
+		];
+	}
+
+	/**
 	 * @dataProvider _test_array_get_provider
 	 *
 	 * @param array $array
@@ -130,6 +247,87 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 				'test3',
 				false,
 				false,
+			],
+			[
+				[
+					'test1' => [
+						'test1-1' => true,
+						'test1-2' => 100,
+					],
+					'test2' => 200,
+				],
+				'test1.test1-2',
+				null,
+				100,
+			],
+			[
+				[
+					'test1' => [
+						'test1-1' => true,
+						'test1-2' => 100,
+					],
+					'test2' => 200,
+				],
+				'test2.test2-1',
+				false,
+				false,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_array_search_provider
+	 *
+	 * @param mixed $expected
+	 * @param array $array
+	 * @param string $key
+	 * @param array $keys
+	 */
+	public function test_array_search( $expected, $array, $key, $keys = [] ) {
+		$this->assertEquals( $expected, static::$_utility->array_search( $array, $key, ...$keys ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_array_search_provider() {
+		return [
+			[
+				1,
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+				'test1',
+			],
+			[
+				2,
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+				'test10',
+				[
+					'test2',
+					'test3',
+					'default',
+				],
+			],
+			[
+				'default',
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+				'test10',
+				[
+					'test20',
+					'test30',
+					'default',
+				],
 			],
 		];
 	}
@@ -341,6 +539,86 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 				'a',
 				'',
 				false,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_snake_provider
+	 *
+	 * @param $expected
+	 * @param $value
+	 * @param string $delimiter
+	 */
+	public function test_snake( $expected, $value, $delimiter = '_' ) {
+		$this->assertEquals( $expected, static::$_utility->snake( $value, $delimiter ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_snake_provider() {
+		return [
+			[
+				'snake_case',
+				'snakeCase',
+			],
+			[
+				'kebab-case',
+				'kebabCase',
+				'-',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_camel_provider
+	 *
+	 * @param $value
+	 * @param $expected
+	 */
+	public function test_camel( $value, $expected ) {
+		$this->assertEquals( $expected, static::$_utility->camel( $value ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_camel_provider() {
+		return [
+			[
+				'camel-test',
+				'camelTest',
+			],
+			[
+				'camel_test',
+				'camelTest',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_studly_provider
+	 *
+	 * @param $value
+	 * @param $expected
+	 */
+	public function test_studly( $value, $expected ) {
+		$this->assertEquals( $expected, static::$_utility->studly( $value ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_studly_provider() {
+		return [
+			[
+				'studly-test',
+				'StudlyTest',
+			],
+			[
+				'studly_test',
+				'StudlyTest',
 			],
 		];
 	}

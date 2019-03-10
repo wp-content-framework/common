@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Classes Models Utility
  *
- * @version 0.0.25
+ * @version 0.0.26
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -27,6 +27,21 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @var string[] $_replace_time
 	 */
 	private $_replace_time;
+
+	/**
+	 * @var string[][] $_snake_cache
+	 */
+	private $_snake_cache = [];
+
+	/**
+	 * @var string[] $_camel_cache
+	 */
+	private $_camel_cache = [];
+
+	/**
+	 * @var string[] $_studly_cache
+	 */
+	private $_studly_cache = [];
 
 	/**
 	 * @return bool
@@ -99,16 +114,27 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param array|object $obj
+	 * @param mixed $obj
+	 * @param bool $ignore_value
 	 *
 	 * @return array
 	 */
-	private function get_array_value( $obj ) {
+	public function get_array_value( $obj, $ignore_value = true ) {
 		if ( $obj instanceof \stdClass ) {
 			$obj = get_object_vars( $obj );
+		} elseif ( $obj instanceof \JsonSerializable ) {
+			$obj = (array) $obj->jsonSerialize();
+		} elseif ( $obj instanceof \Traversable ) {
+			$obj = iterator_to_array( $obj );
 		} elseif ( ! is_array( $obj ) ) {
 			if ( method_exists( $obj, 'to_array' ) ) {
-				$obj = $obj->to_array();
+				$obj = (array) $obj->to_array();
+			} elseif ( method_exists( $obj, 'toArray' ) ) {
+				$obj = (array) $obj->toArray();
+			} elseif ( method_exists( $obj, 'toJson' ) ) {
+				$obj = json_decode( $obj->toJson(), true );
+			} elseif ( ! $ignore_value && ( ! empty( $obj ) || (string) $obj !== '' ) ) {
+				$obj = [ $obj ];
 			}
 		}
 		if ( ! is_array( $obj ) || empty( $obj ) ) {
@@ -116,6 +142,19 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		}
 
 		return $obj;
+	}
+
+	/**
+	 * @param mixed $value
+	 *
+	 * @return array
+	 */
+	public function array_wrap( $value ) {
+		if ( is_null( $value ) ) {
+			return [];
+		}
+
+		return is_array( $value ) ? $value : [ $value ];
 	}
 
 	/**
@@ -127,8 +166,51 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function array_get( $array, $key, $default = null ) {
 		$array = $this->get_array_value( $array );
+
+		if ( is_null( $key ) ) {
+			return $array;
+		}
+
 		if ( array_key_exists( $key, $array ) ) {
 			return $array[ $key ];
+		}
+
+		if ( strpos( $key, '.' ) === false ) {
+			return $default;
+		}
+
+		foreach ( explode( '.', $key ) as $segment ) {
+			$a = $this->get_array_value( $array );
+			if ( array_key_exists( $segment, $a ) ) {
+				$array = $a[ $segment ];
+			} else {
+				return $default;
+			}
+		}
+
+		return $array;
+	}
+
+	/**
+	 * @param array|object $array
+	 * @param string $key
+	 * @param mixed ...$keys
+	 *
+	 * @return mixed
+	 */
+	public function array_search( $array, $key, ...$keys ) {
+		$array = $this->get_array_value( $array );
+		if ( count( $keys ) > 0 ) {
+			$default = array_pop( $keys );
+		} else {
+			$default = null;
+		}
+
+		array_unshift( $keys, $key );
+		foreach ( $keys as $key ) {
+			if ( array_key_exists( $key, $array ) ) {
+				return $array[ $key ];
+			}
 		}
 
 		return $default;
@@ -174,9 +256,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function array_map( $array, $callback ) {
 		$array = $this->get_array_value( $array );
 
-		return array_map( function ( $d ) use ( $callback ) {
-			return is_callable( $callback ) ? $callback( $d ) : ( is_string( $callback ) && method_exists( $d, $callback ) ? $d->$callback() : null );
-		}, $array );
+		foreach ( $array as $key => $value ) {
+			$array[ $key ] = is_callable( $callback ) ? $callback( $value, $key ) : ( is_string( $callback ) && method_exists( $value, $callback ) ? $value->$callback( $key ) : null );
+		}
+
+		return $array;
 	}
 
 	/**
@@ -305,6 +389,86 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		}
 
 		return substr_compare( $haystack, $needle, - strlen( $needle ) ) === 0;
+	}
+
+	/**
+	 * @param string $haystack
+	 * @param string|array $needles
+	 *
+	 * @return bool
+	 */
+	public function contains( $haystack, $needles ) {
+		foreach ( (array) $needles as $needle ) {
+			if ( $needle !== '' && mb_strpos( $haystack, $needle ) !== false ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public function lower( $value ) {
+		return mb_strtolower( $value, 'UTF-8' );
+	}
+
+	/**
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public function camel( $value ) {
+		if ( ! isset( $this->_camel_cache[ $value ] ) ) {
+			$this->_camel_cache[ $value ] = lcfirst( $this->studly( $value ) );
+		}
+
+		return $this->_camel_cache[ $value ];
+	}
+
+	/**
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public function studly( $value ) {
+		if ( ! isset( $this->_studly_cache[ $value ] ) ) {
+			$_value                        = ucwords( str_replace( [ '-', '_' ], ' ', $value ) );
+			$this->_studly_cache[ $value ] = str_replace( ' ', '', $_value );
+		}
+
+		return $this->_studly_cache[ $value ];
+	}
+
+	/**
+	 * @param string $value
+	 * @param string $delimiter
+	 *
+	 * @return string
+	 */
+	public function snake( $value, $delimiter = '_' ) {
+		if ( ! isset( $this->_snake_cache[ $value ][ $delimiter ] ) ) {
+			$_value = $value;
+			if ( ! ctype_lower( $_value ) ) {
+				$_value = preg_replace( '/\s+/u', '', ucwords( $_value ) );
+				$_value = $this->lower( preg_replace( '/(.)(?=[A-Z])/u', '$1' . $delimiter, $_value ) );
+			}
+			$this->_snake_cache[ $value ][ $delimiter ] = $_value;
+		}
+
+		return $this->_snake_cache[ $value ][ $delimiter ];
+	}
+
+	/**
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public function kebab( $value ) {
+		return $this->snake( $value, '-' );
 	}
 
 	/**
@@ -543,28 +707,29 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function lock_process( \WP_Framework $app, $name, callable $func, $timeout = 60 ) {
 		$name         .= '__LOCK_PROCESS__';
 		$timeout_name = $name . 'TIMEOUT__';
-		$app->option->reload_options();
-		$check = $app->get_option( $name );
+		$option       = $app->option;
+		$option->reload_options();
+		$check = $option->get( $name );
 		if ( ! empty( $check ) ) {
-			$expired = $app->get_option( $timeout_name, 0 ) < time();
+			$expired = $option->get( $timeout_name, 0 ) < time();
 			if ( ! $expired ) {
 				return false;
 			}
 		}
 		$rand = md5( uniqid() );
-		$app->option->set( $name, $rand );
-		$app->option->reload_options();
-		if ( $app->get_option( $name ) != $rand ) {
+		$option->set( $name, $rand );
+		$option->reload_options();
+		if ( $option->get( $name ) != $rand ) {
 			return false;
 		}
-		$app->option->set( $timeout_name, time() + $timeout );
+		$option->set( $timeout_name, time() + $timeout );
 		try {
 			$func();
 		} catch ( \Exception $e ) {
 			$app->log( $e );
 		} finally {
-			$app->option->delete( $name );
-			$app->option->delete( $timeout_name );
+			$option->delete( $name );
+			$option->delete( $timeout_name );
 		}
 
 		return true;
