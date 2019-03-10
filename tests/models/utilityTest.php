@@ -131,6 +131,30 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 				false,
 				false,
 			],
+			[
+				[
+					'test1' => [
+						'test1-1' => true,
+						'test1-2' => 100,
+					],
+					'test2' => 200,
+				],
+				'test1.test1-2',
+				null,
+				100,
+			],
+			[
+				[
+					'test1' => [
+						'test1-1' => true,
+						'test1-2' => 100,
+					],
+					'test2' => 200,
+				],
+				'test2.test2-1',
+				false,
+				false,
+			],
 		];
 	}
 
