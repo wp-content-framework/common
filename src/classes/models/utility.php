@@ -51,6 +51,15 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
+	 * @param mixed $value
+	 *
+	 * @return mixed
+	 */
+	private function value( $value ) {
+		return $value instanceof \Closure ? $value() : $value;
+	}
+
+	/**
 	 * @param array $array
 	 * @param bool $preserve_keys
 	 *
@@ -110,7 +119,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			return $const;
 		}
 
-		return $default;
+		return $this->value( $default );
 	}
 
 	/**
@@ -176,7 +185,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		}
 
 		if ( strpos( $key, '.' ) === false ) {
-			return $default;
+			return $this->value( $default );
 		}
 
 		foreach ( explode( '.', $key ) as $segment ) {
@@ -184,7 +193,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			if ( array_key_exists( $segment, $a ) ) {
 				$array = $a[ $segment ];
 			} else {
-				return $default;
+				return $this->value( $default );
 			}
 		}
 
@@ -213,7 +222,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			}
 		}
 
-		return $default;
+		return $this->value( $default );
 	}
 
 	/**
@@ -239,7 +248,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		return array_map( function ( $d ) use ( $key, $default ) {
 			is_object( $d ) and $d = (array) $d;
 
-			return is_array( $d ) && array_key_exists( $key, $d ) ? $d[ $key ] : $default;
+			return is_array( $d ) && array_key_exists( $key, $d ) ? $d[ $key ] : $this->value( $default );
 		}, $filter ? array_filter( $array, function ( $d ) use ( $key ) {
 			is_object( $d ) and $d = (array) $d;
 

@@ -245,8 +245,8 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 					'test2' => 100,
 				],
 				'test3',
-				false,
-				false,
+				'default',
+				'default',
 			],
 			[
 				[
@@ -269,8 +269,10 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 					'test2' => 200,
 				],
 				'test2.test2-1',
-				false,
-				false,
+				function () {
+					return 'default';
+				},
+				'default',
 			],
 		];
 	}
@@ -316,6 +318,15 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 				],
 			],
 			[
+				null,
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+				'test10',
+			],
+			[
 				'default',
 				[
 					'test1' => 1,
@@ -327,6 +338,22 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 					'test20',
 					'test30',
 					'default',
+				],
+			],
+			[
+				'default',
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
+				'test10',
+				[
+					'test20',
+					'test30',
+					function () {
+						return 'default';
+					},
 				],
 			],
 		];
