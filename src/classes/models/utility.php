@@ -29,6 +29,21 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	private $_replace_time;
 
 	/**
+	 * @var string[][] $_snake_cache
+	 */
+	private $_snake_cache = [];
+
+	/**
+	 * @var string[] $_camel_cache
+	 */
+	private $_camel_cache = [];
+
+	/**
+	 * @var string[] $_studly_cache
+	 */
+	private $_studly_cache = [];
+
+	/**
 	 * @return bool
 	 */
 	protected static function is_shared_class() {
@@ -99,16 +114,24 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param array|object $obj
+	 * @param mixed $obj
 	 *
 	 * @return array
 	 */
-	private function get_array_value( $obj ) {
+	public function get_array_value( $obj ) {
 		if ( $obj instanceof \stdClass ) {
 			$obj = get_object_vars( $obj );
+		} elseif ( $obj instanceof \JsonSerializable ) {
+			$obj = (array) $obj->jsonSerialize();
+		} elseif ( $obj instanceof \Traversable ) {
+			$obj = iterator_to_array( $obj );
 		} elseif ( ! is_array( $obj ) ) {
 			if ( method_exists( $obj, 'to_array' ) ) {
-				$obj = $obj->to_array();
+				$obj = (array) $obj->to_array();
+			} elseif ( method_exists( $obj, 'toArray' ) ) {
+				$obj = (array) $obj->toArray();
+			} elseif ( method_exists( $obj, 'toJson' ) ) {
+				$obj = json_decode( $obj->toJson(), true );
 			}
 		}
 		if ( ! is_array( $obj ) || empty( $obj ) ) {
@@ -116,6 +139,19 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		}
 
 		return $obj;
+	}
+
+	/**
+	 * @param mixed $value
+	 *
+	 * @return array
+	 */
+	public function array_wrap( $value ) {
+		if ( is_null( $value ) ) {
+			return [];
+		}
+
+		return is_array( $value ) ? $value : [ $value ];
 	}
 
 	/**
@@ -150,6 +186,31 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		}
 
 		return $array;
+	}
+
+	/**
+	 * @param array|object $array
+	 * @param string $key
+	 * @param mixed ...$keys
+	 *
+	 * @return mixed
+	 */
+	public function array_search( $array, $key, ...$keys ) {
+		$array = $this->get_array_value( $array );
+		if ( count( $keys ) > 0 ) {
+			$default = array_pop( $keys );
+		} else {
+			$default = null;
+		}
+
+		array_unshift( $keys, $key );
+		foreach ( $keys as $key ) {
+			if ( array_key_exists( $key, $array ) ) {
+				return $array[ $key ];
+			}
+		}
+
+		return $default;
 	}
 
 	/**
@@ -325,6 +386,86 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		}
 
 		return substr_compare( $haystack, $needle, - strlen( $needle ) ) === 0;
+	}
+
+	/**
+	 * @param string $haystack
+	 * @param string|array $needles
+	 *
+	 * @return bool
+	 */
+	public function contains( $haystack, $needles ) {
+		foreach ( (array) $needles as $needle ) {
+			if ( $needle !== '' && mb_strpos( $haystack, $needle ) !== false ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public function lower( $value ) {
+		return mb_strtolower( $value, 'UTF-8' );
+	}
+
+	/**
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public function camel( $value ) {
+		if ( ! isset( $this->_camel_cache[ $value ] ) ) {
+			$this->_camel_cache[ $value ] = lcfirst( $this->studly( $value ) );
+		}
+
+		return $this->_camel_cache[ $value ];
+	}
+
+	/**
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public function studly( $value ) {
+		if ( ! isset( $this->_studly_cache[ $value ] ) ) {
+			$_value                        = ucwords( str_replace( [ '-', '_' ], ' ', $value ) );
+			$this->_studly_cache[ $value ] = str_replace( ' ', '', $_value );
+		}
+
+		return $this->_studly_cache[ $value ];
+	}
+
+	/**
+	 * @param string $value
+	 * @param string $delimiter
+	 *
+	 * @return string
+	 */
+	public function snake( $value, $delimiter = '_' ) {
+		if ( ! isset( $this->_snake_cache[ $value ][ $delimiter ] ) ) {
+			$_value = $value;
+			if ( ! ctype_lower( $_value ) ) {
+				$_value = preg_replace( '/\s+/u', '', ucwords( $_value ) );
+				$_value = $this->lower( preg_replace( '/(.)(?=[A-Z])/u', '$1' . $delimiter, $_value ) );
+			}
+			$this->_snake_cache[ $value ][ $delimiter ] = $_value;
+		}
+
+		return $this->_snake_cache[ $value ][ $delimiter ];
+	}
+
+	/**
+	 * @param string $value
+	 *
+	 * @return string
+	 */
+	public function kebab( $value ) {
+		return $this->snake( $value, '-' );
 	}
 
 	/**
