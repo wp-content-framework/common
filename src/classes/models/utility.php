@@ -127,11 +127,29 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function array_get( $array, $key, $default = null ) {
 		$array = $this->get_array_value( $array );
+
+		if ( is_null( $key ) ) {
+			return $array;
+		}
+
 		if ( array_key_exists( $key, $array ) ) {
 			return $array[ $key ];
 		}
 
-		return $default;
+		if ( strpos( $key, '.' ) === false ) {
+			return $default;
+		}
+
+		foreach ( explode( '.', $key ) as $segment ) {
+			$a = $this->get_array_value( $array );
+			if ( array_key_exists( $segment, $a ) ) {
+				$array = $a[ $segment ];
+			} else {
+				return $default;
+			}
+		}
+
+		return $array;
 	}
 
 	/**
