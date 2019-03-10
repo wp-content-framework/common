@@ -56,7 +56,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return mixed
 	 */
 	private function value( $value ) {
-		return $value instanceof \Closure ? $value() : $value;
+		return $value instanceof \Closure ? $value( $this->app ) : $value;
 	}
 
 	/**
