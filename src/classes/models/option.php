@@ -344,6 +344,6 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return int
 	 */
 	public function get_uninstall_priority() {
-		return 200;
+		return 1000;
 	}
 }
