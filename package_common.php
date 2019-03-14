@@ -35,6 +35,7 @@ class Package_Common extends Package_Base {
 		return [
 			'capability',
 			'config',
+			'deprecated',
 			'filter',
 			'map',
 			'slug',
