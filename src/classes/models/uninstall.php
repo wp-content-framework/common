@@ -68,9 +68,7 @@ class Uninstall implements \WP_Framework_Core\Interfaces\Loader {
 		if ( ! is_multisite() ) {
 			foreach ( $uninstall as $priority => $items ) {
 				foreach ( $items as $item ) {
-					if ( is_callable( $item ) ) {
-						call_user_func( $item );
-					}
+					$this->call_if_closure( $item );
 				}
 			}
 		} else {
@@ -83,9 +81,7 @@ class Uninstall implements \WP_Framework_Core\Interfaces\Loader {
 
 				foreach ( $uninstall as $priority => $items ) {
 					foreach ( $items as $item ) {
-						if ( is_callable( $item ) ) {
-							call_user_func( $item );
-						}
+						$this->call_if_closure( $item );
 					}
 				}
 			}
