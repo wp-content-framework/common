@@ -243,7 +243,7 @@ class User implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_Cor
 SQL;
 		$results = $wpdb->get_results( $wpdb->prepare( $query, $this->get_meta_key( $key ), $value ) );
 
-		return $this->apply_filters( 'find_user_meta', $this->app->utility->array_pluck( $results, 'user_id' ), $key, $value );
+		return $this->apply_filters( 'find_user_meta', $this->app->array->pluck( $results, 'user_id' ), $key, $value );
 	}
 
 	/**
@@ -274,7 +274,7 @@ SQL;
 SQL;
 		$results = $wpdb->get_results( $wpdb->prepare( $query, $this->get_meta_key( $key ) ) );
 
-		return $this->apply_filters( 'get_meta_user_ids', $this->app->utility->array_pluck( $results, 'user_id' ), $key );
+		return $this->apply_filters( 'get_meta_user_ids', $this->app->array->pluck( $results, 'user_id' ), $key );
 	}
 
 	/**

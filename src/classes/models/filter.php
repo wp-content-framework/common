@@ -56,7 +56,7 @@ class Filter implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @param array $methods
 	 */
 	public function register_filter( $class, $tag, array $methods ) {
-		$tag = $this->app->utility->replace( $tag, [ 'prefix' => $this->get_filter_prefix(), 'framework' => $this->get_framework_filter_prefix() ] );
+		$tag = $this->app->string->replace( $tag, [ 'prefix' => $this->get_filter_prefix(), 'framework' => $this->get_framework_filter_prefix() ] );
 		if ( empty( $class ) || empty( $tag ) || ! is_array( $methods ) ) {
 			return;
 		}

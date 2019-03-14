@@ -161,11 +161,11 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 	 */
 	private function get_detail_setting( $setting, array $data ) {
 		$data['key'] = $setting;
-		$type        = $this->app->utility->array_get( $data, 'type', '' );
-		$default     = $this->app->utility->array_get( $data, 'default', '' );
 		if ( is_callable( $default ) ) {
 			$default = $default( $this->app );
 		}
+		$type        = $this->app->array->get( $data, 'type', '' );
+		$default     = $this->app->array->get( $data, 'default', '' );
 		$default = $this->get_expression( $default, $type );
 		if ( ! empty( $data['translate'] ) ) {
 			$default = $this->translate( $default );

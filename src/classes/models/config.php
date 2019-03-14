@@ -54,7 +54,7 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return mixed
 	 */
 	public function get( $name, $key = null, $default = null ) {
-		return isset( $key ) ? $this->app->utility->array_get( $this->load( $name ), $key, $default ) : $this->load( $name );
+		return isset( $key ) ? $this->app->array->get( $this->load( $name ), $key, $default ) : $this->load( $name );
 	}
 
 	/**
@@ -64,7 +64,7 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function set( $name, $key, $value ) {
 		$this->load( $name );
-		$this->app->utility->array_set( $this->_configs[ $name ], $key, $value );
+		$this->_configs[ $name ] = $this->app->array->set( $this->_configs[ $name ], $key, $value );
 	}
 
 	/**
