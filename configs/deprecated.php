@@ -1,6 +1,6 @@
 <?php
 /**
- * WP_Framework_Common Configs Slug
+ * WP_Framework_Common Configs Deprecated
  *
  * @version 0.0.29
  * @author Technote
@@ -15,13 +15,6 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 
 return [
 
-	// user prefix
-	'user_prefix'       => '',
-
-	// option name
-	'option_name'       => '',
-
-	// group option name
-	'group_option_name' => '',
+	'\WP_Framework_Common\Classes\Models\Utility' => '\WP_Framework_Common\Deprecated\Classes\Models\Utility',
 
 ];

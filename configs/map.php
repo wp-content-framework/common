@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Configs Map
  *
- * @version 0.0.1
+ * @version 0.0.29
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -27,5 +27,6 @@ return [
 	'array'      => '\WP_Framework_Common\Classes\Models\Array_Utility',
 	'string'     => '\WP_Framework_Common\Classes\Models\String_Utility',
 	'file'       => '\WP_Framework_Common\Classes\Models\File_Utility',
+	'deprecated' => '\WP_Framework_Common\Classes\Models\Deprecated',
 
 ];

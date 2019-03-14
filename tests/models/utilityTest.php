@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Utility Test
  *
- * @version 0.0.27
+ * @version 0.0.29
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -26,14 +26,32 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	private static $_utility;
 
+	/**
+	 * @var \WP_Framework_Common\Classes\Models\Array_Utility $_array
+	 */
+	private static $_array;
+
+	/**
+	 * @var \WP_Framework_Common\Classes\Models\File_Utility $_file
+	 */
+	private static $_file;
+
+	/**
+	 * @var \WP_Framework_Common\Classes\Models\String_Utility $_string
+	 */
+	private static $_string;
+
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
 		static::$_utility = \WP_Framework_Common\Classes\Models\Utility::get_instance( static::$app );
+		static::$_array   = \WP_Framework_Common\Classes\Models\Array_Utility::get_instance( static::$app );
+		static::$_file    = \WP_Framework_Common\Classes\Models\File_Utility::get_instance( static::$app );
+		static::$_string  = \WP_Framework_Common\Classes\Models\String_Utility::get_instance( static::$app );
 	}
 
 	public static function tearDownAfterClass() {
 		parent::tearDownAfterClass();
-		static::$_utility->delete_upload_dir( static::$app );
+		static::$_file->delete_upload_dir( static::$app );
 	}
 
 	/**
@@ -45,6 +63,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_flatten( $array, $preserve_keys, $expected ) {
 		$this->assertEquals( $expected, static::$_utility->flatten( $array, $preserve_keys ) );
+		$this->assertEquals( $expected, static::$_array->flatten( $array, $preserve_keys ) );
 	}
 
 	/**
@@ -101,6 +120,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_get_array_value( $expected, $obj, $ignore_value = true ) {
 		$this->assertEquals( $expected, static::$_utility->get_array_value( $obj, $ignore_value ) );
+		$this->assertEquals( $expected, static::$_array->to_array( $obj, $ignore_value ) );
 	}
 
 	/**
@@ -177,6 +197,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_array_wrap( $value, $expected ) {
 		$this->assertEquals( $expected, static::$_utility->array_wrap( $value ) );
+		$this->assertEquals( $expected, static::$_array->wrap( $value ) );
 	}
 
 	/**
@@ -217,6 +238,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_array_get( $array, $key, $default, $expected ) {
 		$this->assertEquals( $expected, static::$_utility->array_get( $array, $key, $default ) );
+		$this->assertEquals( $expected, static::$_array->get( $array, $key, $default ) );
 	}
 
 	/**
@@ -287,6 +309,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_array_search( $expected, $array, $key, $keys = [] ) {
 		$this->assertEquals( $expected, static::$_utility->array_search( $array, $key, ...$keys ) );
+		$this->assertEquals( $expected, static::$_array->search( $array, $key, ...$keys ) );
 	}
 
 	/**
@@ -368,8 +391,11 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 * @param mixed $value
 	 */
 	public function test_array_set( $array, $key, $value ) {
-		static::$_utility->array_set( $array, $key, $value );
+		$array2 = $array;
+		$array  = static::$_utility->array_set( $array, $key, $value );
 		$this->assertEquals( $value, static::$_utility->array_get( $array, $key ) );
+		$array2 = static::$_array->set( $array2, $key, $value );
+		$this->assertEquals( $value, static::$_array->get( $array2, $key ) );
 	}
 
 	/**
@@ -405,6 +431,60 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 					'test1' => true,
 				],
 			],
+			[
+				[
+					'test' => true,
+				],
+				'test2.test3',
+				[
+					'test4' => 'test5',
+				],
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_array_delete_provider
+	 *
+	 * @param array $array
+	 * @param string $key
+	 * @param string|null $key2
+	 */
+	public function test_array_delete( $array, $key, $key2 = null ) {
+		$array = static::$_array->delete( $array, $key );
+		$this->assertNull( static::$_array->get( $array, $key, null ) );
+		if ( isset( $key2 ) ) {
+			$this->assertNotNull( static::$_array->get( $array, $key2, null ) );
+		}
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_array_delete_provider() {
+		return [
+			[
+				[],
+				'test1',
+			],
+			[
+				[
+					'test1' => 'test1',
+					'test2' => 'test2',
+				],
+				'test1',
+				'test2',
+			],
+			[
+				[
+					'test1' => [
+						'test2' => 'test3',
+						'test4' => 'test5',
+					],
+				],
+				'test1.test2',
+				'test1.test4',
+			],
 		];
 	}
 
@@ -417,6 +497,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_replace( $string, $data, $expected ) {
 		$this->assertEquals( $expected, static::$_utility->replace( $string, $data ) );
+		$this->assertEquals( $expected, static::$_string->replace( $string, $data ) );
 	}
 
 	/**
@@ -451,6 +532,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_starts_with( $haystack, $needle, $expected ) {
 		$this->assertEquals( $expected, static::$_utility->starts_with( $haystack, $needle ) );
+		$this->assertEquals( $expected, static::$_string->starts_with( $haystack, $needle ) );
 	}
 
 	/**
@@ -515,6 +597,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_ends_with( $haystack, $needle, $expected ) {
 		$this->assertEquals( $expected, static::$_utility->ends_with( $haystack, $needle ) );
+		$this->assertEquals( $expected, static::$_string->ends_with( $haystack, $needle ) );
 	}
 
 	/**
@@ -579,6 +662,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_snake( $expected, $value, $delimiter = '_' ) {
 		$this->assertEquals( $expected, static::$_utility->snake( $value, $delimiter ) );
+		$this->assertEquals( $expected, static::$_string->snake( $value, $delimiter ) );
 	}
 
 	/**
@@ -606,6 +690,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_camel( $value, $expected ) {
 		$this->assertEquals( $expected, static::$_utility->camel( $value ) );
+		$this->assertEquals( $expected, static::$_string->camel( $value ) );
 	}
 
 	/**
@@ -632,6 +717,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_studly( $value, $expected ) {
 		$this->assertEquals( $expected, static::$_utility->studly( $value ) );
+		$this->assertEquals( $expected, static::$_string->studly( $value ) );
 	}
 
 	/**
@@ -668,6 +754,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 
 	public function test_upload_file_not_exists() {
 		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertFalse( static::$_file->upload_file_exists( static::$app, 'test/file1.txt' ) );
 	}
 
 	/**
@@ -676,6 +763,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_create_upload_file() {
 		static::$_utility->create_upload_file( static::$app, 'test/file1.txt', 'file test' );
+		static::$_file->create_upload_file( static::$app, 'test/file10.txt', 'file test' );
 	}
 
 	/**
@@ -683,6 +771,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_upload_file_exists() {
 		$this->assertTrue( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertTrue( static::$_file->upload_file_exists( static::$app, 'test/file10.txt' ) );
 	}
 
 	/**
@@ -690,6 +779,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_delete_upload_file() {
 		$this->assertTrue( static::$_utility->delete_upload_file( static::$app, 'test/file1.txt' ) );
+		$this->assertTrue( static::$_file->delete_upload_file( static::$app, 'test/file10.txt' ) );
 	}
 
 	/**
@@ -697,6 +787,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 */
 	public function test_upload_file_not_exists2() {
 		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertFalse( static::$_file->upload_file_exists( static::$app, 'test/file10.txt' ) );
 	}
 
 	/**
@@ -710,6 +801,14 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 		$this->assertEquals( 'create test', static::$_utility->get_upload_file_contents( static::$app, 'test/file2.txt' ) );
 		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
 		$this->assertTrue( static::$_utility->upload_file_exists( static::$app, 'test/file2.txt' ) );
+
+		$this->assertFalse( static::$_file->get_upload_file_contents( static::$app, 'test/file10.txt' ) );
+		$this->assertEquals( 'create test', static::$_file->get_upload_file_contents( static::$app, 'test/file20.txt', function () {
+			return 'create test';
+		} ) );
+		$this->assertEquals( 'create test', static::$_file->get_upload_file_contents( static::$app, 'test/file20.txt' ) );
+		$this->assertFalse( static::$_file->upload_file_exists( static::$app, 'test/file10.txt' ) );
+		$this->assertTrue( static::$_file->upload_file_exists( static::$app, 'test/file20.txt' ) );
 	}
 
 	/**
@@ -723,6 +822,14 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 		$this->assertEquals( static::$app->define->upload_url . '/test/file3.txt', static::$_utility->get_upload_file_url( static::$app, 'test/file3.txt' ) );
 		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
 		$this->assertTrue( static::$_utility->upload_file_exists( static::$app, 'test/file3.txt' ) );
+
+		$this->assertFalse( static::$_file->get_upload_file_url( static::$app, 'test/file10.txt' ) );
+		$this->assertEquals( static::$app->define->upload_url . '/test/file30.txt', static::$_file->get_upload_file_url( static::$app, 'test/file30.txt', function () {
+			return 'create test';
+		} ) );
+		$this->assertEquals( static::$app->define->upload_url . '/test/file30.txt', static::$_file->get_upload_file_url( static::$app, 'test/file30.txt' ) );
+		$this->assertFalse( static::$_file->upload_file_exists( static::$app, 'test/file10.txt' ) );
+		$this->assertTrue( static::$_file->upload_file_exists( static::$app, 'test/file30.txt' ) );
 	}
 
 	/**
