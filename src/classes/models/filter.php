@@ -29,6 +29,12 @@ class Filter implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	private $_target_app = [];
 
 	/**
+	 * for debug
+	 * @var array $_elapsed
+	 */
+	private $_elapsed = [];
+
+	/**
 	 * initialize
 	 */
 	protected function initialize() {
@@ -66,8 +72,8 @@ class Filter implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 				continue;
 			}
 			list( $priority, $accepted_args ) = $this->get_filter_params( $params );
-			add_filter( $tag, function () use ( $class, $method ) {
-				return $this->call_filter_callback( $class, $method, func_get_args() );
+			add_filter( $tag, function () use ( $tag, $class, $method ) {
+				return $this->call_filter_callback( $tag, $class, $method, func_get_args() );
 			}, $priority, $accepted_args );
 		}
 	}
@@ -149,23 +155,66 @@ class Filter implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	}
 
 	/**
+	 * @param string $tag
 	 * @param string $class
 	 * @param string $method
 	 * @param array $args
 	 *
 	 * @return mixed
 	 */
-	private function call_filter_callback( $class, $method, array $args ) {
-		$result = empty( $args ) ? null : reset( $args );
-		$app    = $this->get_target_app( $class );
-		if ( empty( $app ) ) {
-			return $result;
-		}
+	private function call_filter_callback( $tag, $class, $method, array $args ) {
+		return $this->run( $tag, $class, $method, function ( $args ) use ( $class, $method ) {
+			$result = empty( $args ) ? null : reset( $args );
+			$app    = $this->get_target_app( $class );
+			if ( empty( $app ) ) {
+				return $result;
+			}
 
-		if ( $app->is_filter_callable( $method ) ) {
-			return $app->filter_callback( $method, $args );
-		}
+			if ( $app->is_filter_callable( $method ) ) {
+				return $app->filter_callback( $method, $args );
+			}
+
+			return $result;
+		}, $args );
+	}
+
+	/**
+	 * @param string $tag
+	 * @param string $class
+	 * @param string $method
+	 * @param callable $callback
+	 * @param array $args
+	 *
+	 * @return mixed
+	 */
+	private function run( $tag, $class, $method, $callback, $args ) {
+		$start            = microtime( true ) * 1000;
+		$result           = $callback( $args );
+		$elapsed          = microtime( true ) * 1000 - $start;
+		$this->_elapsed[] = [ 'tag' => $tag, 'class' => $class, 'method' => $method, 'elapsed' => $elapsed ];
 
 		return $result;
+	}
+
+	/**
+	 * for debug
+	 * @return float
+	 */
+	public function get_elapsed() {
+		return $this->app->array->sum( $this->_elapsed, function ( $item ) {
+			return $item['elapsed'];
+		} );
+	}
+
+	/**
+	 * for debug
+	 * @return array
+	 */
+	public function get_elapsed_details() {
+		$elapsed = $this->get_elapsed();
+
+		return $this->app->array->map( $this->_elapsed, function ( $item ) use ( $elapsed ) {
+			return sprintf( '%10.6fms (%5.2f%%) : [%s] %s->%s', $item['elapsed'], ( $item['elapsed'] / $elapsed ) * 100, $item['tag'], $item['class'], $item['method'] );
+		} );
 	}
 }

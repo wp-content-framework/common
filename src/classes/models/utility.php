@@ -24,6 +24,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	use \WP_Framework_Core\Traits\Singleton, \WP_Framework_Common\Traits\Package;
 
 	/**
+	 * @var float $_tick
+	 */
+	private $_tick;
+
+	/**
 	 * @return bool
 	 */
 	protected static function is_shared_class() {
@@ -364,5 +369,29 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function is_active_plugin( $plugin ) {
 		return in_array( $plugin, (array) get_option( 'active_plugins', [] ) ) || ( is_multisite() && ( $plugins = get_site_option( 'active_sitewide_plugins' ) ) && isset( $plugins[ $plugin ] ) );
+	}
+
+	/**
+	 * for debug
+	 */
+	public function timer_start() {
+		$this->_tick = microtime( true ) * 1000;
+	}
+
+	/**
+	 * for debug
+	 *
+	 * @param string $format
+	 */
+	public function timer_tick( $format = '%12.8f' ) {
+		if ( ! isset( $this->_tick ) ) {
+			$this->timer_start();
+
+			return;
+		}
+		$now     = microtime( true ) * 1000;
+		$elapsed = $now - $this->_tick;
+		error_log( sprintf( $format, $elapsed ) );
+		$this->_tick = $now;
 	}
 }
