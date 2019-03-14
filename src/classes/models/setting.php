@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Classes Models Setting
  *
- * @version 0.0.11
+ * @version 0.0.29
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -61,9 +61,9 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 						unset( $this->_groups[ $_group_priority ] );
 					}
 				} else {
-				$this->_groups[ $group_priority ][ $group ] = [];
+					$this->_groups[ $group_priority ][ $group ] = [];
 				}
-				$this->_group_priority[ $group ]            = $group_priority;
+				$this->_group_priority[ $group ] = $group_priority;
 				foreach ( $setting_set as $setting_priority => $settings ) {
 
 					$this->_groups[ $group_priority ][ $group ] = array_merge( $this->_groups[ $group_priority ][ $group ], array_keys( $settings ) );
