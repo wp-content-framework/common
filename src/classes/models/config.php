@@ -37,10 +37,25 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 		if ( ! isset( $this->_configs[ $name ] ) ) {
 			$plugin_config = $this->load_config_file( $this->app->define->plugin_configs_dir, $name );
 			$configs       = [];
-			foreach ( $this->app->get_packages() as $package ) {
-				$configs = array_replace_recursive( $configs, $package->get_config( $name ) );
+			if ( 'config' === $name ) {
+				$required_php_version       = isset( $plugin_config['required_php_version'] ) ? $plugin_config['required_php_version'] : WP_FRAMEWORK_REQUIRED_PHP_VERSION;
+				$required_wordpress_version = isset( $plugin_config['required_wordpress_version'] ) ? $plugin_config['required_wordpress_version'] : WP_FRAMEWORK_REQUIRED_WP_VERSION;
+				foreach ( $this->app->get_packages() as $package ) {
+					$_config = $package->get_config( $name );
+					isset( $_config['required_php_version'] ) && version_compare( $required_php_version, $_config['required_php_version'], '<' ) and $required_php_version = $_config['required_php_version'];
+					isset( $_config['required_wordpress_version'] ) && version_compare( $required_wordpress_version, $_config['required_wordpress_version'], '<' ) and $required_wordpress_version = $_config['required_wordpress_version'];
+					$configs = array_replace_recursive( $configs, $_config );
+				}
+				$configs                               = array_replace_recursive( $configs, $plugin_config );
+				$configs['required_php_version']       = $required_php_version;
+				$configs['required_wordpress_version'] = $required_wordpress_version;
+			} else {
+				foreach ( $this->app->get_packages() as $package ) {
+					$configs = array_replace_recursive( $configs, $package->get_config( $name ) );
+				}
+				$configs = array_replace_recursive( $configs, $plugin_config );
 			}
-			$this->_configs[ $name ] = array_replace_recursive( $configs, $plugin_config );
+			$this->_configs[ $name ] = $configs;
 		}
 
 		return $this->_configs[ $name ];
