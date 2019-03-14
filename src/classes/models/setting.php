@@ -53,7 +53,16 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 			foreach ( $groups as $group => $setting_set ) {
 				ksort( $setting_set );
 
+				if ( isset( $this->_group_priority[ $group ] ) ) {
+					$_group_priority                            = $this->_group_priority[ $group ];
+					$this->_groups[ $group_priority ][ $group ] = $this->_groups[ $_group_priority ][ $group ];
+					unset( $this->_groups[ $_group_priority ][ $group ] );
+					if ( empty( $this->_groups[ $_group_priority ] ) ) {
+						unset( $this->_groups[ $_group_priority ] );
+					}
+				} else {
 				$this->_groups[ $group_priority ][ $group ] = [];
+				}
 				$this->_group_priority[ $group ]            = $group_priority;
 				foreach ( $setting_set as $setting_priority => $settings ) {
 
@@ -65,6 +74,7 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 				}
 			}
 		}
+		asort( $this->_group_priority );
 	}
 
 	/**
