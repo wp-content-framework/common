@@ -66,7 +66,6 @@ class Deprecated implements \WP_Framework_Core\Interfaces\Singleton {
 
 		$messages = [
 			'致命的なバグが発生しました。',
-			'これはフレームワークの互換性によるエラーです。',
 			'お手数ですがエラーを報告いただけると助かります。',
 		];
 		try {
