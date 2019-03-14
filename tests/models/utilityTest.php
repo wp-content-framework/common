@@ -229,6 +229,50 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	}
 
 	/**
+	 * @dataProvider _test_array_exists_provider
+	 *
+	 * @param bool $expected
+	 * @param array $array
+	 * @param string $key
+	 */
+	public function test_array_exists( $expected, $array, $key ) {
+		$this->assertEquals( $expected, static::$_array->exists( $array, $key ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_array_exists_provider() {
+		return [
+			[
+				false,
+				[],
+				'test1',
+			],
+			[
+				true,
+				[ 'test2' => 2 ],
+				'test2',
+			],
+			[
+				false,
+				[ 'test3_1' => [ 'test3_2' => 3 ] ],
+				'test3_1.test_3',
+			],
+			[
+				true,
+				[ 'test4_1' => [ 'test4_2' => 4 ] ],
+				'test4_1',
+			],
+			[
+				true,
+				[ 'test5_1' => [ 'test5_2' => 5 ] ],
+				'test5_1.test5_2',
+			],
+		];
+	}
+
+	/**
 	 * @dataProvider _test_array_get_provider
 	 *
 	 * @param array $array
