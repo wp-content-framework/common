@@ -96,6 +96,40 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param array|object $array
+	 * @param string|array $key
+	 *
+	 * @return bool
+	 */
+	public function exists( $array, $key ) {
+		$array = $this->to_array( $array );
+
+		if ( is_string( $key ) ) {
+			if ( array_key_exists( $key, $array ) ) {
+				return true;
+			}
+
+			if ( strpos( $key, '.' ) === false ) {
+				return false;
+			}
+			$keys = explode( '.', $key );
+		} else {
+			$keys = $this->to_array( $key );
+		}
+
+		foreach ( $keys as $segment ) {
+			$a = $this->to_array( $array );
+			if ( array_key_exists( $segment, $a ) ) {
+				$array = $a[ $segment ];
+			} else {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param array|object $array
 	 * @param string|array|null $key
 	 * @param mixed $default
 	 *
