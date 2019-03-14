@@ -24,5 +24,6 @@ return [
 	'option'    => '\WP_Framework_Common\Classes\Models\Option',
 	'user'      => '\WP_Framework_Common\Classes\Models\User',
 	'input'     => '\WP_Framework_Common\Classes\Models\Input',
+	'deprecated' => '\WP_Framework_Common\Classes\Models\Deprecated',
 
 ];
