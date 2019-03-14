@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Utility Test
  *
- * @version 0.0.29
+ * @version 0.0.30
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -224,6 +224,50 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 			[
 				'test',
 				[ 'test' ],
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_array_exists_provider
+	 *
+	 * @param bool $expected
+	 * @param array $array
+	 * @param string $key
+	 */
+	public function test_array_exists( $expected, $array, $key ) {
+		$this->assertEquals( $expected, static::$_array->exists( $array, $key ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_array_exists_provider() {
+		return [
+			[
+				false,
+				[],
+				'test1',
+			],
+			[
+				true,
+				[ 'test2' => 2 ],
+				'test2',
+			],
+			[
+				false,
+				[ 'test3_1' => [ 'test3_2' => 3 ] ],
+				'test3_1.test_3',
+			],
+			[
+				true,
+				[ 'test4_1' => [ 'test4_2' => 4 ] ],
+				'test4_1',
+			],
+			[
+				true,
+				[ 'test5_1' => [ 'test5_2' => 5 ] ],
+				'test5_1.test5_2',
 			],
 		];
 	}
