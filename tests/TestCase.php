@@ -1,8 +1,8 @@
 <?php
 /**
- * WP_Framework_Common Models Define Test
+ * WP_Framework_Common TestCase
  *
- * @version 0.0.29
+ * @version 0.0.31
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
