@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Classes Models Option
  *
- * @version 0.0.30
+ * @version 0.0.31
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -311,7 +311,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 		isset( $group_prefix ) and $prefix .= $group_prefix;
 
 		return $this->app->array->pluck_unique( $this->wpdb()->get_results( $this->wpdb()->prepare(
-			"SELECT option_name FROM {$this->wpdb()->options} WHERE option_name LIKE %s",
+			"SELECT option_name FROM {$this->get_wp_table('options')} WHERE option_name LIKE %s",
 			str_replace( [ '\\', '%', '_' ], [ '\\\\', '\%', '\_' ], $prefix ) . '%'
 		) ), 'option_name' );
 	}
