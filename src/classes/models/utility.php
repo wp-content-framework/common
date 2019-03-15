@@ -110,7 +110,14 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			return wp_doing_ajax();
 		}
 
-		return $this->definedv( 'DOING_AJAX' );
+		return ! ! $this->definedv( 'DOING_AJAX' );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function doing_cron() {
+		return ! ! $this->definedv( 'DOING_CRON' );
 	}
 
 	/**
