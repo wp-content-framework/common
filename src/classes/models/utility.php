@@ -39,6 +39,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	private $_active_plugins_hash;
 
 	/**
+	 * @var string $_framework_plugin_hash
+	 */
+	private $_framework_plugin_hash;
+
+	/**
 	 * @return bool
 	 */
 	protected static function is_shared_class() {
@@ -407,6 +412,25 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		! isset( $this->_active_plugins_hash ) and $this->_active_plugins_hash = sha1( json_encode( $this->get_active_plugins( false ) ) );
 
 		return $this->_active_plugins_hash;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function get_framework_plugins() {
+		return $this->app->array->map( $this->app->get_instances(), function ( $instance ) {
+			/** @var \WP_Framework $instance */
+			return $instance->plugin_name . '/' . $instance->get_plugin_version();
+		} );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_framework_plugins_hash() {
+		! isset( $this->_framework_plugin_hash ) and $this->_framework_plugin_hash = sha1( json_encode( $this->get_framework_plugins() ) );
+
+		return $this->_framework_plugin_hash;
 	}
 
 	/**
