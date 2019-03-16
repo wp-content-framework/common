@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Classes Models Utility
  *
- * @version 0.0.31
+ * @version 0.0.32
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -118,6 +118,13 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function doing_cron() {
 		return ! ! $this->definedv( 'DOING_CRON' );
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function is_autosave() {
+		return ! ! $this->definedv( 'DOING_AUTOSAVE' );
 	}
 
 	/**
@@ -304,18 +311,14 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return bool
 	 */
 	public function is_valid_tinymce_color_picker() {
-		global $wp_version;
-
-		return version_compare( $wp_version, '4.0.0', '>=' );
+		return $this->compare_wp_version( '4.0.0', '>=' );
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function can_use_block_editor() {
-		global $wp_version;
-
-		return version_compare( $wp_version, '5.0.0', '>=' );
+		return $this->compare_wp_version( '5.0.0', '>=' );
 	}
 
 	/**
