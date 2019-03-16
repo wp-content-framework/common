@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Classes Models Utility
  *
- * @version 0.0.33
+ * @version 0.0.35
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -37,6 +37,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @var string $_active_plugins_hash
 	 */
 	private $_active_plugins_hash;
+
+	/**
+	 * @var string $_framework_plugin_hash
+	 */
+	private $_framework_plugin_hash;
 
 	/**
 	 * @return bool
@@ -407,6 +412,25 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		! isset( $this->_active_plugins_hash ) and $this->_active_plugins_hash = sha1( json_encode( $this->get_active_plugins( false ) ) );
 
 		return $this->_active_plugins_hash;
+	}
+
+	/**
+	 * @return array
+	 */
+	private function get_framework_plugins() {
+		return $this->app->array->map( $this->app->get_instances(), function ( $instance ) {
+			/** @var \WP_Framework $instance */
+			return $instance->plugin_name . '/' . $instance->get_plugin_version();
+		} );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_framework_plugins_hash() {
+		! isset( $this->_framework_plugin_hash ) and $this->_framework_plugin_hash = sha1( json_encode( $this->get_framework_plugins() ) );
+
+		return $this->_framework_plugin_hash;
 	}
 
 	/**
