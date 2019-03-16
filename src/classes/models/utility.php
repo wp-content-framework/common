@@ -121,6 +121,13 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function is_autosave() {
+		return ! ! $this->definedv( 'DOING_AUTOSAVE' );
+	}
+
+	/**
 	 * @param bool $except_ajax
 	 *
 	 * @return bool
