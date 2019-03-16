@@ -29,6 +29,16 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	private $_tick;
 
 	/**
+	 * @var array $_active_plugins
+	 */
+	private $_active_plugins;
+
+	/**
+	 * @var string $_active_plugins_hash
+	 */
+	private $_active_plugins_hash;
+
+	/**
 	 * @return bool
 	 */
 	protected static function is_shared_class() {
@@ -373,12 +383,39 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
+	 * @param bool $combine
+	 *
+	 * @return array
+	 */
+	public function get_active_plugins( $combine = true ) {
+		if ( ! isset( $this->_active_plugins ) ) {
+			$option = get_option( 'active_plugins', [] );
+			if ( is_multisite() ) {
+				$option = array_merge( $option, array_keys( get_site_option( 'active_sitewide_plugins' ) ) );
+				$option = array_unique( $option );
+			}
+			$this->_active_plugins = $combine ? $this->app->array->combine( $option, null ) : array_values( $option );
+		}
+
+		return $this->_active_plugins;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function get_active_plugins_hash() {
+		! isset( $this->_active_plugins_hash ) and $this->_active_plugins_hash = sha1( json_encode( $this->get_active_plugins( false ) ) );
+
+		return $this->_active_plugins_hash;
+	}
+
+	/**
 	 * @param string $plugin
 	 *
 	 * @return bool
 	 */
 	public function is_active_plugin( $plugin ) {
-		return in_array( $plugin, (array) get_option( 'active_plugins', [] ) ) || ( is_multisite() && ( $plugins = get_site_option( 'active_sitewide_plugins' ) ) && isset( $plugins[ $plugin ] ) );
+		return in_array( $plugin, $this->get_active_plugins( false ) );
 	}
 
 	/**
