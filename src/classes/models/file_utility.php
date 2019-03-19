@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Classes Models File Utility
  *
- * @version 0.0.29
+ * @version 0.0.36
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -46,7 +46,7 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return bool
 	 */
 	public function delete_plugin_dir( \WP_Framework $app, $dir ) {
-		return $this->delete_dir( $this->app->define->plugin_dir . DS . $dir );
+		return $this->delete_dir( $app->define->plugin_dir . DS . $dir );
 	}
 
 	/**
