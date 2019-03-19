@@ -40,6 +40,16 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
+	 * @param \WP_Framework $app
+	 * @param string $dir
+	 *
+	 * @return bool
+	 */
+	public function delete_plugin_dir( \WP_Framework $app, $dir ) {
+		return $this->delete_dir( $this->app->define->plugin_dir . DS . $dir );
+	}
+
+	/**
 	 * @see https://qiita.com/algo13/items/34bb9750f0e450109a03
 	 *
 	 * @param $dir
