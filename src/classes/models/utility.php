@@ -345,8 +345,6 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		}
 
 		if ( $this->can_use_block_editor() ) {
-			require_once ABSPATH . 'wp-admin/includes/screen.php';
-
 			return get_current_screen()->is_block_editor();
 		}
 
