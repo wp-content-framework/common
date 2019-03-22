@@ -148,6 +148,27 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 
 	/**
 	 * @param string $setting
+	 *
+	 * @return bool
+	 */
+	public function is_setting_removed( $setting ) {
+		if ( ! $this->is_setting( $setting ) ) {
+			return true;
+		}
+
+		foreach ( $this->_groups as $group_priority => $groups ) {
+			foreach ( $groups as $group => $settings ) {
+				if ( false !== array_search( $setting, $settings ) ) {
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * @param string $setting
 	 * @param string $key
 	 * @param mixed $value
 	 *
