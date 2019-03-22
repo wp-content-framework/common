@@ -343,9 +343,14 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		if ( ! is_admin() ) {
 			return false;
 		}
-		$current_screen = get_current_screen();
 
-		return ( method_exists( $current_screen, 'is_block_editor' ) && $current_screen->is_block_editor() ) || ( function_exists( 'is_gutenberg_page' ) && is_gutenberg_page() );
+		if ( $this->can_use_block_editor() ) {
+			require_once ABSPATH . 'wp-admin/includes/screen.php';
+
+			return get_current_screen()->is_block_editor();
+		}
+
+		return function_exists( 'is_gutenberg_page' ) && is_gutenberg_page();
 	}
 
 	/**
