@@ -31,7 +31,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	/**
 	 * @var array $_site_options
 	 */
-	private static $_site_options;
+	private $_site_options;
 
 	/**
 	 * @var bool $_suspend_reload
@@ -46,7 +46,12 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	/**
 	 * @var array $_site_option_name_cache
 	 */
-	private static $_site_option_name_cache = [];
+	private $_site_option_name_cache = [];
+
+	/**
+	 * @var int $_blog_id
+	 */
+	private $_blog_id;
 
 	/**
 	 * app deactivated
@@ -91,7 +96,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 */
 	private function get_options( $group, $common ) {
 		if ( $common ) {
-			return self::get_site_options( $group );
+			return $this->get_site_options( $group );
 		}
 
 		! isset( $this->_options ) and $this->_options = [];
@@ -113,17 +118,17 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return array
 	 */
 	private function get_site_options( $group ) {
-		! isset( self::$_site_options ) and self::$_site_options = [];
+		! isset( $this->_site_options ) and $this->_site_options = [];
 		! isset( $group ) and $group = 'default';
 
-		if ( ! isset( self::$_site_options[ $group ] ) ) {
-			self::$_site_options[ $group ] = wp_parse_args(
-				self::get_site_option( $group ), []
+		if ( ! isset( $this->_site_options[ $group ] ) ) {
+			$this->_site_options[ $group ] = wp_parse_args(
+				$this->get_site_option( $group ), []
 			);
-			self::$_site_options[ $group ] = self::unescape( self::$_site_options[ $group ] );
+			$this->_site_options[ $group ] = $this->unescape( $this->_site_options[ $group ] );
 		}
 
-		return self::$_site_options[ $group ];
+		return $this->_site_options[ $group ];
 	}
 
 	/**
@@ -149,8 +154,8 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	public function flush( $group = null, $common = false ) {
 		! isset( $group ) and $group = 'default';
 		if ( $common ) {
-			if ( isset( self::$_site_options[ $group ] ) ) {
-				unset( self::$_site_options[ $group ] );
+			if ( isset( $this->_site_options[ $group ] ) ) {
+				unset( $this->_site_options[ $group ] );
 			}
 		} else {
 			if ( isset( $this->_options[ $group ] ) ) {
@@ -177,15 +182,12 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 *
 	 * @return array
 	 */
-	private static function get_site_option( $group ) {
-		if ( ! is_multisite() ) {
-			return [];
-		}
+	private function get_site_option( $group ) {
 		if ( function_exists( 'wp_cache_flush' ) ) {
 			wp_cache_flush();
 		}
 
-		return get_site_option( self::get_site_option_name( $group ), [] );
+		return get_site_option( $this->get_site_option_name( $group ), [] );
 	}
 
 	/**
@@ -214,21 +216,28 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	}
 
 	/**
+	 * @return string
+	 */
+	private function get_group_site_option_name_prefix() {
+		return $this->get_slug( 'group_site_option_name', '_options' ) . '/';
+	}
+
+	/**
 	 * @param string|null $group
 	 *
 	 * @return string
 	 */
-	public static function get_site_option_name( $group = null ) {
+	public function get_site_option_name( $group = null ) {
 		! isset( $group ) and $group = 'default';
-		if ( ! isset( self::$_site_option_name_cache[ $group ] ) ) {
+		if ( ! isset( $this->_site_option_name_cache[ $group ] ) ) {
 			if ( 'default' === $group ) {
-				self::$_site_option_name_cache[ $group ] = WP_FRAMEWORK_VENDOR_NAME . '_options';
+				$this->_site_option_name_cache[ $group ] = $this->apply_filters( 'get_site_option_name', $this->get_slug( 'site_option_name', '_options' ) );
 			} else {
-				self::$_site_option_name_cache[ $group ] = WP_FRAMEWORK_VENDOR_NAME . '_options/' . $group;
+				$this->_site_option_name_cache[ $group ] = $this->apply_filters( 'get_group_site_option_name', $this->get_group_site_option_name_prefix() . $group, $group );
 			}
 		}
 
-		return self::$_site_option_name_cache[ $group ];
+		return $this->_site_option_name_cache[ $group ];
 	}
 
 	/**
@@ -241,6 +250,10 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 			return true;
 		}
 
+		if ( ! is_multisite() && preg_match( '/^' . preg_quote( $this->get_group_site_option_name_prefix(), '/' ) . '/', $option ) > 0 ) {
+			return true;
+		}
+
 		return preg_match( '/^' . preg_quote( $this->get_group_option_name_prefix(), '/' ) . '/', $option ) > 0;
 	}
 
@@ -249,7 +262,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 *
 	 * @return array
 	 */
-	private static function unescape( $options ) {
+	private function unescape( $options ) {
 		foreach ( $options as $key => $value ) {
 			if ( is_string( $value ) ) {
 				$options[ $key ] = stripslashes( htmlspecialchars_decode( $options[ $key ] ) );
@@ -394,7 +407,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 
 		$this->flush( $group, $common );
 
-		return $common ? update_site_option( self::get_site_option_name( $group ), $options ) : update_option( $this->get_option_name( $group ), $options );
+		return $common ? update_site_option( $this->get_site_option_name( $group ), $options ) : update_option( $this->get_option_name( $group ), $options );
 	}
 
 	/**
@@ -419,11 +432,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return array
 	 */
 	private function get_group_site_options( $group_prefix = null ) {
-		if ( ! is_multisite() ) {
-			return [];
-		}
-
-		$prefix = WP_FRAMEWORK_VENDOR_NAME . '_options/';
+		$prefix = $this->get_group_site_option_name_prefix();
 		isset( $group_prefix ) and $prefix .= $group_prefix;
 
 		/** @noinspection SqlResolve */
@@ -457,7 +466,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 		$this->clear_group_option( null, false );
 
 		if ( is_multisite() ) {
-			delete_site_option( self::get_site_option_name() );
+			delete_site_option( $this->get_site_option_name() );
 			$this->clear_group_option( null, true );
 		}
 	}
