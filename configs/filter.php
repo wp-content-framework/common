@@ -15,12 +15,21 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 
 return [
 
+	'define' => [
+		'switch_blog' => [
+			'switch_blog' => 1,
+		],
+	],
+
 	'option' => [
 		'${prefix}app_activated'   => [
 			'app_activated',
 		],
 		'${prefix}app_deactivated' => [
 			'app_deactivated',
+		],
+		'switch_blog'              => [
+			'switch_blog' => 2,
 		],
 	],
 

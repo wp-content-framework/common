@@ -62,6 +62,18 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	}
 
 	/**
+	 * @param int $new_blog
+	 */
+	/** @noinspection PhpUnusedPrivateMethodInspection */
+	private function switch_blog( $new_blog ) {
+		if ( $new_blog === $this->_blog_id ) {
+			return;
+		}
+
+		$this->_options = [];
+	}
+
+	/**
 	 * @param string|null $group
 	 *
 	 * @return array
