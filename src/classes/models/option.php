@@ -95,7 +95,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return array
 	 */
 	private function get_options( $group, $common ) {
-		if ( $common ) {
+		if ( $common && is_multisite() ) {
 			return $this->get_site_options( $group );
 		}
 
@@ -153,7 +153,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 */
 	public function flush( $group = null, $common = false ) {
 		! isset( $group ) and $group = 'default';
-		if ( $common ) {
+		if ( $common && is_multisite() ) {
 			if ( isset( $this->_site_options[ $group ] ) ) {
 				unset( $this->_site_options[ $group ] );
 			}
@@ -407,7 +407,11 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 
 		$this->flush( $group, $common );
 
-		return $common ? update_site_option( $this->get_site_option_name( $group ), $options ) : update_option( $this->get_option_name( $group ), $options );
+		if ( $common && is_multisite() ) {
+			return update_site_option( $this->get_site_option_name( $group ), $options );
+		}
+
+		return update_option( $this->get_option_name( $group ), $options );
 	}
 
 	/**
@@ -447,7 +451,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @param bool $common
 	 */
 	public function clear_group_option( $group_prefix, $common ) {
-		if ( $common ) {
+		if ( $common && is_multisite() ) {
 			foreach ( $this->get_group_site_options( $group_prefix ) as $option ) {
 				delete_site_option( $option );
 			}
