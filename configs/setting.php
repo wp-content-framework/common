@@ -15,10 +15,10 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 
 return [
 
-	'100' => [
-		'Performance' => [
-			'100' => [
-				'use_filesystem_credentials'     => [
+	'999' => [
+		'Others' => [
+			'10' => [
+				'use_filesystem_credentials' => [
 					'label'   => 'Whether to use filesystem credentials',
 					'type'    => 'bool',
 					'default' => false,
