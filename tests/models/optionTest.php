@@ -49,6 +49,7 @@ class OptionTest extends \WP_Framework_Common\Tests\TestCase {
 
 	/**
 	 * @dataProvider _test_value_provider
+	 * @depends      test_set
 	 *
 	 * @param string $key
 	 * @param mixed $value
@@ -59,6 +60,7 @@ class OptionTest extends \WP_Framework_Common\Tests\TestCase {
 
 	/**
 	 * @dataProvider _test_value_provider
+	 * @depends      test_get
 	 *
 	 * @param string $key
 	 * @param mixed $value
@@ -68,7 +70,44 @@ class OptionTest extends \WP_Framework_Common\Tests\TestCase {
 		$key, $value
 	) {
 		$this->assertEquals( true, static::$_option->delete( $key ) );
-		$this->assertEquals( '', static::$_option->get( $key ) );
+		$this->assertEquals( 'test', static::$_option->get( $key, 'test' ) );
+	}
+
+	/**
+	 * @dataProvider _test_value_provider
+	 * @depends      test_delete
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function test_set2( $key, $value ) {
+		$this->assertEquals( true, static::$_option->set( $key, $value, true ) );
+	}
+
+	/**
+	 * @dataProvider _test_value_provider
+	 * @depends      test_set2
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function test_get2( $key, $value ) {
+		$this->assertEquals( $value, static::$_option->get( $key, '', true ) );
+	}
+
+	/**
+	 * @dataProvider _test_value_provider
+	 * @depends      test_get2
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function test_delete2(
+		/** @noinspection PhpUnusedParameterInspection */
+		$key, $value
+	) {
+		$this->assertEquals( true, static::$_option->delete( $key, true ) );
+		$this->assertEquals( 'test', static::$_option->get( $key, 'test', true ) );
 	}
 
 	/**

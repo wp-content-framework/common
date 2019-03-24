@@ -16,12 +16,18 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 return [
 
 	// user prefix
-	'user_prefix'       => '',
+	'user_prefix'            => '',
 
 	// option name
-	'option_name'       => '',
+	'option_name'            => '',
 
 	// group option name
-	'group_option_name' => '',
+	'group_option_name'      => '',
+
+	// site option name
+	'site_option_name'       => '',
+
+	// group site option name
+	'group_site_option_name' => '',
 
 ];
