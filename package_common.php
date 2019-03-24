@@ -37,6 +37,7 @@ class Package_Common extends Package_Base {
 			'config',
 			'deprecated',
 			'filter',
+			'setting',
 			'slug',
 		];
 	}
