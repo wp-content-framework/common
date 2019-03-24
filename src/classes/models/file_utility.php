@@ -81,14 +81,14 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 	private static $_fs_initialized = false;
 
 	/**
-	 * @var mixed $_credentials
+	 * @var mixed $_fs_credentials
 	 */
-	private static $_credentials;
+	private static $_fs_credentials;
 
 	/**
-	 * @var \WP_Filesystem_Base[] $_filesystem_direct
+	 * @var \WP_Filesystem_Base[] $_fs_cache
 	 */
-	private static $_filesystem_direct = [];
+	private static $_fs_cache = [];
 
 	/**
 	 * @param string $name
@@ -110,8 +110,8 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 	 * @return \WP_Filesystem_Base
 	 */
 	private function fs() {
-		if ( isset( self::$_filesystem_direct[ $this->app->plugin_name ] ) ) {
-			return self::$_filesystem_direct[ $this->app->plugin_name ];
+		if ( isset( self::$_fs_cache[ $this->app->plugin_name ] ) ) {
+			return self::$_fs_cache[ $this->app->plugin_name ];
 		}
 
 		if ( ! self::$_fs_initialized ) {
@@ -128,32 +128,32 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 			return $this->fs_with_credentials();
 		}
 
-		self::$_filesystem_direct[ $this->app->plugin_name ] = $this->fs_direct();
+		self::$_fs_cache[ $this->app->plugin_name ] = $this->fs_direct();
 
-		return self::$_filesystem_direct[ $this->app->plugin_name ];
+		return self::$_fs_cache[ $this->app->plugin_name ];
 	}
 
 	/**
 	 * @return \WP_Filesystem_Base
 	 */
 	private function fs_with_credentials() {
-		if ( ! isset( self::$_credentials ) ) {
+		if ( ! isset( self::$_fs_credentials ) ) {
 			require_once ABSPATH . 'wp-admin/includes/file.php';
-			self::$_credentials = request_filesystem_credentials( '', '', false, false, null );
+			self::$_fs_credentials = request_filesystem_credentials( '', '', false, false, null );
 		}
 
-		if ( \WP_Filesystem( self::$_credentials ) ) {
+		if ( \WP_Filesystem( self::$_fs_credentials ) ) {
 			global $wp_filesystem;
 			if ( $wp_filesystem instanceof \WP_Filesystem_Direct ) {
-				self::$_filesystem_direct[ $this->app->plugin_name ] = $wp_filesystem;
+				self::$_fs_cache[ $this->app->plugin_name ] = $wp_filesystem;
 			}
 
 			return $wp_filesystem;
 		}
 
-		self::$_filesystem_direct[ $this->app->plugin_name ] = $this->fs_direct();
+		self::$_fs_cache[ $this->app->plugin_name ] = $this->fs_direct();
 
-		return self::$_filesystem_direct[ $this->app->plugin_name ];
+		return self::$_fs_cache[ $this->app->plugin_name ];
 	}
 
 	/**
@@ -171,7 +171,7 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 			$this->fs();
 		}
 
-		return empty( self::$_filesystem_direct [ $this->app->plugin_name ] ) ? 0777 : 0755;
+		return empty( self::$_fs_cache [ $this->app->plugin_name ] ) ? 0777 : 0755;
 	}
 
 	/**
@@ -182,7 +182,7 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 			$this->fs();
 		}
 
-		return empty( self::$_filesystem_direct [ $this->app->plugin_name ] ) ? 0666 : 0644;
+		return empty( self::$_fs_cache [ $this->app->plugin_name ] ) ? 0666 : 0644;
 	}
 
 	/**
