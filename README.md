@@ -22,6 +22,12 @@
 |cache_filter_result|filterをキャッシュするかどうかを設定 \[default = true]|
 |cache_filter_exclude_list|キャッシュから除外するfilterを設定 \[default = []]|
 
+- configs/settings.php
+
+|設定値|説明|
+|---|---|
+|use_filesystem_credentials|ファイルシステム認証を使用するかどうかを設定 \[default = false]<br>KUSANAGI等のファイルシステム認証が必要な環境で有効にすると正しく動作するようになる場合があります|
+
 # Author
 
 [GitHub (Technote)](https://github.com/technote-space)  
