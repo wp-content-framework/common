@@ -121,6 +121,14 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 			if ( ! class_exists( "\WP_Filesystem_Direct" ) ) {
 				require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 			}
+
+			// ABSPATH . 'wp-admin/includes/file.php' WP_Filesystem
+			if ( ! defined( 'FS_CHMOD_DIR' ) ) {
+				define( 'FS_CHMOD_DIR', ( fileperms( ABSPATH ) & 0777 | 0755 ) );
+			}
+			if ( ! defined( 'FS_CHMOD_FILE' ) ) {
+				define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) );
+			}
 			self::$_fs_initialized = true;
 		}
 
@@ -171,7 +179,7 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 			$this->fs();
 		}
 
-		return empty( self::$_fs_cache [ $this->app->plugin_name ] ) ? 0777 : 0755;
+		return empty( self::$_fs_cache [ $this->app->plugin_name ] ) ? 0777 : FS_CHMOD_DIR;
 	}
 
 	/**
@@ -182,7 +190,7 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 			$this->fs();
 		}
 
-		return empty( self::$_fs_cache [ $this->app->plugin_name ] ) ? 0666 : 0644;
+		return empty( self::$_fs_cache [ $this->app->plugin_name ] ) ? FS_CHMOD_FILE | 0666 : FS_CHMOD_FILE;
 	}
 
 	/**
