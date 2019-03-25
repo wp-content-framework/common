@@ -90,9 +90,11 @@ class Uninstall implements \WP_Framework_Core\Interfaces\Loader {
 						$this->call_if_closure( $item );
 					}
 				}
+				delete_option( WP_FRAMEWORK_VENDOR_NAME );
 			}
 			switch_to_blog( $current_blog_id );
 		}
+		delete_site_option( WP_FRAMEWORK_VENDOR_NAME );
 	}
 
 	/**
