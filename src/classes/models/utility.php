@@ -154,6 +154,13 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	/**
 	 * @return bool
 	 */
+	public function is_front() {
+		return ! ! $this->definedv( 'WP_USE_THEMES' );
+	}
+
+	/**
+	 * @return bool
+	 */
 	public function was_admin() {
 		return $this->is_admin_url( $this->app->input->referer() );
 	}
