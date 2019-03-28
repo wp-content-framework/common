@@ -33,6 +33,12 @@ return [
 		],
 	],
 
+	'system' => [
+		'${framework}initialize' => [
+			'app_initialized',
+		],
+	],
+
 	'uninstall' => [
 		'${prefix}app_activated' => [
 			'register_uninstall',
