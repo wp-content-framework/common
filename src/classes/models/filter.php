@@ -35,6 +35,11 @@ class Filter implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	private $_elapsed = [];
 
 	/**
+	 * @var bool $_is_running
+	 */
+	private $_is_running = false;
+
+	/**
 	 * initialize
 	 */
 	protected function initialize() {
@@ -84,6 +89,9 @@ class Filter implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return false|\WP_Framework|\WP_Framework_Core\Interfaces\Singleton
 	 */
 	private function get_target_app( $class ) {
+		if ( ! $this->app->system->is_enough_version() ) {
+			return false;
+		}
 		if ( ! isset( $this->_target_app[ $class ] ) ) {
 			$app = false;
 			if ( strpos( $class, '->' ) !== false ) {
@@ -188,10 +196,20 @@ class Filter implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return mixed
 	 */
 	private function run( $tag, $class, $method, $callback, $args ) {
-		$start            = microtime( true ) * 1000;
-		$result           = $callback( $args );
-		$elapsed          = microtime( true ) * 1000 - $start;
-		$this->_elapsed[] = [ 'tag' => $tag, 'class' => $class, 'method' => $method, 'elapsed' => $elapsed ];
+		if ( $this->_is_running ) {
+			$result           = $callback( $args );
+			$this->_elapsed[] = [ 'tag' => $tag, 'class' => $class, 'method' => $method, 'elapsed' => 0 ];
+		} else {
+			$this->_is_running = true;
+
+			$start            = microtime( true ) * 1000;
+			$result           = $callback( $args );
+			$elapsed          = microtime( true ) * 1000 - $start;
+			$this->_elapsed[] = [ 'tag' => $tag, 'class' => $class, 'method' => $method, 'elapsed' => $elapsed ];
+
+			$this->_is_running = false;
+		}
+
 
 		return $result;
 	}
