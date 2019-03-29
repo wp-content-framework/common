@@ -359,11 +359,11 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return bool
 	 */
 	public function delete_grouped( $key, $group, $common = false ) {
+		$options = $this->reload_options( $group, $common );
 		if ( ! isset( $key ) ) {
-			return $this->save( $group, [], $common );
+			return empty( $options ) ? false : $this->save( $group, [], $common );
 		}
 
-		$options        = $this->reload_options( $group, $common );
 		$suspend_reload = $this->_suspend_reload;
 		if ( $this->exists( $key, $group, $common ) ) {
 			$prev = $options[ $key ];
@@ -375,7 +375,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 			return $this->save( $group, $options, $common );
 		}
 
-		return true;
+		return false;
 	}
 
 	/**
