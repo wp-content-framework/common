@@ -35,7 +35,7 @@ return [
 
 	'system' => [
 		'${framework}initialize' => [
-			'app_initialized',
+			'app_initialized' => 9,
 		],
 	],
 
