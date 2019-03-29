@@ -264,6 +264,7 @@ SQL;
 	 * @return array
 	 */
 	public function get_meta_user_ids( $key ) {
+		/** @noinspection SqlResolve */
 		$query   = <<< SQL
 		SELECT user_id FROM {$this->get_wp_table('usermeta')}
 		WHERE meta_key LIKE %s
