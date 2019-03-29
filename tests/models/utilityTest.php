@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Utility Test
  *
- * @version 0.0.30
+ * @version 0.0.42
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -882,5 +882,210 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	public function test_delete_upload_dir() {
 		$this->assertTrue( static::$_utility->delete_upload_dir( static::$app ) );
 		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, '' ) );
+	}
+
+	/**
+	 * @dataProvider _test_sum_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $callback
+	 */
+	public function test_sum( $expected, $array, $callback ) {
+		$this->assertEquals( $expected, static::$_array->sum( $array, $callback ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_sum_provider() {
+		return [
+			[
+				6,
+				[
+					[ 'a' => 1, 'b' => 0 ],
+					[ 'a' => 2, 'b' => 1 ],
+					[ 'a' => 3, 'b' => 2 ],
+				],
+				function ( $item ) {
+					return $item['a'];
+				},
+			],
+			[
+				3,
+				[
+					[ 'a' => 1, 'b' => 0 ],
+					[ 'a' => 2, 'b' => 1 ],
+					[ 'a' => 3, 'b' => 2 ],
+				],
+				function ( $item ) {
+					return $item['b'];
+				},
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_mul_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $callback
+	 */
+	public function test_mul( $expected, $array, $callback ) {
+		$this->assertEquals( $expected, static::$_array->mul( $array, $callback ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_mul_provider() {
+		return [
+			[
+				6,
+				[
+					[ 'a' => 1, 'b' => 0 ],
+					[ 'a' => 2, 'b' => 1 ],
+					[ 'a' => 3, 'b' => 2 ],
+				],
+				function ( $item ) {
+					return $item['a'];
+				},
+			],
+			[
+				0,
+				[
+					[ 'a' => 1, 'b' => 0 ],
+					[ 'a' => 2, 'b' => 1 ],
+					[ 'a' => 3, 'b' => 2 ],
+				],
+				function ( $item ) {
+					return $item['b'];
+				},
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_max_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $callback
+	 */
+	public function test_max( $expected, $array, $callback ) {
+		$this->assertEquals( $expected, static::$_array->max( $array, $callback ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_max_provider() {
+		return [
+			[
+				10,
+				[
+					[ 'a' => 10, 'b' => 0 ],
+					[ 'a' => 2, 'b' => 1 ],
+					[ 'a' => 3, 'b' => 2 ],
+				],
+				function ( $item ) {
+					return $item['a'];
+				},
+			],
+			[
+				21,
+				[
+					[ 'a' => 1, 'b' => 20 ],
+					[ 'a' => 2, 'b' => 21 ],
+					[ 'a' => 3, 'b' => 12 ],
+				],
+				function ( $item ) {
+					return $item['b'];
+				},
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_min_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $callback
+	 */
+	public function test_min( $expected, $array, $callback ) {
+		$this->assertEquals( $expected, static::$_array->min( $array, $callback ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_min_provider() {
+		return [
+			[
+				2,
+				[
+					[ 'a' => 10, 'b' => 0 ],
+					[ 'a' => 2, 'b' => 1 ],
+					[ 'a' => 3, 'b' => 2 ],
+				],
+				function ( $item ) {
+					return $item['a'];
+				},
+			],
+			[
+				12,
+				[
+					[ 'a' => 1, 'b' => 20 ],
+					[ 'a' => 2, 'b' => 21 ],
+					[ 'a' => 3, 'b' => 12 ],
+				],
+				function ( $item ) {
+					return $item['b'];
+				},
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_ave_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $callback
+	 */
+	public function test_ave( $expected, $array, $callback ) {
+		$this->assertEquals( $expected, static::$_array->ave( $array, $callback ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_ave_provider() {
+		return [
+			[
+				2,
+				[
+					[ 'a' => 1, 'b' => 0 ],
+					[ 'a' => 2, 'b' => 1 ],
+					[ 'a' => 3, 'b' => 2 ],
+				],
+				function ( $item ) {
+					return $item['a'];
+				},
+			],
+			[
+				1,
+				[
+					[ 'a' => 1, 'b' => 0 ],
+					[ 'a' => 2, 'b' => 1 ],
+					[ 'a' => 3, 'b' => 2 ],
+				],
+				function ( $item ) {
+					return $item['b'];
+				},
+			],
+		];
 	}
 }
