@@ -291,6 +291,24 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param array|object $array
+	 * @param string|callable $callback
+	 *
+	 * @return array
+	 */
+	public function filter( $array, $callback ) {
+		$array = $this->to_array( $array );
+
+		foreach ( $array as $key => $value ) {
+			if ( ! ( $this->is_closure( $callback ) ? $this->call_closure( $callback, $value, $key ) : ( is_string( $callback ) && method_exists( $value, $callback ) ? $value->$callback( $key ) : true ) ) ) {
+				unset( $array[ $key ] );
+			}
+		}
+
+		return $array;
+	}
+
+	/**
+	 * @param array|object $array
 	 * @param string $key
 	 *
 	 * @return array
