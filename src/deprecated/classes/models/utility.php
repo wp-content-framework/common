@@ -67,6 +67,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			case 'delete_upload_file':
 			case 'get_upload_file_contents':
 			case 'get_upload_file_url':
+			case 'scan_dir_namespace_class':
 				return $this->app->file->{$name}( ...$args );
 			case 'file_exists':
 				return $this->app->file->exists( ...$args );
