@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Utility Test
  *
- * @version 0.0.42
+ * @version 0.0.43
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -528,6 +528,321 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 				],
 				'test1.test2',
 				'test1.test4',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_pluck_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $key
+	 * @param $default
+	 * @param $filter
+	 */
+	public function test_pluck( $expected, $array, $key, $default, $filter ) {
+		$this->assertEquals( $expected, static::$_array->pluck( $array, $key, $default, $filter ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_pluck_provider() {
+		return [
+			[
+				[],
+				[],
+				'test',
+				null,
+				false,
+			],
+			[
+				[ null, null, null, null ],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test1' => 3, 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				'test',
+				null,
+				false,
+			],
+			[
+				[],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test1' => 3, 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				'test',
+				null,
+				true,
+			],
+			[
+				[ 1, 2, null, 4 ],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				'test1',
+				null,
+				false,
+			],
+			[
+				[ 0 => 1, 1 => 2, 3 => 4 ],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				'test1',
+				null,
+				true,
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_map_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $callback
+	 */
+	public function test_map( $expected, $array, $callback ) {
+		$this->assertEquals( $expected, static::$_array->map( $array, $callback ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_map_provider() {
+		return [
+			[
+				[],
+				[],
+				function ( $value ) {
+					return $value;
+				},
+			],
+			[
+				[ 1, 2, 3, 4 ],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test1' => 3, 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				function ( $value ) {
+					return $value['test1'];
+				},
+			],
+			[
+				[ 100 => 1, 200 => 2, 300 => 3, 400 => 4 ],
+				[
+					100 => [ 'test1' => 1, 'test2' => 10 ],
+					200 => [ 'test1' => 2, 'test2' => 20 ],
+					300 => [ 'test1' => 3, 'test2' => 30 ],
+					400 => [ 'test1' => 4, 'test2' => 40 ],
+				],
+				function ( $value ) {
+					return $value['test1'];
+				},
+			],
+			[
+				[ 100 => '1/100', 200 => '2/200', 300 => '3/300', 400 => '4/400' ],
+				[
+					100 => [ 'test1' => 1, 'test2' => 10 ],
+					200 => [ 'test1' => 2, 'test2' => 20 ],
+					300 => [ 'test1' => 3, 'test2' => 30 ],
+					400 => [ 'test1' => 4, 'test2' => 40 ],
+				],
+				function ( $value, $key ) {
+					return $value['test1'] . '/' . $key;
+				},
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_filter_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $callback
+	 */
+	public function test_filter( $expected, $array, $callback ) {
+		$this->assertEquals( $expected, static::$_array->filter( $array, $callback ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_filter_provider() {
+		return [
+			[
+				[],
+				[],
+				function () {
+					return false;
+				},
+			],
+			[
+				[
+					1 => [ 'test1' => 2, 'test2' => 20 ],
+					3 => [ 'test1' => 4, 'test2' => 40 ],
+				],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test1' => 3, 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				function ( $value ) {
+					return $value['test1'] % 2 === 0;
+				},
+			],
+			[
+				[
+					200 => [ 'test1' => 2, 'test2' => 20 ],
+					400 => [ 'test1' => 4, 'test2' => 40 ],
+				],
+				[
+					100 => [ 'test1' => 1, 'test2' => 10 ],
+					200 => [ 'test1' => 2, 'test2' => 20 ],
+					300 => [ 'test1' => 3, 'test2' => 30 ],
+					400 => [ 'test1' => 4, 'test2' => 40 ],
+				],
+				function ( $value ) {
+					return $value['test1'] % 2 === 0;
+				},
+			],
+			[
+				[
+					400 => [ 'test1' => 4, 'test2' => 40 ],
+				],
+				[
+					100 => [ 'test1' => 1, 'test2' => 10 ],
+					200 => [ 'test1' => 2, 'test2' => 20 ],
+					300 => [ 'test1' => 3, 'test2' => 30 ],
+					400 => [ 'test1' => 4, 'test2' => 40 ],
+				],
+				function ( $value, $key ) {
+					return $value['test1'] % 2 == 0 && $key > 200;
+				},
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_pluck_unique_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $key
+	 */
+	public function test_pluck_unique( $expected, $array, $key ) {
+		$this->assertEquals( $expected, static::$_array->pluck_unique( $array, $key ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_pluck_unique_provider() {
+		return [
+			[
+				[ 1, 2, 3, 4 ],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test1' => 3, 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				'test1',
+			],
+			[
+				[ 0 => 1, 1 => 2, 3 => 4 ],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test1' => 2, 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				'test1',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_combine_provider
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $key
+	 * @param $value
+	 */
+	public function test_combine( $expected, $array, $key, $value ) {
+		$this->assertEquals( $expected, static::$_array->combine( $array, $key, $value ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_combine_provider() {
+		return [
+			[
+				[
+					1 => 10,
+					2 => 20,
+					3 => 30,
+					4 => 40,
+				],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test1' => 3, 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				'test1',
+				'test2',
+			],
+			[
+				[
+					1 => [ 'test1' => 1, 'test2' => 10 ],
+					2 => [ 'test1' => 2, 'test2' => 20 ],
+					3 => [ 'test1' => 3, 'test2' => 30 ],
+					4 => [ 'test1' => 4, 'test2' => 40 ],
+				],
+				[
+					[ 'test1' => 1, 'test2' => 10 ],
+					[ 'test1' => 2, 'test2' => 20 ],
+					[ 'test1' => 3, 'test2' => 30 ],
+					[ 'test1' => 4, 'test2' => 40 ],
+				],
+				'test1',
+				null,
+			],
+			[
+				[
+					1 => 1,
+					2 => 2,
+					3 => 3,
+					4 => 4,
+				],
+				[
+					1,
+					2,
+					3,
+					4,
+				],
+				null,
+				null,
 			],
 		];
 	}
