@@ -34,11 +34,6 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	private $_site_options;
 
 	/**
-	 * @var bool $_suspend_reload
-	 */
-	private $_suspend_reload = false;
-
-	/**
 	 * @var array $_option_name_cache
 	 */
 	private $_option_name_cache = [];
@@ -138,10 +133,6 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return array
 	 */
 	private function reload_options( $group, $common ) {
-		if ( $this->_suspend_reload ) {
-			return $this->get_options( $group, $common );
-		}
-
 		$this->flush( $group, $common );
 
 		return $this->get_options( $group, $common );
@@ -326,16 +317,14 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return bool
 	 */
 	public function set_grouped( $key, $group, $value, $common = false ) {
-		$options        = $this->reload_options( $group, $common );
-		$suspend_reload = $this->_suspend_reload;
-		$prev           = array_key_exists( $key, $options ) ? $options[ $key ] : null;
+		$options = $this->reload_options( $group, $common );
+		$prev    = array_key_exists( $key, $options ) ? $options[ $key ] : null;
 		if ( $prev !== $value || ! array_key_exists( $key, $options ) ) {
-			$options[ $key ]       = $value;
-			$this->_suspend_reload = true;
+			$options[ $key ] = $value;
+			$result          = $this->save( $group, $options, $common );
 			$this->do_action( 'changed_option', $key, $value, $prev, $group, $common );
-			$this->_suspend_reload = $suspend_reload;
 
-			return $this->save( $group, $options, $common );
+			return $result;
 		}
 
 		return false;
@@ -364,15 +353,13 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 			return empty( $options ) ? false : $this->save( $group, [], $common );
 		}
 
-		$suspend_reload = $this->_suspend_reload;
 		if ( $this->exists( $key, $group, $common ) ) {
 			$prev = $options[ $key ];
 			unset( $options[ $key ] );
-			$this->_suspend_reload = true;
+			$result = $this->save( $group, $options, $common );
 			$this->do_action( 'deleted_option', $key, $prev, $common );
-			$this->_suspend_reload = $suspend_reload;
 
-			return $this->save( $group, $options, $common );
+			return $result;
 		}
 
 		return false;
