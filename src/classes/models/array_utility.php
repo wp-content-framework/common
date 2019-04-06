@@ -39,7 +39,7 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function to_array( $obj, $ignore_value = true ) {
 		if ( $obj instanceof \stdClass ) {
 			$obj = get_object_vars( $obj );
-		} elseif ( $obj instanceof \JsonSerializable ) {
+		} /** @noinspection PhpUndefinedClassInspection */ elseif ( $obj instanceof \JsonSerializable ) {
 			$obj = (array) $obj->jsonSerialize();
 		} elseif ( $obj instanceof \Traversable ) {
 			$obj = iterator_to_array( $obj );
