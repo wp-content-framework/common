@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Classes Models Utility
  *
- * @version 0.0.43
+ * @version 0.0.44
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -77,14 +77,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return bool
 	 */
 	public function defined( $c ) {
-		if ( defined( $c ) ) {
-			$const = @constant( $c );
-			if ( $const ) {
-				return true;
-			}
-		}
-
-		return false;
+		return defined( $c ) && ! empty( @constant( $c ) );
 	}
 
 	/**
@@ -117,7 +110,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return bool
 	 */
 	public function doing_ajax() {
-		if ( $this->definedv( 'REST_REQUEST' ) ) {
+		if ( $this->defined( 'REST_REQUEST' ) ) {
 			return true;
 		}
 
@@ -125,21 +118,21 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			return wp_doing_ajax();
 		}
 
-		return ! ! $this->definedv( 'DOING_AJAX' );
+		return $this->defined( 'DOING_AJAX' );
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function doing_cron() {
-		return ! ! $this->definedv( 'DOING_CRON' );
+		return $this->defined( 'DOING_CRON' );
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function is_autosave() {
-		return ! ! $this->definedv( 'DOING_AUTOSAVE' );
+		return $this->defined( 'DOING_AUTOSAVE' );
 	}
 
 	/**
@@ -155,7 +148,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return bool
 	 */
 	public function is_front() {
-		return ! ! $this->definedv( 'WP_USE_THEMES' );
+		return $this->defined( 'WP_USE_THEMES' );
 	}
 
 	/**
