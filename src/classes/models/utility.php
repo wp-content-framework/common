@@ -52,11 +52,12 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param mixed $value
+	 * @param array $args
 	 *
 	 * @return mixed
 	 */
-	public function value( $value ) {
-		return $value instanceof \Closure ? $value( $this->app ) : $value;
+	public function value( $value, ...$args ) {
+		return $value instanceof \Closure ? $value( $this->app, ...$args ) : $value;
 	}
 
 	/**
