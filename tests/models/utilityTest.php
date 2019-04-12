@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Utility Test
  *
- * @version 0.0.43
+ * @version 0.0.46
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -878,6 +878,45 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 				'test1${test}test2',
 				[ 'test' => '' ],
 				'test1test2',
+			],
+		];
+	}
+
+	/**
+	 * @dataProvider _test_explode_provider
+	 *
+	 * @param string $string
+	 * @param string|array $delimiter
+	 * @param array $expected
+	 */
+	public function test_explode( $string, $delimiter, $expected ) {
+		$this->assertEquals( $expected, static::$_string->explode( $string, $delimiter ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_explode_provider() {
+		return [
+			[
+				'test',
+				',',
+				[ 'test' ],
+			],
+			[
+				'test1,test2',
+				',',
+				[ 'test1', 'test2' ],
+			],
+			[
+				'test1,test2 , test1 ',
+				',',
+				[ 'test1', 'test2' ],
+			],
+			[
+				'test1|test2 , test1 ',
+				[ ',', '|' ],
+				[ 'test1', 'test2' ],
 			],
 		];
 	}
