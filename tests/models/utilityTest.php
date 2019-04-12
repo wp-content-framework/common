@@ -883,6 +883,45 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	}
 
 	/**
+	 * @dataProvider _test_explode_provider
+	 *
+	 * @param string $string
+	 * @param string|array $delimiter
+	 * @param array $expected
+	 */
+	public function test_explode( $string, $delimiter, $expected ) {
+		$this->assertEquals( $expected, static::$_string->explode( $string, $delimiter ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function _test_explode_provider() {
+		return [
+			[
+				'test',
+				',',
+				[ 'test' ],
+			],
+			[
+				'test1,test2',
+				',',
+				[ 'test1', 'test2' ],
+			],
+			[
+				'test1,test2 , test1 ',
+				',',
+				[ 'test1', 'test2' ],
+			],
+			[
+				'test1|test2 , test1 ',
+				[ ',', '|' ],
+				[ 'test1', 'test2' ],
+			],
+		];
+	}
+
+	/**
 	 * @dataProvider _test_starts_with_provider
 	 *
 	 * @param $haystack
