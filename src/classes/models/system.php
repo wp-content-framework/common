@@ -125,6 +125,11 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 						<?php $this->e( $this->get_unsupported_wp_version_message() ); ?>
                     </p>
 				<?php endif; ?>
+				<?php if ( ! $this->app->is_theme ): ?>
+                    <p>
+						<?php $this->e( $this->get_deactivate_message() ); ?>
+                    </p>
+				<?php endif; ?>
             </div>
 			<?php
 		} );
@@ -153,6 +158,19 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 		$messages[] = sprintf( $this->translate( '<strong>%s</strong> requires WordPress version %s or above.' ), $this->translate( $this->app->original_plugin_name ), $this->required_wordpress_version );
 
 		return implode( '<br>', $messages );
+	}
+
+	/**
+	 * @return string
+	 */
+	private function get_deactivate_message() {
+		$url   = wp_nonce_url( add_query_arg( [
+			'action' => 'deactivate',
+			'plugin' => urlencode( $this->app->define->plugin_base_name ),
+		], 'plugins.php' ), 'deactivate-plugin_' . $this->app->define->plugin_base_name );
+		$label = $this->translate( 'Deactivate plugin' );
+
+		return '<a href="' . esc_url( $url ) . '" aria-label="' . esc_attr( $label ) . '">' . $label . '</a>';
 	}
 
 	/**
