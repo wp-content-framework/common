@@ -103,10 +103,14 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 			?>
             <div class="notice error notice-error">
 				<?php if ( $this->not_enough_php_version ): ?>
-                    <p><?php echo $this->get_unsupported_php_version_message(); ?></p>
+                    <p>
+						<?php $this->e( $this->get_unsupported_php_version_message() ); ?>
+                    </p>
 				<?php endif; ?>
 				<?php if ( $this->not_enough_wordpress_version ): ?>
-                    <p><?php echo $this->get_unsupported_wp_version_message(); ?></p>
+                    <p>
+						<?php $this->e( $this->get_unsupported_wp_version_message() ); ?>
+                    </p>
 				<?php endif; ?>
             </div>
 			<?php
@@ -136,5 +140,12 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 		$messages[] = sprintf( $this->translate( '<strong>%s</strong> requires WordPress version %s or above.' ), $this->translate( $this->app->original_plugin_name ), $this->required_wordpress_version );
 
 		return implode( '<br>', $messages );
+	}
+
+	/**
+	 * @param string $string
+	 */
+	private function e( $string ) {
+		echo $this->app->string->strip_tags( $string );
 	}
 }
