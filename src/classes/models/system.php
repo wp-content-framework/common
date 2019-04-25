@@ -53,6 +53,9 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 		$this->not_enough_wordpress_version = empty( $wp_version ) || version_compare( $wp_version, $this->required_wordpress_version, '<' );
 		if ( ! $this->is_enough_version() ) {
 			$this->set_unsupported();
+			if ( $this->app->is_theme ) {
+				$this->deactivate_theme();
+			}
 		} elseif ( ! self::$_setup_initialized_action ) {
 			self::$_setup_initialized_action = true;
 			add_action( 'init', function () {
@@ -76,6 +79,16 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 		if ( ! $this->app->option->is_app_activated() ) {
 			$this->do_action( 'app_activated', $this->app );
 		}
+	}
+
+	/**
+	 * deactivate theme
+	 */
+	private function deactivate_theme() {
+		add_action( 'init', function () {
+			switch_theme( WP_DEFAULT_THEME );
+			unset( $_GET['activated'] );
+		}, 11 );
 	}
 
 	/**
