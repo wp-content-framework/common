@@ -88,7 +88,7 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 		add_action( 'init', function () {
 			switch_theme( WP_DEFAULT_THEME );
 			unset( $_GET['activated'] );
-		}, 11 );
+		}, 999 );
 	}
 
 	/**
