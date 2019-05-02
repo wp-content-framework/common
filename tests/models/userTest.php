@@ -11,22 +11,25 @@
 
 namespace WP_Framework_Common\Tests\Models;
 
+use WP_Framework_Common\Classes\Models\User;
+use WP_Framework_Common\Tests\TestCase;
+
 /**
  * Class UserTest
  * @package WP_Framework_Common\Tests\Models
  * @group wp_framework
  * @group models
  */
-class UserTest extends \WP_Framework_Common\Tests\TestCase {
+class UserTest extends TestCase {
 
 	/**
-	 * @var \WP_Framework_Common\Classes\Models\User $_user
+	 * @var User $_user
 	 */
 	private static $_user;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		static::$_user = \WP_Framework_Common\Classes\Models\User::get_instance( static::$app );
+		static::$_user = User::get_instance( static::$app );
 		foreach ( static::get_test_value() as $value ) {
 			static::$_user->delete( $value[0], 1 );
 		}

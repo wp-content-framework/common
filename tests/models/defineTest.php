@@ -11,16 +11,19 @@
 
 namespace WP_Framework_Common\Tests\Models;
 
+use WP_Framework_Common\Classes\Models\Define;
+use WP_Framework_Common\Tests\TestCase;
+
 /**
  * Class DefineTest
  * @package WP_Framework_Common\Tests\Models
  * @group wp_framework
  * @group models
  */
-class DefineTest extends \WP_Framework_Common\Tests\TestCase {
+class DefineTest extends TestCase {
 
 	/**
-	 * @var \WP_Framework_Common\Classes\Models\Define $_define
+	 * @var Define $_define
 	 */
 	private static $_define;
 

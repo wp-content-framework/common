@@ -11,22 +11,25 @@
 
 namespace WP_Framework_Common\Tests\Models;
 
+use WP_Framework_Common\Classes\Models\Option;
+use WP_Framework_Common\Tests\TestCase;
+
 /**
  * Class OptionTest
  * @package WP_Framework_Common\Tests\Models
  * @group wp_framework
  * @group models
  */
-class OptionTest extends \WP_Framework_Common\Tests\TestCase {
+class OptionTest extends TestCase {
 
 	/**
-	 * @var \WP_Framework_Common\Classes\Models\Option $_option
+	 * @var Option $_option
 	 */
 	private static $_option;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		static::$_option = \WP_Framework_Common\Classes\Models\Option::get_instance( static::$app );
+		static::$_option = Option::get_instance( static::$app );
 		foreach ( static::get_test_value() as $value ) {
 			static::$_option->delete( $value[0] );
 		}

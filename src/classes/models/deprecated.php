@@ -11,6 +11,11 @@
 
 namespace WP_Framework_Common\Classes\Models;
 
+use Exception;
+use WP_Framework;
+use WP_Framework_Common\Traits\Package;
+use WP_Framework_Core\Traits\Singleton;
+
 if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 	exit;
 }
@@ -21,11 +26,11 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  */
 class Deprecated implements \WP_Framework_Core\Interfaces\Singleton {
 
-	use \WP_Framework_Core\Traits\Singleton, \WP_Framework_Common\Traits\Package;
+	use Singleton, Package;
 
 	/**
 	 * @param string $class
-	 * @param \WP_Framework_Core\Traits\Singleton $instance
+	 * @param Singleton $instance
 	 * @param string $name
 	 * @param array $args
 	 *
@@ -45,7 +50,7 @@ class Deprecated implements \WP_Framework_Core\Interfaces\Singleton {
 				}
 			}
 			if ( $_class && $class !== $_class && class_exists( $_class ) && is_subclass_of( $_class, '\WP_Framework_Core\Interfaces\Singleton' ) ) {
-				/** @var \WP_Framework_Core\Interfaces\Singleton $_class */
+				/** @var Singleton $_class */
 				$_instance = $_class::get_instance( $this->app );
 				array_unshift( $args, $instance );
 
@@ -55,7 +60,7 @@ class Deprecated implements \WP_Framework_Core\Interfaces\Singleton {
 			foreach ( class_uses( $class ) as $trait ) {
 				$_class = $this->app->array->search( $map, $trait, '\\' . $trait, null );
 				if ( $_class && class_exists( $_class ) && is_subclass_of( $_class, '\WP_Framework_Core\Interfaces\Singleton' ) ) {
-					/** @var \WP_Framework_Core\Interfaces\Singleton $_class */
+					/** @var Singleton $_class */
 					$_instance = $_class::get_instance( $this->app );
 					array_unshift( $args, $instance );
 
@@ -73,11 +78,11 @@ class Deprecated implements \WP_Framework_Core\Interfaces\Singleton {
 			if ( $github_repo ) {
 				$messages[] = '<a href="' . esc_url( 'https://github.com/' . $github_repo . '/issues' ) . '" target="_blank">GitHub</a>';
 			}
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 		}
 		$messages[] = sprintf( '<pre>you cannot access %s->%s</pre>', $class, $name );
 		$messages[] = '<pre>' . print_r( $this->app->utility->get_debug_backtrace(), true ) . '</pre>';
-		\WP_Framework::wp_die( $messages, __FILE__, __LINE__ );
+		WP_Framework::wp_die( $messages, __FILE__, __LINE__ );
 
 		return null;
 	}
@@ -89,7 +94,7 @@ class Deprecated implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return mixed
 	 */
 	public function __call( $name, array $args ) {
-		\WP_Framework::wp_die( sprintf( 'you cannot access %s', $name ), __FILE__, __LINE__ );
+		WP_Framework::wp_die( sprintf( 'you cannot access %s', $name ), __FILE__, __LINE__ );
 
 		return null;
 	}

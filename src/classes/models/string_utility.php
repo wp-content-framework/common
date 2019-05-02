@@ -11,6 +11,9 @@
 
 namespace WP_Framework_Common\Classes\Models;
 
+use WP_Framework_Common\Traits\Package;
+use WP_Framework_Core\Traits\Singleton;
+
 if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 	exit;
 }
@@ -21,7 +24,7 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  */
 class String_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
-	use \WP_Framework_Core\Traits\Singleton, \WP_Framework_Common\Traits\Package;
+	use Singleton, Package;
 
 	/**
 	 * @var string[] $_replace_time
