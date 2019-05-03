@@ -13,7 +13,6 @@ namespace WP_Framework_Common\Classes\Models;
 
 use WP_Framework_Common\Traits\Package;
 use WP_Framework_Core\Traits\Hook;
-use WP_Framework_Common\Traits\Uninstall;
 use WP_Framework_Core\Traits\Singleton;
 use WP_User;
 
@@ -38,7 +37,7 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  */
 class User implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_Core\Interfaces\Hook, \WP_Framework_Common\Interfaces\Uninstall {
 
-	use Singleton, Hook, Uninstall, Package;
+	use Singleton, Hook, \WP_Framework_Common\Traits\Uninstall, Package;
 
 	/**
 	 * @var array $readonly_properties

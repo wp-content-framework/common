@@ -13,8 +13,8 @@ namespace WP_Framework_Common\Classes\Models;
 
 use Exception;
 use WP_Framework;
-use WP_Framework_Core\Traits\Singleton;
 use WP_Framework_Common\Traits\Package;
+use WP_Framework_Core\Interfaces\Singleton;
 use WP_Framework_Core\Traits\Hook;
 
 if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
@@ -25,9 +25,9 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  * Class Filter
  * @package WP_Framework_Common\Classes\Models
  */
-class Filter implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_Core\Interfaces\Hook {
+class Filter implements Singleton, \WP_Framework_Core\Interfaces\Hook {
 
-	use Singleton, Hook, Package;
+	use \WP_Framework_Core\Traits\Singleton, Hook, Package;
 
 	/**
 	 * @var array $_target_app

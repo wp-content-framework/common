@@ -14,7 +14,7 @@ namespace WP_Framework_Common\Classes\Models;
 use Exception;
 use WP_Framework;
 use WP_Framework_Common\Traits\Package;
-use WP_Framework_Core\Traits\Singleton;
+use WP_Framework_Core\Interfaces\Singleton;
 
 if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 	exit;
@@ -24,13 +24,13 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  * Class Deprecated
  * @package WP_Framework_Common\Classes\Models
  */
-class Deprecated implements \WP_Framework_Core\Interfaces\Singleton {
+class Deprecated implements Singleton {
 
-	use Singleton, Package;
+	use \WP_Framework_Core\Traits\Singleton, Package;
 
 	/**
 	 * @param string $class
-	 * @param Singleton $instance
+	 * @param \WP_Framework_Core\Traits\Singleton $instance
 	 * @param string $name
 	 * @param array $args
 	 *
