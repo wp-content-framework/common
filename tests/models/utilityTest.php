@@ -19,6 +19,7 @@ use WP_Framework_Common\Classes\Models\Utility;
 use WP_Framework_Common\Tests\TestCase;
 
 require_once __DIR__ . DS . 'misc' . DS . 'collection.php';
+require_once __DIR__ . DS . 'misc' . DS . 'data.php';
 
 /**
  * Class UtilityTest
@@ -674,6 +675,15 @@ class UtilityTest extends TestCase {
 					return $value['test1'] . '/' . $key;
 				},
 			],
+			[
+				[ 'test1' => 1, 'test2' => 2, 'test3' => 3 ],
+				[
+					'test1' => new Misc\Data( 1 ),
+					'test2' => new Misc\Data( 2 ),
+					'test3' => new Misc\Data( 3 ),
+				],
+				'map_test',
+			],
 		];
 	}
 
@@ -692,6 +702,12 @@ class UtilityTest extends TestCase {
 	 * @return array
 	 */
 	public function _test_filter_provider() {
+		$a = [
+			'test1' => new Misc\Data( 1 ),
+			'test2' => new Misc\Data( 2 ),
+			'test3' => new Misc\Data( 3 ),
+		];
+
 		return [
 			[
 				[],
@@ -743,6 +759,11 @@ class UtilityTest extends TestCase {
 				function ( $value, $key ) {
 					return $value['test1'] % 2 == 0 && $key > 200;
 				},
+			],
+			[
+				[ 'test1' => $a['test1'], 'test3' => $a['test3'] ],
+				$a,
+				'map_filter',
 			],
 		];
 	}
