@@ -125,9 +125,11 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 
 		if ( ! self::$_fs_initialized ) {
 			if ( ! class_exists( "\WP_Filesystem_Base" ) ) {
+				/** @noinspection PhpIncludeInspection */
 				require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 			}
 			if ( ! class_exists( "\WP_Filesystem_Direct" ) ) {
+				/** @noinspection PhpIncludeInspection */
 				require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 			}
 
@@ -155,6 +157,7 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 	 */
 	private function fs_with_credentials() {
 		if ( ! isset( self::$_fs_credentials ) ) {
+			/** @noinspection PhpIncludeInspection */
 			require_once ABSPATH . 'wp-admin/includes/file.php';
 			self::$_fs_credentials = request_filesystem_credentials( '', '', false, false, null );
 		}
