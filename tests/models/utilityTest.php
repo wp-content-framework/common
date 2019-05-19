@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Utility Test
  *
- * @version 0.0.46
+ * @version 0.0.49
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -11,7 +11,15 @@
 
 namespace WP_Framework_Common\Tests\Models;
 
+use Exception;
+use WP_Framework_Common\Classes\Models\Array_Utility;
+use WP_Framework_Common\Classes\Models\File_Utility;
+use WP_Framework_Common\Classes\Models\String_Utility;
+use WP_Framework_Common\Classes\Models\Utility;
+use WP_Framework_Common\Tests\TestCase;
+
 require_once __DIR__ . DS . 'misc' . DS . 'collection.php';
+require_once __DIR__ . DS . 'misc' . DS . 'data.php';
 
 /**
  * Class UtilityTest
@@ -19,34 +27,34 @@ require_once __DIR__ . DS . 'misc' . DS . 'collection.php';
  * @group wp_framework
  * @group models
  */
-class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
+class UtilityTest extends TestCase {
 
 	/**
-	 * @var \WP_Framework_Common\Classes\Models\Utility $_utility
+	 * @var Utility $_utility
 	 */
 	private static $_utility;
 
 	/**
-	 * @var \WP_Framework_Common\Classes\Models\Array_Utility $_array
+	 * @var Array_Utility $_array
 	 */
 	private static $_array;
 
 	/**
-	 * @var \WP_Framework_Common\Classes\Models\File_Utility $_file
+	 * @var File_Utility $_file
 	 */
 	private static $_file;
 
 	/**
-	 * @var \WP_Framework_Common\Classes\Models\String_Utility $_string
+	 * @var String_Utility $_string
 	 */
 	private static $_string;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		static::$_utility = \WP_Framework_Common\Classes\Models\Utility::get_instance( static::$app );
-		static::$_array   = \WP_Framework_Common\Classes\Models\Array_Utility::get_instance( static::$app );
-		static::$_file    = \WP_Framework_Common\Classes\Models\File_Utility::get_instance( static::$app );
-		static::$_string  = \WP_Framework_Common\Classes\Models\String_Utility::get_instance( static::$app );
+		static::$_utility = Utility::get_instance( static::$app );
+		static::$_array   = Array_Utility::get_instance( static::$app );
+		static::$_file    = File_Utility::get_instance( static::$app );
+		static::$_string  = String_Utility::get_instance( static::$app );
 	}
 
 	public static function tearDownAfterClass() {
@@ -667,6 +675,15 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 					return $value['test1'] . '/' . $key;
 				},
 			],
+			[
+				[ 'test1' => 1, 'test2' => 2, 'test3' => 3 ],
+				[
+					'test1' => new Misc\Data( 1 ),
+					'test2' => new Misc\Data( 2 ),
+					'test3' => new Misc\Data( 3 ),
+				],
+				'map_test',
+			],
 		];
 	}
 
@@ -685,6 +702,12 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 	 * @return array
 	 */
 	public function _test_filter_provider() {
+		$a = [
+			'test1' => new Misc\Data( 1 ),
+			'test2' => new Misc\Data( 2 ),
+			'test3' => new Misc\Data( 3 ),
+		];
+
 		return [
 			[
 				[],
@@ -736,6 +759,11 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 				function ( $value, $key ) {
 					return $value['test1'] % 2 == 0 && $key > 200;
 				},
+			],
+			[
+				[ 'test1' => $a['test1'], 'test3' => $a['test3'] ],
+				$a,
+				'map_filter',
 			],
 		];
 	}
@@ -1157,7 +1185,7 @@ class UtilityTest extends \WP_Framework_Common\Tests\TestCase {
 
 	/**
 	 * @depends test_upload_file_not_exists
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function test_create_upload_file() {
 		static::$_utility->create_upload_file( static::$app, 'test/file1.txt', 'file test' );

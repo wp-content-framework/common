@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Models Config Test
  *
- * @version 0.0.18
+ * @version 0.0.49
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -11,25 +11,29 @@
 
 namespace WP_Framework_Common\Tests\Models;
 
+use Phake;
+use WP_Framework_Common\Classes\Models\Config;
+use WP_Framework_Common\Tests\TestCase;
+
 /**
  * Class ConfigTest
  * @package WP_Framework_Common\Tests\Models
  * @group wp_framework
  * @group models
  */
-class ConfigTest extends \WP_Framework_Common\Tests\TestCase {
+class ConfigTest extends TestCase {
 
 	/**
-	 * @var \WP_Framework_Common\Classes\Models\Config $_config
+	 * @var Config $_config
 	 */
 	private static $_config;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		$package = \Phake::mock( '\WP_Framework\Package_Core' );
-		\Phake::when( $package )->get_config( 'test_config' )->thenReturn( [ 'test1' => 'test1', 'test2' => 'test2' ] );
-		\Phake::when( static::$app )->get_packages()->thenReturn( [ $package ] );
-		static::$_config = \WP_Framework_Common\Classes\Models\Config::get_instance( static::$app );
+		$package = Phake::mock( '\WP_Framework\Package_Core' );
+		Phake::when( $package )->get_config( 'test_config' )->thenReturn( [ 'test1' => 'test1', 'test2' => 'test2' ] );
+		Phake::when( static::$app )->get_packages()->thenReturn( [ $package ] );
+		static::$_config = Config::get_instance( static::$app );
 
 		if ( ! file_exists( static::$app->define->plugin_configs_dir ) ) {
 			mkdir( static::$app->define->plugin_configs_dir, true );
