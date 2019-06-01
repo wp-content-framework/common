@@ -95,7 +95,7 @@ class Filter implements Singleton, \WP_Framework_Core\Interfaces\Hook {
 	 * @return false|WP_Framework|Singleton
 	 */
 	private function get_target_app( $class ) {
-		if ( ! $this->app->system->is_enough_version() ) {
+		if ( ! $this->app->is_uninstall() && ! $this->app->system->is_enough_version() ) {
 			return false;
 		}
 		if ( ! isset( $this->_target_app[ $class ] ) ) {
