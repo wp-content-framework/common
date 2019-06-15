@@ -2,7 +2,7 @@
 /**
  * WP_Framework_Common Classes Models Utility
  *
- * @version 0.0.49
+ * @version 0.0.51
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -38,7 +38,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	/**
 	 * @var array $_active_plugins
 	 */
-	private $_active_plugins;
+	private $_active_plugins = [];
 
 	/**
 	 * @var string $_active_plugins_hash
@@ -296,36 +296,6 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function is_valid_tinymce_color_picker() {
-		return $this->compare_wp_version( '4.0.0', '>=' );
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function can_use_block_editor() {
-		return $this->compare_wp_version( '5.0.0', '>=' );
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function is_block_editor() {
-		if ( ! is_admin() ) {
-			return false;
-		}
-
-		if ( $this->can_use_block_editor() ) {
-			return get_current_screen()->is_block_editor();
-		}
-
-		/** @noinspection PhpDeprecationInspection */
-		return function_exists( 'is_gutenberg_page' ) && is_gutenberg_page();
-	}
-
-	/**
 	 * @param WP_Framework $app
 	 * @param string $name
 	 * @param callable $func
@@ -370,16 +340,17 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return array
 	 */
 	public function get_active_plugins( $combine = true ) {
-		if ( ! isset( $this->_active_plugins ) ) {
+		$combine = $combine ? 1 : 0;
+		if ( ! isset( $this->_active_plugins[ $combine ] ) ) {
 			$option = get_option( 'active_plugins', [] );
 			if ( is_multisite() ) {
 				$option = array_merge( $option, array_keys( get_site_option( 'active_sitewide_plugins' ) ) );
 				$option = array_unique( $option );
 			}
-			$this->_active_plugins = $combine ? $this->app->array->combine( $option, null ) : array_values( $option );
+			$this->_active_plugins[ $combine ] = $combine ? $this->app->array->combine( $option, null ) : array_values( $option );
 		}
 
-		return $this->_active_plugins;
+		return $this->_active_plugins[ $combine ];
 	}
 
 	/**
@@ -415,7 +386,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 *
 	 * @return bool
 	 */
-	public function is_active_plugin( $plugin ) {
+	public function is_plugin_active( $plugin ) {
 		return in_array( $plugin, $this->get_active_plugins( false ) );
 	}
 
