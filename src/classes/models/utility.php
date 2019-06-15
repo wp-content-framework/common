@@ -385,7 +385,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 *
 	 * @return bool
 	 */
-	public function is_active_plugin( $plugin ) {
+	public function is_plugin_active( $plugin ) {
 		return in_array( $plugin, $this->get_active_plugins( false ) );
 	}
 

@@ -36,10 +36,15 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function __call( $name, array $args ) {
 		array_shift( $args );
 		switch ( $name ) {
+			case 'is_active_plugin':
+				return $this->app->utility->is_plugin_active( ...$args );
+
 			case 'flatten':
 				return $this->app->array->flatten( ...$args );
+
 			case 'get_array_value':
 				return $this->app->array->to_array( ...$args );
+
 			case 'array_wrap':
 			case 'array_get':
 			case 'array_search':
@@ -51,6 +56,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 				$name = substr( $name, 6 );
 
 				return $this->app->array->{$name}( ...$args );
+
 			case 'replace':
 			case 'replace_time':
 			case 'explode':
@@ -64,6 +70,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			case 'kebab':
 			case 'strip_tags':
 				return $this->app->string->{$name}( ...$args );
+
 			case 'delete_upload_dir':
 			case 'upload_file_exists':
 			case 'create_upload_file':
@@ -73,6 +80,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			case 'get_upload_file_url':
 			case 'scan_dir_namespace_class':
 				return $this->app->file->{$name}( ...$args );
+
 			case 'file_exists':
 				return $this->app->file->exists( ...$args );
 
