@@ -296,36 +296,6 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @return bool
-	 */
-	public function is_valid_tinymce_color_picker() {
-		return $this->compare_wp_version( '4.0.0', '>=' );
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function can_use_block_editor() {
-		return $this->compare_wp_version( '5.0.0', '>=' );
-	}
-
-	/**
-	 * @return bool
-	 */
-	public function is_block_editor() {
-		if ( ! is_admin() ) {
-			return false;
-		}
-
-		if ( $this->can_use_block_editor() ) {
-			return get_current_screen()->is_block_editor();
-		}
-
-		/** @noinspection PhpDeprecationInspection */
-		return function_exists( 'is_gutenberg_page' ) && is_gutenberg_page();
-	}
-
-	/**
 	 * @param WP_Framework $app
 	 * @param string $name
 	 * @param callable $func

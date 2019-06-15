@@ -75,6 +75,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 				return $this->app->file->{$name}( ...$args );
 			case 'file_exists':
 				return $this->app->file->exists( ...$args );
+
+			case 'is_valid_tinymce_color_picker':
+			case 'can_use_block_editor':
+			case 'is_block_editor':
+				return $this->app->editor->{$name}( ...$args );
 		}
 
 		WP_Framework::wp_die( sprintf( 'you cannot access utility->%s', $name ), __FILE__, __LINE__ );
