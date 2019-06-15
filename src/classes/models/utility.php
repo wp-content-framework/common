@@ -38,7 +38,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	/**
 	 * @var array $_active_plugins
 	 */
-	private $_active_plugins;
+	private $_active_plugins = [];
 
 	/**
 	 * @var string $_active_plugins_hash
@@ -340,16 +340,17 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return array
 	 */
 	public function get_active_plugins( $combine = true ) {
-		if ( ! isset( $this->_active_plugins ) ) {
+		$combine = $combine ? 1 : 0;
+		if ( ! isset( $this->_active_plugins[ $combine ] ) ) {
 			$option = get_option( 'active_plugins', [] );
 			if ( is_multisite() ) {
 				$option = array_merge( $option, array_keys( get_site_option( 'active_sitewide_plugins' ) ) );
 				$option = array_unique( $option );
 			}
-			$this->_active_plugins = $combine ? $this->app->array->combine( $option, null ) : array_values( $option );
+			$this->_active_plugins[ $combine ] = $combine ? $this->app->array->combine( $option, null ) : array_values( $option );
 		}
 
-		return $this->_active_plugins;
+		return $this->_active_plugins[ $combine ];
 	}
 
 	/**
