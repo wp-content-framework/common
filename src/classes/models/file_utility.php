@@ -135,10 +135,10 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 
 			// ABSPATH . 'wp-admin/includes/file.php' WP_Filesystem
 			if ( ! defined( 'FS_CHMOD_DIR' ) ) {
-				define( 'FS_CHMOD_DIR', ( fileperms( ABSPATH ) & 0777 | 0755 ) );
+				define( 'FS_CHMOD_DIR', file_exists( ABSPATH ) ? ( fileperms( ABSPATH ) & 0777 | 0755 ) : 0755 );
 			}
 			if ( ! defined( 'FS_CHMOD_FILE' ) ) {
-				define( 'FS_CHMOD_FILE', ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) );
+				define( 'FS_CHMOD_FILE', file_exists( ABSPATH . 'index.php' ) ? ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) : 0644 );
 			}
 			self::$_fs_initialized = true;
 		}
