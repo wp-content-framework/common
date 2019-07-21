@@ -404,7 +404,7 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 					continue;
 				}
 
-				$path = rtrim( $dir, DS ) . DS . $file;
+				$path = $dir . DS . $file;
 				if ( is_file( $path ) ) {
 					if ( $this->app->string->ends_with( $file, '.php' ) ) {
 						if ( $split ) {
