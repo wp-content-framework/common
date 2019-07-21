@@ -2,7 +2,6 @@
 /**
  * WP_Framework_Common Classes Models File Utility
  *
- * @version 0.0.52
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -404,7 +403,7 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 					continue;
 				}
 
-				$path = rtrim( $dir, DS ) . DS . $file;
+				$path = $dir . DS . $file;
 				if ( is_file( $path ) ) {
 					if ( $this->app->string->ends_with( $file, '.php' ) ) {
 						if ( $split ) {

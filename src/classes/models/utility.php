@@ -2,7 +2,6 @@
 /**
  * WP_Framework_Common Classes Models Utility
  *
- * @version 0.0.51
  * @author Technote
  * @copyright Technote All Rights Reserved
  * @license http://www.opensource.org/licenses/gpl-2.0.php GNU General Public License, version 2
@@ -412,5 +411,28 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		$elapsed = $now - $this->_tick;
 		error_log( sprintf( $format, $elapsed ) );
 		$this->_tick = $now;
+	}
+
+	/**
+	 * @param string $limit
+	 *
+	 * @return bool|int|string
+	 */
+	public function raise_memory_limit( $limit ) {
+		if ( $this->compare_wp_version( '4.6.0', '>=' ) ) {
+			$context = WP_FRAMEWORK_VENDOR_NAME;
+			$filter  = function () use ( $limit, $context, &$filter ) {
+				remove_filter( "{$context}_memory_limit", $filter );
+
+				return $limit;
+			};
+			add_filter( "{$context}_memory_limit", $filter );
+
+			return wp_raise_memory_limit( $context );
+		}
+
+		ini_set( 'memory_limit', $limit );
+
+		return $limit;
 	}
 }
