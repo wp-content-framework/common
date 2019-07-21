@@ -412,4 +412,27 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		error_log( sprintf( $format, $elapsed ) );
 		$this->_tick = $now;
 	}
+
+	/**
+	 * @param string $limit
+	 *
+	 * @return bool|int|string
+	 */
+	public function raise_memory_limit( $limit ) {
+		if ( $this->compare_wp_version( '4.6.0', '>=' ) ) {
+			$context = WP_FRAMEWORK_VENDOR_NAME;
+			$filter  = function () use ( $limit, $context, &$filter ) {
+				remove_filter( "{$context}_memory_limit", $filter );
+
+				return $limit;
+			};
+			add_filter( "{$context}_memory_limit", $filter );
+
+			return wp_raise_memory_limit( $context );
+		}
+
+		ini_set( 'memory_limit', $limit );
+
+		return $limit;
+	}
 }
