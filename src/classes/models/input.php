@@ -140,6 +140,21 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function set_file( $key, $value ) {
+		$_FILES[ $key ] = $value;
+	}
+
+	/**
+	 * @param string $key
+	 */
+	public function delete_file( $key ) {
+		unset( $_FILES[ $key ] );
+	}
+
+	/**
+	 * @param string $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -156,6 +171,21 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function server( $key = null, $default = null ) {
 		return func_num_args() === 0 ? $_SERVER : $this->app->array->get( $_SERVER, strtoupper( $key ), $default );
+	}
+
+	/**
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function set_server( $key, $value ) {
+		$_SERVER[ $key ] = $value;
+	}
+
+	/**
+	 * @param string $key
+	 */
+	public function delete_server( $key ) {
+		unset( $_SERVER[ $key ] );
 	}
 
 	/**
