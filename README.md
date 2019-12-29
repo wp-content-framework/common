@@ -6,16 +6,19 @@
 
 [WP Content Framework](https://github.com/wp-content-framework/core) のモジュールです。
 
+<!-- START doctoc -->
+<!-- END doctoc -->
+
 # 要件
 - PHP 5.6 以上
 - WordPress 3.9.3 以上
 
 # インストール
 
-``` composer require wp-content-framework/common ```  
+``` composer require wp-content-framework/common ```
 
 ## 基本設定
-- configs/config.php  
+- configs/config.php
 
 |設定値|説明|
 |---|---|
@@ -30,5 +33,5 @@
 
 # Author
 
-[GitHub (Technote)](https://github.com/technote-space)  
+[GitHub (Technote)](https://github.com/technote-space)
 [Blog](https://technote.space)
