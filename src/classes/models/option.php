@@ -244,11 +244,11 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 			return true;
 		}
 
-		if ( ! is_multisite() && preg_match( '/^' . preg_quote( $this->get_group_site_option_name_prefix(), '/' ) . '/', $option ) > 0 ) {
+		if ( ! is_multisite() && preg_match( '/\A' . preg_quote( $this->get_group_site_option_name_prefix(), '/' ) . '/', $option ) > 0 ) {
 			return true;
 		}
 
-		return preg_match( '/^' . preg_quote( $this->get_group_option_name_prefix(), '/' ) . '/', $option ) > 0;
+		return preg_match( '/\A' . preg_quote( $this->get_group_option_name_prefix(), '/' ) . '/', $option ) > 0;
 	}
 
 	/**
@@ -380,7 +380,7 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 			return false;
 		}
 		$result = $this->set( $key, isset( $post ) ? $post : $default );
-		$this->delete_hook_cache( preg_replace( '/^' . preg_quote( $this->get_filter_prefix(), '/' ) . '/', '', $key ) );
+		$this->delete_hook_cache( preg_replace( '/\A' . preg_quote( $this->get_filter_prefix(), '/' ) . '/', '', $key ) );
 
 		return $result;
 	}
