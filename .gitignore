@@ -27,3 +27,7 @@ Thumbs.db
 vendor/
 composer.lock
 composer.phar
+/fixtures
+/phpcs.xml
+/phpmd.xml
+/phpunit.xml
