@@ -200,18 +200,20 @@ class User implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_Cor
 	 * @param string $value
 	 */
 	public function set_all( $key, $value ) {
-		/** @noinspection SqlResolve */
+		// @codingStandardsIgnoreStart
 		$query = $this->wpdb()->prepare( "UPDATE {$this->get_wp_table('usermeta')} SET meta_value = %s WHERE meta_key LIKE %s", $value, $this->get_meta_key( $key ) );
 		$this->wpdb()->query( $query );
+		// @codingStandardsIgnoreStart
 	}
 
 	/**
 	 * @param string $key
 	 */
 	public function delete_all( $key ) {
-		/** @noinspection SqlResolve */
+		// @codingStandardsIgnoreStart
 		$query = $this->wpdb()->prepare( "DELETE FROM {$this->get_wp_table('usermeta')} WHERE meta_key LIKE %s", $this->get_meta_key( $key ) );
 		$this->wpdb()->query( $query );
+		// @codingStandardsIgnoreStart
 	}
 
 	/**
@@ -239,13 +241,15 @@ class User implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_Cor
 	 * @return array
 	 */
 	public function find( $key, $value ) {
-		/** @noinspection SqlResolve */
-		$query   = <<< SQL
+		$query = <<< SQL
 			SELECT * FROM {$this->get_wp_table( 'usermeta' )}
 			WHERE meta_key LIKE %s
 			AND   meta_value LIKE %s
 SQL;
+		// @codingStandardsIgnoreStart
 		$results = $this->wpdb()->get_results( $this->wpdb()->prepare( $query, $this->get_meta_key( $key ), $value ) );
+
+		// @codingStandardsIgnoreStart
 
 		return $this->apply_filters( 'find_user_meta', $this->app->array->pluck( $results, 'user_id' ), $key, $value );
 	}
@@ -271,12 +275,14 @@ SQL;
 	 * @return array
 	 */
 	public function get_meta_user_ids( $key ) {
-		/** @noinspection SqlResolve */
-		$query   = <<< SQL
+		$query = <<< SQL
 		SELECT user_id FROM {$this->get_wp_table( 'usermeta' )}
 		WHERE meta_key LIKE %s
 SQL;
+		// @codingStandardsIgnoreStart
 		$results = $this->wpdb()->get_results( $this->wpdb()->prepare( $query, $this->get_meta_key( $key ) ) );
+
+		// @codingStandardsIgnoreEnd
 
 		return $this->apply_filters( 'get_meta_user_ids', $this->app->array->pluck( $results, 'user_id' ), $key );
 	}
@@ -297,7 +303,7 @@ SQL;
 			return false;
 		}
 
-		return $this->has_cap( $capability ) || in_array( $capability, $this->user_roles );
+		return $this->has_cap( $capability ) || in_array( $capability, $this->user_roles, true );
 	}
 
 	/**
@@ -313,9 +319,10 @@ SQL;
 	 * uninstall
 	 */
 	public function uninstall() {
-		/** @noinspection SqlResolve */
+		// @codingStandardsIgnoreStart
 		$query = $this->wpdb()->prepare( "DELETE FROM {$this->get_wp_table('usermeta')} WHERE meta_key LIKE %s", $this->get_user_prefix() . '%' );
 		$this->wpdb()->query( $query );
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**

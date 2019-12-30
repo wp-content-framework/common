@@ -26,21 +26,22 @@ class Uninstall implements \WP_Framework_Core\Interfaces\Loader {
 	use Loader, Package;
 
 	/**
-	 * @var callable[] $_uninstall
+	 * @var callable[] $uninstall
 	 */
-	private $_uninstall = [];
+	private $uninstall = [];
 
 	/**
 	 * register uninstall
+	 * @noinspection PhpUnusedPrivateMethodInspection
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
 	 */
-	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function register_uninstall() {
 		if ( $this->app->is_theme ) {
 			return;
 		}
 		register_uninstall_hook( $this->app->define->plugin_base_name, [
-			"\WP_Framework",
-			"register_uninstall_" . $this->app->define->plugin_base_name,
+			'\WP_Framework',
+			'register_uninstall_' . $this->app->define->plugin_base_name,
 		] );
 	}
 
@@ -71,8 +72,8 @@ class Uninstall implements \WP_Framework_Core\Interfaces\Loader {
 	 * uninstall
 	 */
 	public function uninstall() {
-		$uninstall        = $this->_uninstall;
-		$this->_uninstall = [];
+		$uninstall       = $this->uninstall;
+		$this->uninstall = [];
 		ksort( $uninstall );
 		if ( ! is_multisite() ) {
 			foreach ( $uninstall as $priority => $items ) {
@@ -82,8 +83,9 @@ class Uninstall implements \WP_Framework_Core\Interfaces\Loader {
 			}
 		} else {
 			$current_blog_id = get_current_blog_id();
-			/** @noinspection SqlResolve */
+			// @codingStandardsIgnoreStart
 			$blog_ids = $this->wpdb()->get_col( "SELECT blog_id FROM {$this->get_wp_table('blogs')}" );
+			// @codingStandardsIgnoreEnd
 			foreach ( $blog_ids as $blog_id ) {
 				switch_to_blog( $blog_id );
 
@@ -104,6 +106,6 @@ class Uninstall implements \WP_Framework_Core\Interfaces\Loader {
 	 * @param int $priority
 	 */
 	public function add_uninstall( callable $callback, $priority = 10 ) {
-		$this->_uninstall[ $priority ][] = $callback;
+		$this->uninstall[ $priority ][] = $callback;
 	}
 }

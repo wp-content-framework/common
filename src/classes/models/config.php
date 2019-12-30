@@ -26,9 +26,9 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 	use Singleton, Package;
 
 	/**
-	 * @var mixed[] $_configs
+	 * @var mixed[] $configs
 	 */
-	private $_configs = [];
+	private $configs = [];
 
 	/**
 	 * @param string $name
@@ -36,7 +36,7 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return array
 	 */
 	public function load( $name ) {
-		if ( ! isset( $this->_configs[ $name ] ) ) {
+		if ( ! isset( $this->configs[ $name ] ) ) {
 			$plugin_config = $this->load_config_file( $this->app->define->plugin_configs_dir, $name );
 			$configs       = [];
 			if ( 'config' === $name ) {
@@ -44,8 +44,12 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 				$required_wordpress_version = isset( $plugin_config['required_wordpress_version'] ) ? $plugin_config['required_wordpress_version'] : WP_FRAMEWORK_REQUIRED_WP_VERSION;
 				foreach ( $this->app->get_packages() as $package ) {
 					$_config = $package->get_config( $name );
-					isset( $_config['required_php_version'] ) && version_compare( $required_php_version, $_config['required_php_version'], '<' ) and $required_php_version = $_config['required_php_version'];
-					isset( $_config['required_wordpress_version'] ) && version_compare( $required_wordpress_version, $_config['required_wordpress_version'], '<' ) and $required_wordpress_version = $_config['required_wordpress_version'];
+					if ( isset( $_config['required_php_version'] ) && version_compare( $required_php_version, $_config['required_php_version'], '<' ) ) {
+						$required_php_version = $_config['required_php_version'];
+					}
+					if ( isset( $_config['required_wordpress_version'] ) && version_compare( $required_wordpress_version, $_config['required_wordpress_version'], '<' ) ) {
+						$required_wordpress_version = $_config['required_wordpress_version'];
+					}
 					$configs = array_replace_recursive( $configs, $_config );
 				}
 				$configs                               = array_replace_recursive( $configs, $plugin_config );
@@ -57,10 +61,10 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 				}
 				$configs = array_replace_recursive( $configs, $plugin_config );
 			}
-			$this->_configs[ $name ] = $configs;
+			$this->configs[ $name ] = $configs;
 		}
 
-		return $this->_configs[ $name ];
+		return $this->configs[ $name ];
 	}
 
 	/**
@@ -81,7 +85,7 @@ class Config implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function set( $name, $key, $value ) {
 		$this->load( $name );
-		$this->_configs[ $name ] = $this->app->array->set( $this->_configs[ $name ], $key, $value );
+		$this->configs[ $name ] = $this->app->array->set( $this->configs[ $name ], $key, $value );
 	}
 
 	/**

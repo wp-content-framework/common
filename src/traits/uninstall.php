@@ -23,7 +23,7 @@ trait Uninstall {
 	/**
 	 * uninstall
 	 */
-	public abstract function uninstall();
+	abstract public function uninstall();
 
 	/**
 	 * @return int

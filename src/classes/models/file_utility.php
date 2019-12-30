@@ -55,9 +55,9 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 	use Singleton, Hook, Package;
 
 	/**
-	 * @var array $_fs_methods
+	 * @var array|string[] $fs_methods
 	 */
-	private static $_fs_methods = [
+	private static $fs_methods = [
 		'find_folder',
 		'search_for_folder',
 		'is_binary',
@@ -84,19 +84,19 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 	];
 
 	/**
-	 * @var bool $_fs_initialized
+	 * @var bool $fs_initialized
 	 */
-	private static $_fs_initialized = false;
+	private static $fs_initialized = false;
 
 	/**
-	 * @var mixed $_fs_credentials
+	 * @var mixed $fs_credentials
 	 */
-	private static $_fs_credentials;
+	private static $fs_credentials;
 
 	/**
-	 * @var WP_Filesystem_Base[] $_fs_cache
+	 * @var array|WP_Filesystem_Base[] $fs_cache
 	 */
-	private static $_fs_cache = [];
+	private static $fs_cache = [];
 
 	/**
 	 * @param string $name
@@ -105,30 +105,29 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 	 * @return mixed
 	 */
 	public function __call( $name, array $args ) {
-		if ( in_array( $name, self::$_fs_methods ) ) {
+		if ( in_array( $name, self::$fs_methods, true ) ) {
 			return $this->fs()->$name( ...$args );
 		}
 
-		WP_Framework::wp_die( sprintf( 'you cannot access file->%s', $name ), __FILE__, __LINE__ );
+		WP_Framework::wp_die( sprintf( 'you cannot access file->%s', esc_html( $name ) ), __FILE__, __LINE__ );
 
 		return null;
 	}
 
 	/**
 	 * @return WP_Filesystem_Base
+	 * @SuppressWarnings(PHPMD.ShortMethodName)
 	 */
 	private function fs() {
-		if ( isset( self::$_fs_cache[ $this->app->plugin_name ] ) ) {
-			return self::$_fs_cache[ $this->app->plugin_name ];
+		if ( array_key_exists( $this->app->plugin_name, self::$fs_cache ) ) {
+			return self::$fs_cache[ $this->app->plugin_name ];
 		}
 
-		if ( ! self::$_fs_initialized ) {
-			if ( ! class_exists( "\WP_Filesystem_Base" ) ) {
-				/** @noinspection PhpIncludeInspection */
+		if ( ! self::$fs_initialized ) {
+			if ( ! class_exists( '\WP_Filesystem_Base' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-base.php';
 			}
-			if ( ! class_exists( "\WP_Filesystem_Direct" ) ) {
-				/** @noinspection PhpIncludeInspection */
+			if ( ! class_exists( '\WP_Filesystem_Direct' ) ) {
 				require_once ABSPATH . 'wp-admin/includes/class-wp-filesystem-direct.php';
 			}
 
@@ -139,40 +138,43 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 			if ( ! defined( 'FS_CHMOD_FILE' ) ) {
 				define( 'FS_CHMOD_FILE', file_exists( ABSPATH . 'index.php' ) ? ( fileperms( ABSPATH . 'index.php' ) & 0777 | 0644 ) : 0644 );
 			}
-			self::$_fs_initialized = true;
+			self::$fs_initialized = true;
 		}
 
 		if ( $this->apply_filters( 'use_filesystem_credentials' ) ) {
 			return $this->fs_with_credentials();
 		}
 
-		self::$_fs_cache[ $this->app->plugin_name ] = $this->fs_direct();
+		self::$fs_cache[ $this->app->plugin_name ] = $this->fs_direct();
 
-		return self::$_fs_cache[ $this->app->plugin_name ];
+		return self::$fs_cache[ $this->app->plugin_name ];
 	}
 
 	/**
 	 * @return WP_Filesystem_Base
 	 */
 	private function fs_with_credentials() {
-		if ( ! isset( self::$_fs_credentials ) ) {
-			/** @noinspection PhpIncludeInspection */
-			require_once ABSPATH . 'wp-admin/includes/file.php';
-			self::$_fs_credentials = request_filesystem_credentials( '', '', false, false, null );
+		if ( array_key_exists( $this->app->plugin_name, self::$fs_cache ) ) {
+			return self::$fs_cache[ $this->app->plugin_name ];
 		}
 
-		if ( WP_Filesystem( self::$_fs_credentials ) ) {
+		if ( ! isset( self::$fs_credentials ) ) {
+			require_once ABSPATH . 'wp-admin/includes/file.php';
+			self::$fs_credentials = request_filesystem_credentials( '', '', false, false, null );
+		}
+
+		if ( WP_Filesystem( self::$fs_credentials ) ) {
 			global $wp_filesystem;
 			if ( $wp_filesystem instanceof WP_Filesystem_Direct ) {
-				self::$_fs_cache[ $this->app->plugin_name ] = $wp_filesystem;
+				self::$fs_cache[ $this->app->plugin_name ] = $wp_filesystem;
 			}
 
 			return $wp_filesystem;
 		}
 
-		self::$_fs_cache[ $this->app->plugin_name ] = $this->fs_direct();
+		self::$fs_cache[ $this->app->plugin_name ] = $this->fs_direct();
 
-		return self::$_fs_cache[ $this->app->plugin_name ];
+		return self::$fs_cache[ $this->app->plugin_name ];
 	}
 
 	/**
@@ -186,22 +188,22 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 	 * @return int
 	 */
 	private function get_dir_mode() {
-		if ( ! self::$_fs_initialized ) {
+		if ( ! self::$fs_initialized ) {
 			$this->fs();
 		}
 
-		return empty( self::$_fs_cache [ $this->app->plugin_name ] ) ? 0777 : FS_CHMOD_DIR;
+		return array_key_exists( $this->app->plugin_name, self::$fs_cache ) ? FS_CHMOD_DIR : 0777;
 	}
 
 	/**
 	 * @return int
 	 */
 	private function get_file_mode() {
-		if ( ! self::$_fs_initialized ) {
+		if ( ! self::$fs_initialized ) {
 			$this->fs();
 		}
 
-		return empty( self::$_fs_cache [ $this->app->plugin_name ] ) ? FS_CHMOD_FILE | 0666 : FS_CHMOD_FILE;
+		return array_key_exists( $this->app->plugin_name, self::$fs_cache ) ? FS_CHMOD_FILE : FS_CHMOD_FILE | 0666;
 	}
 
 	/**
@@ -395,26 +397,27 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 	 * @return array
 	 */
 	public function scan_dir_namespace_class( $dir, $split = false, $relative = '', array $ignore = [ 'base.php' ] ) {
-		$dir  = rtrim( $dir, DS );
-		$list = [];
-		if ( is_dir( $dir ) ) {
-			foreach ( scandir( $dir ) as $file ) {
-				if ( $file === '.' || $file === '..' || in_array( $file, $ignore ) ) {
-					continue;
-				}
+		$dir = rtrim( $dir, DS );
+		if ( ! is_dir( $dir ) ) {
+			return [];
+		}
 
-				$path = $dir . DS . $file;
-				if ( is_file( $path ) ) {
-					if ( $this->app->string->ends_with( $file, '.php' ) ) {
-						if ( $split ) {
-							$list[] = [ $relative, ucfirst( $this->app->get_page_slug( $file ) ), $path ];
-						} else {
-							$list[] = $relative . ucfirst( $this->app->get_page_slug( $file ) );
-						}
-					}
-				} elseif ( is_dir( $path ) ) {
-					$list = array_merge( $list, $this->scan_dir_namespace_class( $path, $split, $relative . ucfirst( $file ) . '\\', $ignore ) );
+		$list = [];
+		foreach ( scandir( $dir ) as $file ) {
+			if ( '.' === $file || '..' === $file || in_array( $file, $ignore, true ) ) {
+				continue;
+			}
+
+			$path = $dir . DS . $file;
+			if ( is_file( $path ) && $this->app->string->ends_with( $file, '.php' ) ) {
+				if ( $split ) {
+					$list[] = [ $relative, ucfirst( $this->app->get_page_slug( $file ) ), $path ];
+				} else {
+					$list[] = $relative . ucfirst( $this->app->get_page_slug( $file ) );
 				}
+			}
+			if ( is_dir( $path ) ) {
+				$list = array_merge( $list, $this->scan_dir_namespace_class( $path, $split, $relative . ucfirst( $file ) . '\\', $ignore ) );
 			}
 		}
 

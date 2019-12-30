@@ -56,7 +56,7 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 				$obj = (array) $obj->toArray();
 			} elseif ( method_exists( $obj, 'toJson' ) ) {
 				$obj = json_decode( $obj->toJson(), true );
-			} elseif ( ! $ignore_value && ( ! empty( $obj ) || (string) $obj !== '' ) ) {
+			} elseif ( ! $ignore_value && ( ! empty( $obj ) || '' !== (string) $obj ) ) {
 				$obj = [ $obj ];
 			}
 		}
@@ -76,11 +76,11 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function flatten( $array, $preserve_keys = false ) {
 		$array  = $this->to_array( $array );
 		$return = [];
-		array_walk_recursive( $array, function ( $v, $k ) use ( &$return, $preserve_keys ) {
+		array_walk_recursive( $array, function ( $value, $key ) use ( &$return, $preserve_keys ) {
 			if ( $preserve_keys ) {
-				$return[ $k ] = $v;
+				$return[ $key ] = $value;
 			} else {
-				$return[] = $v;
+				$return[] = $value;
 			}
 		} );
 
@@ -268,15 +268,22 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function pluck( $array, $key, $default = null, $filter = false ) {
 		$array = $this->to_array( $array );
 
-		return array_map( function ( $d ) use ( $key, $default ) {
-			is_object( $d ) and $d = (array) $d;
+		return array_map(
+			function ( $data ) use ( $key, $default ) {
+				if ( is_object( $data ) ) {
+					$data = (array) $data;
+				}
 
-			return is_array( $d ) && array_key_exists( $key, $d ) ? $d[ $key ] : $this->app->utility->value( $default );
-		}, $filter ? array_filter( $array, function ( $d ) use ( $key ) {
-			is_object( $d ) and $d = (array) $d;
+				return is_array( $data ) && array_key_exists( $key, $data ) ? $data[ $key ] : $this->app->utility->value( $default );
+			},
+			$filter ? array_filter( $array, function ( $data ) use ( $key ) {
+				if ( is_object( $data ) ) {
+					$data = (array) $data;
+				}
 
-			return is_array( $d ) && array_key_exists( $key, $d );
-		} ) : $array );
+				return is_array( $data ) && array_key_exists( $key, $data );
+			} ) : $array
+		);
 	}
 
 	/**

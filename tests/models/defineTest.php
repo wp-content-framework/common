@@ -23,27 +23,27 @@ use WP_Framework_Common\Tests\TestCase;
 class DefineTest extends TestCase {
 
 	/**
-	 * @var Define $_define
+	 * @var Define $define
 	 */
-	private static $_define;
+	private static $define;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		static::$_define = static::$app->define;
+		static::$define = static::$app->define;
 	}
 
 	public function test_plugin_property() {
-		$this->assertEquals( static::$plugin_name, static::$_define->plugin_name );
-		$this->assertEquals( ucfirst( static::$plugin_name ), static::$_define->plugin_namespace );
-		$this->assertNotEmpty( static::$_define->plugin_file );
-		$this->assertNotEmpty( static::$_define->plugin_dir );
-		$this->assertNotEmpty( static::$_define->plugin_dir_name );
-		$this->assertNotEmpty( static::$_define->plugin_base_name );
-		$this->assertNotEmpty( static::$_define->plugin_assets_dir );
-		$this->assertNotEmpty( static::$_define->plugin_src_dir );
-		$this->assertNotEmpty( static::$_define->plugin_configs_dir );
-		$this->assertNotEmpty( static::$_define->plugin_views_dir );
-		$this->assertEmpty( static::$_define->plugin_languages_dir );
-		$this->assertNotEmpty( static::$_define->plugin_assets_url );
+		$this->assertEquals( static::$plugin_name, static::$define->plugin_name );
+		$this->assertEquals( ucfirst( static::$plugin_name ), static::$define->plugin_namespace );
+		$this->assertNotEmpty( static::$define->plugin_file );
+		$this->assertNotEmpty( static::$define->plugin_dir );
+		$this->assertNotEmpty( static::$define->plugin_dir_name );
+		$this->assertNotEmpty( static::$define->plugin_base_name );
+		$this->assertNotEmpty( static::$define->plugin_assets_dir );
+		$this->assertNotEmpty( static::$define->plugin_src_dir );
+		$this->assertNotEmpty( static::$define->plugin_configs_dir );
+		$this->assertNotEmpty( static::$define->plugin_views_dir );
+		$this->assertEmpty( static::$define->plugin_languages_dir );
+		$this->assertNotEmpty( static::$define->plugin_assets_url );
 	}
 }

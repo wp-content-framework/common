@@ -23,94 +23,96 @@ use WP_Framework_Common\Tests\TestCase;
 class OptionTest extends TestCase {
 
 	/**
-	 * @var Option $_option
+	 * @var Option $option
 	 */
-	private static $_option;
+	private static $option;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		static::$_option = Option::get_instance( static::$app );
+		static::$option = Option::get_instance( static::$app );
 		foreach ( static::get_test_value() as $value ) {
-			static::$_option->delete( $value[0] );
+			static::$option->delete( $value[0] );
 		}
 	}
 
 	public static function tearDownAfterClass() {
 		parent::tearDownAfterClass();
-		static::$_option->uninstall();
+		static::$option->uninstall();
 	}
 
 	/**
-	 * @dataProvider _test_value_provider
+	 * @dataProvider provider_test_value
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 */
 	public function test_set( $key, $value ) {
-		$this->assertEquals( true, static::$_option->set( $key, $value ) );
+		$this->assertEquals( true, static::$option->set( $key, $value ) );
 	}
 
 	/**
-	 * @dataProvider _test_value_provider
+	 * @dataProvider provider_test_value
 	 * @depends      test_set
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 */
 	public function test_get( $key, $value ) {
-		$this->assertEquals( $value, static::$_option->get( $key ) );
+		$this->assertEquals( $value, static::$option->get( $key ) );
 	}
 
 	/**
-	 * @dataProvider _test_value_provider
+	 * @dataProvider provider_test_value
 	 * @depends      test_get
 	 *
 	 * @param string $key
 	 * @param mixed $value
+	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
 	public function test_delete(
 		/** @noinspection PhpUnusedParameterInspection */
 		$key, $value
 	) {
-		$this->assertEquals( true, static::$_option->delete( $key ) );
-		$this->assertEquals( 'test', static::$_option->get( $key, 'test' ) );
+		$this->assertEquals( true, static::$option->delete( $key ) );
+		$this->assertEquals( 'test', static::$option->get( $key, 'test' ) );
 	}
 
 	/**
-	 * @dataProvider _test_value_provider
+	 * @dataProvider provider_test_value
 	 * @depends      test_delete
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 */
 	public function test_set2( $key, $value ) {
-		$this->assertEquals( true, static::$_option->set( $key, $value, true ) );
+		$this->assertEquals( true, static::$option->set( $key, $value, true ) );
 	}
 
 	/**
-	 * @dataProvider _test_value_provider
+	 * @dataProvider provider_test_value
 	 * @depends      test_set2
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 */
 	public function test_get2( $key, $value ) {
-		$this->assertEquals( $value, static::$_option->get( $key, '', true ) );
+		$this->assertEquals( $value, static::$option->get( $key, '', true ) );
 	}
 
 	/**
-	 * @dataProvider _test_value_provider
+	 * @dataProvider provider_test_value
 	 * @depends      test_get2
 	 *
 	 * @param string $key
 	 * @param mixed $value
+	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
 	public function test_delete2(
 		/** @noinspection PhpUnusedParameterInspection */
 		$key, $value
 	) {
-		$this->assertEquals( true, static::$_option->delete( $key, true ) );
-		$this->assertEquals( 'test', static::$_option->get( $key, 'test', true ) );
+		$this->assertEquals( true, static::$option->delete( $key, true ) );
+		$this->assertEquals( 'test', static::$option->get( $key, 'test', true ) );
 	}
 
 	/**
@@ -137,7 +139,7 @@ class OptionTest extends TestCase {
 	/**
 	 * @return array
 	 */
-	public function _test_value_provider() {
+	public function provider_test_value() {
 		return static::get_test_value();
 	}
 }

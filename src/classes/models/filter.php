@@ -29,20 +29,20 @@ class Filter implements Singleton, \WP_Framework_Core\Interfaces\Hook {
 	use \WP_Framework_Core\Traits\Singleton, Hook, Package;
 
 	/**
-	 * @var array $_target_app
+	 * @var array $target_app
 	 */
-	private $_target_app = [];
+	private $target_app = [];
 
 	/**
 	 * for debug
-	 * @var array $_elapsed
+	 * @var array $elapsed
 	 */
-	private $_elapsed = [];
+	private $elapsed = [];
 
 	/**
-	 * @var bool $_is_running
+	 * @var bool $is_running
 	 */
-	private $_is_running = false;
+	private $is_running = false;
 
 	/**
 	 * initialize
@@ -72,7 +72,10 @@ class Filter implements Singleton, \WP_Framework_Core\Interfaces\Hook {
 	 * @param array $methods
 	 */
 	public function register_filter( $class, $tag, array $methods ) {
-		$tag = $this->app->string->replace( $tag, [ 'prefix' => $this->get_filter_prefix(), 'framework' => $this->get_framework_filter_prefix() ] );
+		$tag = $this->app->string->replace( $tag, [
+			'prefix'    => $this->get_filter_prefix(),
+			'framework' => $this->get_framework_filter_prefix(),
+		] );
 		if ( empty( $class ) || empty( $tag ) || ! is_array( $methods ) ) {
 			return;
 		}
@@ -97,37 +100,57 @@ class Filter implements Singleton, \WP_Framework_Core\Interfaces\Hook {
 		if ( ! $this->app->is_uninstall() && ! $this->app->system->is_enough_version() ) {
 			return false;
 		}
-		if ( ! isset( $this->_target_app[ $class ] ) ) {
+		if ( ! isset( $this->target_app[ $class ] ) ) {
 			$app = false;
 			if ( strpos( $class, '->' ) !== false ) {
-				$app      = $this->app;
-				$exploded = explode( '->', $class );
-				foreach ( $exploded as $property ) {
-					if ( isset( $app->$property ) ) {
-						$app = $app->$property;
-					} else {
-						$app = false;
-						break;
-					}
-				}
+				$app = $this->get_target_app_by_arrow_access( $class );
 			} else {
 				if ( isset( $this->app->$class ) ) {
 					$app = $this->app->$class;
 				}
 			}
 			if ( false === $app ) {
-				if ( class_exists( $class ) && is_subclass_of( $class, '\WP_Framework_Core\Interfaces\Singleton' ) ) {
-					try {
-						/** @var Singleton $class */
-						$app = $class::get_instance( $this->app );
-					} catch ( Exception $e ) {
-					}
-				}
+				$app = $this->get_target_singleton( $class );
 			}
-			$this->_target_app[ $class ] = $app;
+			$this->target_app[ $class ] = $app;
 		}
 
-		return $this->_target_app[ $class ];
+		return $this->target_app[ $class ];
+	}
+
+	/**
+	 * @param $class
+	 *
+	 * @return bool|WP_Framework
+	 */
+	private function get_target_app_by_arrow_access( $class ) {
+		$app      = $this->app;
+		$exploded = explode( '->', $class );
+		foreach ( $exploded as $property ) {
+			if ( isset( $app->$property ) ) {
+				$app = $app->$property;
+			} else {
+				return false;
+			}
+		}
+
+		return $app;
+	}
+
+	/**
+	 * @param string|Singleton $class
+	 *
+	 * @return bool|\WP_Framework_Core\Traits\Singleton
+	 */
+	private function get_target_singleton( $class ) {
+		if ( class_exists( $class ) && is_subclass_of( $class, '\WP_Framework_Core\Interfaces\Singleton' ) ) {
+			try {
+				return $class::get_instance( $this->app );
+			} catch ( Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -201,20 +224,29 @@ class Filter implements Singleton, \WP_Framework_Core\Interfaces\Hook {
 	 * @return mixed
 	 */
 	private function run( $tag, $class, $method, $callback, $args ) {
-		if ( $this->_is_running ) {
-			$result           = $callback( $args );
-			$this->_elapsed[] = [ 'tag' => $tag, 'class' => $class, 'method' => $method, 'elapsed' => 0 ];
+		if ( $this->is_running ) {
+			$result          = $callback( $args );
+			$this->elapsed[] = [
+				'tag'     => $tag,
+				'class'   => $class,
+				'method'  => $method,
+				'elapsed' => 0,
+			];
 		} else {
-			$this->_is_running = true;
+			$this->is_running = true;
 
-			$start            = microtime( true ) * 1000;
-			$result           = $callback( $args );
-			$elapsed          = microtime( true ) * 1000 - $start;
-			$this->_elapsed[] = [ 'tag' => $tag, 'class' => $class, 'method' => $method, 'elapsed' => $elapsed ];
+			$start           = microtime( true ) * 1000;
+			$result          = $callback( $args );
+			$elapsed         = microtime( true ) * 1000 - $start;
+			$this->elapsed[] = [
+				'tag'     => $tag,
+				'class'   => $class,
+				'method'  => $method,
+				'elapsed' => $elapsed,
+			];
 
-			$this->_is_running = false;
+			$this->is_running = false;
 		}
-
 
 		return $result;
 	}
@@ -224,7 +256,7 @@ class Filter implements Singleton, \WP_Framework_Core\Interfaces\Hook {
 	 * @return float
 	 */
 	public function get_elapsed() {
-		return $this->app->array->sum( $this->_elapsed, function ( $item ) {
+		return $this->app->array->sum( $this->elapsed, function ( $item ) {
 			return $item['elapsed'];
 		} );
 	}
@@ -236,7 +268,7 @@ class Filter implements Singleton, \WP_Framework_Core\Interfaces\Hook {
 	public function get_elapsed_details() {
 		$elapsed = $this->get_elapsed();
 
-		return $this->app->array->map( $this->_elapsed, function ( $item ) use ( $elapsed ) {
+		return $this->app->array->map( $this->elapsed, function ( $item ) use ( $elapsed ) {
 			return sprintf( '%10.6fms (%5.2f%%) : [%s] %s->%s', $item['elapsed'], ( $item['elapsed'] / $elapsed ) * 100, $item['tag'], $item['class'], $item['method'] );
 		} );
 	}

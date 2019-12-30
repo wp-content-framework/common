@@ -23,57 +23,58 @@ use WP_Framework_Common\Tests\TestCase;
 class UserTest extends TestCase {
 
 	/**
-	 * @var User $_user
+	 * @var User $user
 	 */
-	private static $_user;
+	private static $user;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		static::$_user = User::get_instance( static::$app );
+		static::$user = User::get_instance( static::$app );
 		foreach ( static::get_test_value() as $value ) {
-			static::$_user->delete( $value[0], 1 );
+			static::$user->delete( $value[0], 1 );
 		}
 	}
 
 	public static function tearDownAfterClass() {
 		parent::tearDownAfterClass();
 		foreach ( static::get_test_value() as $value ) {
-			static::$_user->delete( $value[0], 1 );
+			static::$user->delete( $value[0], 1 );
 		}
 	}
 
 	/**
-	 * @dataProvider _test_value_provider
+	 * @dataProvider provider_test_value
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 */
 	public function test_set( $key, $value ) {
-		$this->assertEquals( true, static::$_user->set( $key, $value, 1 ) );
+		$this->assertEquals( true, static::$user->set( $key, $value, 1 ) );
 	}
 
 	/**
-	 * @dataProvider _test_value_provider
+	 * @dataProvider provider_test_value
 	 *
 	 * @param string $key
 	 * @param mixed $value
 	 */
 	public function test_get( $key, $value ) {
-		$this->assertEquals( $value, static::$_user->get( $key, 1 ) );
+		$this->assertEquals( $value, static::$user->get( $key, 1 ) );
 	}
 
 	/**
-	 * @dataProvider _test_value_provider
+	 * @dataProvider provider_test_value
 	 *
 	 * @param string $key
 	 * @param mixed $value
+	 * @SuppressWarnings(PHPMD.UnusedFormalParameter)
 	 */
 	public function test_delete(
 		/** @noinspection PhpUnusedParameterInspection */
 		$key, $value
 	) {
-		$this->assertEquals( true, static::$_user->delete( $key, 1 ) );
-		$this->assertEquals( '', static::$_user->get( $key, 1 ) );
+		$this->assertEquals( true, static::$user->delete( $key, 1 ) );
+		$this->assertEquals( '', static::$user->get( $key, 1 ) );
 	}
 
 	/**
@@ -100,7 +101,7 @@ class UserTest extends TestCase {
 	/**
 	 * @return array
 	 */
-	public function _test_value_provider() {
+	public function provider_test_value() {
 		return static::get_test_value();
 	}
 }

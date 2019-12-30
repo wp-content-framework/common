@@ -27,8 +27,7 @@ class Collection {
 		$this->items = $items;
 	}
 
-	public function all()
-	{
+	public function all() {
 		return $this->items;
 	}
 

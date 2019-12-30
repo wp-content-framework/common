@@ -115,19 +115,15 @@ class Define implements \WP_Framework_Core\Interfaces\Singleton {
 		$this->plugin_assets_url = $this->plugin_url . '/assets';
 
 		$this->blog_id = get_current_blog_id();
-		if ( is_multisite() && defined( 'BLOG_ID_CURRENT_SITE' ) && $this->blog_id != BLOG_ID_CURRENT_SITE ) {
-			$this->upload_dir = WP_CONTENT_DIR . DS . 'uploads' . DS . $this->plugin_name . $this->blog_id;
-			$this->upload_url = WP_CONTENT_URL . '/uploads/' . $this->plugin_name . $this->blog_id;
-		} else {
-			$this->upload_dir = WP_CONTENT_DIR . DS . 'uploads' . DS . $this->plugin_name;
-			$this->upload_url = WP_CONTENT_URL . '/uploads/' . $this->plugin_name;
-		}
+		$this->set_upload_params();
 	}
 
 	/**
 	 * @param int $new_blog
+	 *
+	 * @noinspection PhpUnusedPrivateMethodInspection
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
 	 */
-	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function switch_blog( $new_blog ) {
 		if ( $new_blog === $this->blog_id ) {
 			return;
@@ -135,13 +131,20 @@ class Define implements \WP_Framework_Core\Interfaces\Singleton {
 
 		$this->set_allowed_access( true );
 		$this->blog_id = $new_blog;
-		if ( is_multisite() && defined( 'BLOG_ID_CURRENT_SITE' ) && $this->blog_id != BLOG_ID_CURRENT_SITE ) {
+		$this->set_upload_params();
+		$this->set_allowed_access( false );
+	}
+
+	/**
+	 * set upload params
+	 */
+	private function set_upload_params() {
+		if ( is_multisite() && defined( 'BLOG_ID_CURRENT_SITE' ) && (string) BLOG_ID_CURRENT_SITE !== (string) $this->blog_id ) {
 			$this->upload_dir = WP_CONTENT_DIR . DS . 'uploads' . DS . $this->plugin_name . $this->blog_id;
 			$this->upload_url = WP_CONTENT_URL . '/uploads/' . $this->plugin_name . $this->blog_id;
 		} else {
 			$this->upload_dir = WP_CONTENT_DIR . DS . 'uploads' . DS . $this->plugin_name;
 			$this->upload_url = WP_CONTENT_URL . '/uploads/' . $this->plugin_name;
 		}
-		$this->set_allowed_access( false );
 	}
 }

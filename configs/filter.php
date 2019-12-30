@@ -14,13 +14,13 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 
 return [
 
-	'define' => [
+	'define'    => [
 		'switch_blog' => [
 			'switch_blog' => 1,
 		],
 	],
 
-	'option' => [
+	'option'    => [
 		'${prefix}app_activated'   => [
 			'app_activated',
 		],
@@ -32,7 +32,7 @@ return [
 		],
 	],
 
-	'system' => [
+	'system'    => [
 		'${framework}initialize' => [
 			'app_initialized' => 9,
 		],
