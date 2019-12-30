@@ -993,7 +993,7 @@ class UtilityTest extends TestCase {
 				[
 					0 => 1,
 					1 => 2,
-					3 => 4,
+					2 => 4,
 				],
 				[
 					[

@@ -102,19 +102,19 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param array|object $array
-	 * @param string|array $key
+	 * @param string|int|array $key
 	 *
 	 * @return bool
 	 */
 	public function exists( $array, $key ) {
 		$array = $this->to_array( $array );
 
-		if ( is_string( $key ) ) {
+		if ( is_string( $key ) || is_int( $key ) ) {
 			if ( array_key_exists( $key, $array ) ) {
 				return true;
 			}
 
-			if ( strpos( $key, '.' ) === false ) {
+			if ( is_int( $key ) || strpos( $key, '.' ) === false ) {
 				return false;
 			}
 			$keys = explode( '.', $key );
@@ -136,7 +136,7 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param array|object $array
-	 * @param string|array|null $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -148,12 +148,12 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			return $array;
 		}
 
-		if ( is_string( $key ) ) {
+		if ( is_string( $key ) || is_int( $key ) ) {
 			if ( array_key_exists( $key, $array ) ) {
 				return $array[ $key ];
 			}
 
-			if ( strpos( $key, '.' ) === false ) {
+			if ( is_int( $key ) || strpos( $key, '.' ) === false ) {
 				return $this->app->utility->value( $default );
 			}
 			$keys = explode( '.', $key );
@@ -327,7 +327,7 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return array
 	 */
 	public function pluck_unique( $array, $key ) {
-		return array_unique( $this->pluck( $array, $key, null, true ) );
+		return array_values( array_unique( $this->pluck( $array, $key, null, true ) ) );
 	}
 
 	/**
@@ -341,7 +341,7 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		$array = $this->to_array( $array );
 		if ( isset( $key ) ) {
 			$keys   = $this->pluck( $array, $key );
-			$values = empty( $value ) ? $array : $this->pluck( $array, $value );
+			$values = is_null( $value ) ? $array : $this->pluck( $array, $value );
 		} else {
 			$keys   = array_unique( $array );
 			$values = $keys;
@@ -422,6 +422,11 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return float
 	 */
 	public function ave( $array, $extractor ) {
+		$array = $this->to_array( $array );
+		if ( empty( $array ) ) {
+			return 0;
+		}
+
 		return (float) $this->sum( $array, $extractor ) / count( $array );
 	}
 }
