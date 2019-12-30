@@ -20,20 +20,21 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
 /**
  * Class Input
  * @package WP_Framework_Common\Classes\Models
+ * @SuppressWarnings(PHPMD.Superglobals)
  */
 class Input implements \WP_Framework_Core\Interfaces\Singleton {
 
 	use Singleton, Package;
 
 	/**
-	 * @var array $_input
+	 * @var array $input
 	 */
-	private $_input = null;
+	private $input = null;
 
 	/**
-	 * @var string $_php_input
+	 * @var string $php_input
 	 */
-	private $_php_input = null;
+	private $php_input = null;
 
 	/**
 	 * @return bool
@@ -46,11 +47,11 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return array
 	 */
 	public function all() {
-		if ( ! isset( $this->_input ) ) {
-			$this->_input = array_merge( $_GET, $_POST );
+		if ( ! isset( $this->input ) ) {
+			$this->input = array_merge( $_GET, $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Missing,WordPress.Security.NonceVerification.Recommended
 		}
 
-		return $this->_input;
+		return $this->input;
 	}
 
 	/**
@@ -60,7 +61,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return mixed
 	 */
 	public function get( $key = null, $default = null ) {
-		return func_num_args() === 0 ? $_GET : $this->app->array->get( $_GET, $key, $default );
+		return func_num_args() === 0 ? $_GET : $this->app->array->get( $_GET, $key, $default ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -75,7 +76,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @param string $key
 	 */
 	public function delete_get( $key ) {
-		unset( $_GET[ $key ] );
+		unset( $_GET[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -85,7 +86,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return mixed
 	 */
 	public function post( $key = null, $default = null ) {
-		return func_num_args() === 0 ? $_POST : $this->app->array->get( $_POST, $key, $default );
+		return func_num_args() === 0 ? $_POST : $this->app->array->get( $_POST, $key, $default ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
 	/**
@@ -100,7 +101,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @param string $key
 	 */
 	public function delete_post( $key ) {
-		unset( $_POST[ $key ] );
+		unset( $_POST[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Missing
 	}
 
 	/**
@@ -110,7 +111,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return mixed
 	 */
 	public function request( $key = null, $default = null ) {
-		return func_num_args() === 0 ? $_REQUEST : $this->app->array->get( $_REQUEST, $key, $default );
+		return func_num_args() === 0 ? $_REQUEST : $this->app->array->get( $_REQUEST, $key, $default ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -125,7 +126,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @param string $key
 	 */
 	public function delete_request( $key ) {
-		unset( $_REQUEST[ $key ] );
+		unset( $_REQUEST[ $key ] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	}
 
 	/**
@@ -192,6 +193,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @param string $default
 	 *
 	 * @return string
+	 * @SuppressWarnings(PHPMD.ShortMethodName)
 	 */
 	public function ip( $default = '0.0.0.0' ) {
 		return $this->server( 'HTTP_X_FORWARDED_FOR', $this->server( 'REMOTE_ADDR', $default ) );
@@ -235,7 +237,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 			return $default;
 		}
 
-		return $this->app->array->get( parse_url( $referer ), 'host', $default );
+		return $this->app->array->get( wp_parse_url( $referer ), 'host', $default );
 	}
 
 	/**
@@ -256,18 +258,18 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 			'HEAD',
 			'TRACE',
 			'OPTIONS',
-		] );
+		], true );
 	}
 
 	/**
 	 * @return bool|string
 	 */
 	public function php_input() {
-		if ( ! isset( $this->_php_input ) ) {
-			$this->_php_input = file_get_contents( 'php://input' );
+		if ( ! isset( $this->php_input ) ) {
+			$this->php_input = file_get_contents( 'php://input' );
 		}
 
-		return $this->_php_input;
+		return $this->php_input;
 	}
 
 	/**
@@ -288,7 +290,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return string
 	 */
 	public function get_current_host() {
-		return ( is_ssl() ? "https://" : "http://" ) . $this->server( 'HTTP_HOST' );
+		return ( is_ssl() ? 'https://' : 'http://' ) . $this->server( 'HTTP_HOST' );
 	}
 
 	/**

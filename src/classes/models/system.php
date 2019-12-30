@@ -31,9 +31,9 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	use Singleton, Hook, Package;
 
 	/**
-	 * @var bool $_setup_initialized_action
+	 * @var bool $setup_initialized_action
 	 */
-	private static $_setup_initialized_action = false;
+	private static $setup_initialized_action = false;
 
 	/**
 	 * @var array $readonly_properties
@@ -61,8 +61,8 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 			}
 		} elseif ( $this->app->is_uninstall() ) {
 			$this->app_initialized();
-		} elseif ( ! self::$_setup_initialized_action ) {
-			self::$_setup_initialized_action = true;
+		} elseif ( ! self::$setup_initialized_action ) {
+			self::$setup_initialized_action = true;
 			add_action( 'init', function () {
 				$this->do_framework_action( 'initialize' );
 			}, 9 );
@@ -72,7 +72,6 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	/**
 	 * app initialized
 	 */
-	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function app_initialized() {
 		if ( ! $this->is_enough_version() ) {
 			return;
@@ -91,11 +90,12 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 
 	/**
 	 * deactivate theme
+	 * @SuppressWarnings(PHPMD.Superglobals)
 	 */
 	private function deactivate_theme() {
 		add_action( 'init', function () {
 			switch_theme( WP_DEFAULT_THEME );
-			unset( $_GET['activated'] );
+			unset( $_GET['activated'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}, 999 );
 	}
 
@@ -112,23 +112,23 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	private function set_unsupported() {
 		add_action( 'admin_notices', function () {
 			?>
-            <div class="notice error notice-error">
-				<?php if ( $this->not_enough_php_version ): ?>
-                    <p>
+			<div class="notice error notice-error">
+				<?php if ( $this->not_enough_php_version ) : ?>
+					<p>
 						<?php $this->e( $this->get_unsupported_php_version_message() ); ?>
-                    </p>
+					</p>
 				<?php endif; ?>
-				<?php if ( $this->not_enough_wordpress_version ): ?>
-                    <p>
+				<?php if ( $this->not_enough_wordpress_version ) : ?>
+					<p>
 						<?php $this->e( $this->get_unsupported_wp_version_message() ); ?>
-                    </p>
+					</p>
 				<?php endif; ?>
-				<?php if ( ! $this->app->is_theme ): ?>
-                    <p>
+				<?php if ( ! $this->app->is_theme ) : ?>
+					<p>
 						<?php $this->e( $this->get_deactivate_message() ); ?>
-                    </p>
+					</p>
 				<?php endif; ?>
-            </div>
+			</div>
 			<?php
 		} );
 	}
@@ -164,7 +164,7 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	private function get_deactivate_message() {
 		$url   = wp_nonce_url( add_query_arg( [
 			'action' => 'deactivate',
-			'plugin' => urlencode( $this->app->define->plugin_base_name ),
+			'plugin' => rawurlencode( $this->app->define->plugin_base_name ),
 		], 'plugins.php' ), 'deactivate-plugin_' . $this->app->define->plugin_base_name );
 		$label = $this->translate( 'Deactivate plugin' );
 
@@ -173,8 +173,9 @@ class System implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 
 	/**
 	 * @param string $string
+	 * @SuppressWarnings(PHPMD.ShortMethodName)
 	 */
 	private function e( $string ) {
-		echo $this->app->string->strip_tags( $string );
+		echo $this->app->string->strip_tags( $string ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 	}
 }

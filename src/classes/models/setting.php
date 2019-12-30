@@ -27,24 +27,24 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 	use Singleton, Hook, Package;
 
 	/**
-	 * @var array $_groups
+	 * @var array $groups
 	 */
-	private $_groups = [];
+	private $groups = [];
 
 	/**
-	 * @var array $_group_priority
+	 * @var array $group_priority
 	 */
-	private $_group_priority = [];
+	private $group_priority = [];
 
 	/**
-	 * @var array $_settings
+	 * @var array $settings
 	 */
-	private $_settings = [];
+	private $settings = [];
 
 	/**
-	 * @var array $_setting_priority
+	 * @var array $setting_priority
 	 */
-	private $_setting_priority = [];
+	private $setting_priority = [];
 
 	/**
 	 * initialize
@@ -56,35 +56,34 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 			foreach ( $groups as $group => $setting_set ) {
 				ksort( $setting_set );
 
-				if ( isset( $this->_group_priority[ $group ] ) ) {
-					$_group_priority                            = $this->_group_priority[ $group ];
-					$this->_groups[ $group_priority ][ $group ] = $this->_groups[ $_group_priority ][ $group ];
-					unset( $this->_groups[ $_group_priority ][ $group ] );
-					if ( empty( $this->_groups[ $_group_priority ] ) ) {
-						unset( $this->_groups[ $_group_priority ] );
+				if ( isset( $this->group_priority[ $group ] ) ) {
+					$_group_priority                           = $this->group_priority[ $group ];
+					$this->groups[ $group_priority ][ $group ] = $this->groups[ $_group_priority ][ $group ];
+					unset( $this->groups[ $_group_priority ][ $group ] );
+					if ( empty( $this->groups[ $_group_priority ] ) ) {
+						unset( $this->groups[ $_group_priority ] );
 					}
 				} else {
-					$this->_groups[ $group_priority ][ $group ] = [];
+					$this->groups[ $group_priority ][ $group ] = [];
 				}
-				$this->_group_priority[ $group ] = $group_priority;
+				$this->group_priority[ $group ] = $group_priority;
 				foreach ( $setting_set as $setting_priority => $settings ) {
-
-					$this->_groups[ $group_priority ][ $group ] = array_merge( $this->_groups[ $group_priority ][ $group ], array_keys( $settings ) );
+					$this->groups[ $group_priority ][ $group ] = array_merge( $this->groups[ $group_priority ][ $group ], array_keys( $settings ) );
 					foreach ( $settings as $setting => $detail ) {
-						$this->_settings[ $setting_priority ][ $setting ] = $detail;
-						$this->_setting_priority[ $setting ]              = $setting_priority;
+						$this->settings[ $setting_priority ][ $setting ] = $detail;
+						$this->setting_priority[ $setting ]              = $setting_priority;
 					}
 				}
 			}
 		}
-		asort( $this->_group_priority );
+		asort( $this->group_priority );
 	}
 
 	/**
 	 * @return array
 	 */
 	public function get_groups() {
-		return $this->apply_filters( 'get_groups', array_keys( $this->_group_priority ) );
+		return $this->apply_filters( 'get_groups', array_keys( $this->group_priority ) );
 	}
 
 	/**
@@ -93,11 +92,11 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 	 * @return array
 	 */
 	public function get_settings( $group ) {
-		if ( ! isset( $this->_group_priority[ $group ], $this->_groups[ $this->_group_priority[ $group ] ] ) ) {
+		if ( ! isset( $this->group_priority[ $group ], $this->groups[ $this->group_priority[ $group ] ] ) ) {
 			return $this->apply_filters( 'get_settings', [], $group );
 		}
 
-		return $this->apply_filters( 'get_settings', $this->_groups[ $this->_group_priority[ $group ] ][ $group ], $group );
+		return $this->apply_filters( 'get_settings', $this->groups[ $this->group_priority[ $group ] ][ $group ], $group );
 	}
 
 	/**
@@ -111,7 +110,7 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 			return $this->apply_filters( 'get_setting', false, $setting, $detail );
 		}
 
-		$data = $this->apply_filters( 'get_setting', $this->_settings[ $this->_setting_priority[ $setting ] ][ $setting ], $setting );
+		$data = $this->apply_filters( 'get_setting', $this->settings[ $this->setting_priority[ $setting ] ][ $setting ], $setting );
 		if ( $detail ) {
 			$data = $this->get_detail_setting( $setting, $data );
 		}
@@ -129,16 +128,16 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 			return true;
 		}
 
-		foreach ( $this->_groups as $group_priority => $groups ) {
+		foreach ( $this->groups as $group_priority => $groups ) {
 			foreach ( $groups as $group => $settings ) {
-				$key = array_search( $setting, $settings );
+				$key = array_search( $setting, $settings, true );
 				if ( false !== $key ) {
-					unset( $this->_groups[ $group_priority ][ $group ][ $key ] );
-					if ( empty( $this->_groups[ $group_priority ][ $group ] ) ) {
-						unset( $this->_groups[ $group_priority ][ $group ] );
-						unset( $this->_group_priority[ $group ] );
-						if ( empty( $this->_groups[ $group_priority ] ) ) {
-							unset( $this->_groups[ $group_priority ] );
+					unset( $this->groups[ $group_priority ][ $group ][ $key ] );
+					if ( empty( $this->groups[ $group_priority ][ $group ] ) ) {
+						unset( $this->groups[ $group_priority ][ $group ] );
+						unset( $this->group_priority[ $group ] );
+						if ( empty( $this->groups[ $group_priority ] ) ) {
+							unset( $this->groups[ $group_priority ] );
 						}
 					}
 					break;
@@ -159,9 +158,9 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 			return true;
 		}
 
-		foreach ( $this->_groups as $group_priority => $groups ) {
-			foreach ( $groups as $group => $settings ) {
-				if ( false !== array_search( $setting, $settings ) ) {
+		foreach ( $this->groups as $groups ) {
+			foreach ( $groups as $settings ) {
+				if ( false !== array_search( $setting, $settings, true ) ) {
 					return false;
 				}
 			}
@@ -181,8 +180,7 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 		if ( ! $this->is_setting( $setting ) ) {
 			return true;
 		}
-		$priority                                         = $this->_setting_priority[ $setting ];
-		$this->_settings[ $priority ][ $setting ][ $key ] = $value;
+		$this->settings[ $this->setting_priority[ $setting ] ][ $setting ][ $key ] = $value;
 
 		return true;
 	}
@@ -231,9 +229,9 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 	private function get_expression( $value, $type ) {
 		switch ( $type ) {
 			case 'bool':
+				// @codingStandardsIgnoreStart
 				return var_export( $value, true );
-			case 'int':
-				return $value;
+			// @codingStandardsIgnoreEnd
 			case 'float':
 				return round( $value, 6 );
 			default:
@@ -247,6 +245,6 @@ class Setting implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_
 	 * @return bool
 	 */
 	public function is_setting( $setting ) {
-		return isset( $this->_setting_priority[ $setting ], $this->_settings[ $this->_setting_priority[ $setting ] ] );
+		return isset( $this->setting_priority[ $setting ], $this->settings[ $this->setting_priority[ $setting ] ] );
 	}
 }

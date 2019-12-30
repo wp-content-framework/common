@@ -30,24 +30,24 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	use Singleton, Package;
 
 	/**
-	 * @var float $_tick
+	 * @var float $tick
 	 */
-	private $_tick;
+	private $tick;
 
 	/**
-	 * @var array $_active_plugins
+	 * @var array $active_plugins
 	 */
-	private $_active_plugins = [];
+	private $active_plugins = [];
 
 	/**
-	 * @var string $_active_plugins_hash
+	 * @var string $active_plugins_hash
 	 */
-	private $_active_plugins_hash;
+	private $active_plugins_hash;
 
 	/**
-	 * @var string $_framework_plugin_hash
+	 * @var string $framework_plugin_hash
 	 */
-	private $_framework_plugin_hash;
+	private $framework_plugin_hash;
 
 	/**
 	 * @return bool
@@ -72,32 +72,39 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	public function uuid() {
 		$pid  = getmypid();
 		$node = $this->app->input->server( 'SERVER_ADDR', '0.0.0.0' );
-		list( $timeMid, $timeLow ) = explode( ' ', microtime() );
 
-		return sprintf( "%08x%04x%04x%02x%02x%04x%08x", (int) $timeLow, (int) substr( $timeMid, 2 ) & 0xffff,
-			mt_rand( 0, 0xfff ) | 0x4000, mt_rand( 0, 0x3f ) | 0x80, mt_rand( 0, 0xff ), $pid & 0xffff, $node );
+		list( $time_mid, $time_low ) = explode( ' ', microtime() );
+
+		return sprintf(
+			'%08x%04x%04x%02x%02x%04x%08x',
+			(int) $time_low,
+			(int) substr( $time_mid, 2 ) & 0xffff,
+			wp_rand( 0, 0xfff ) | 0x4000,
+			wp_rand( 0, 0x3f ) | 0x80,
+			wp_rand( 0, 0xff ),
+			$pid & 0xffff,
+			$node
+		);
 	}
 
 	/**
-	 * @param string $c
+	 * @param string $name
 	 *
 	 * @return bool
 	 */
-	public function defined( $c ) {
-		return defined( $c ) && ! empty( @constant( $c ) );
+	public function defined( $name ) {
+		return defined( $name ) && ! empty( constant( $name ) );
 	}
 
 	/**
-	 * @param string $c
+	 * @param string $name
 	 * @param null $default
 	 *
 	 * @return mixed|null
 	 */
-	public function definedv( $c, $default = null ) {
-		if ( defined( $c ) ) {
-			$const = @constant( $c );
-
-			return $const;
+	public function definedv( $name, $default = null ) {
+		if ( defined( $name ) ) {
+			return constant( $name );
 		}
 
 		return $this->value( $default );
@@ -194,19 +201,22 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return array
 	 */
 	public function get_debug_backtrace( array $unset = [] ) {
+		// @codingStandardsIgnoreStart
 		$backtrace = debug_backtrace();
-		foreach ( $backtrace as $k => $v ) {
+		// @codingStandardsIgnoreEnd
+
+		foreach ( $backtrace as $key1 => $value ) {
 			// 大量のデータになりがちな object と args を削除や編集
-			unset( $backtrace[ $k ]['object'] );
-			if ( ! empty( $backtrace[ $k ]['args'] ) ) {
-				$backtrace[ $k ]['args'] = $this->parse_backtrace_args( $backtrace[ $k ]['args'] );
+			unset( $backtrace[ $key1 ]['object'] );
+			if ( ! empty( $backtrace[ $key1 ]['args'] ) ) {
+				$backtrace[ $key1 ]['args'] = $this->parse_backtrace_args( $backtrace[ $key1 ]['args'] );
 			} else {
-				unset( $backtrace[ $k ]['args'] );
+				unset( $backtrace[ $key1 ]['args'] );
 			}
 			if ( ! empty( $unset ) ) {
-				foreach ( $v as $key => $value ) {
-					if ( in_array( $key, $unset ) ) {
-						unset( $backtrace[ $k ][ $key ] );
+				foreach ( array_keys( $value ) as $key2 ) {
+					if ( in_array( $key2, $unset, true ) ) {
+						unset( $backtrace[ $key1 ][ $key2 ] );
 					}
 				}
 			}
@@ -229,7 +239,9 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 				$type = get_class( $d );
 			} elseif ( 'resource' !== $type && 'resource (closed)' !== $type && 'NULL' !== $type && 'unknown type' !== $type ) {
 				if ( 'boolean' === $type ) {
+					// @codingStandardsIgnoreStart
 					$d = var_export( $d, true );
+					// @codingStandardsIgnoreEnd
 				}
 				$type .= ': ' . $d;
 			}
@@ -243,25 +255,22 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @param bool $detect_text
 	 *
 	 * @return string
+	 * @SuppressWarnings(PHPMD.CyclomaticComplexity)
 	 */
 	public function parse_db_type( $type, $detect_text = false ) {
 		switch ( true ) {
 			case stristr( $type, 'TINYINT(1)' ) !== false:
+			case stristr( $type, 'BIT' ) !== false:
+			case stristr( $type, 'BOOLEAN' ) !== false:
 				return 'bool';
 			case stristr( $type, 'INT' ) !== false:
 				return 'int';
-			case stristr( $type, 'BIT' ) !== false:
-				return 'bool';
-			case stristr( $type, 'BOOLEAN' ) !== false:
-				return 'bool';
 			case stristr( $type, 'DECIMAL' ) !== false:
+			case stristr( $type, 'DOUBLE' ) !== false:
+			case stristr( $type, 'REAL' ) !== false:
 				return 'number';
 			case stristr( $type, 'FLOAT' ) !== false:
 				return 'float';
-			case stristr( $type, 'DOUBLE' ) !== false:
-				return 'number';
-			case stristr( $type, 'REAL' ) !== false:
-				return 'number';
 			case $detect_text && stristr( $type, 'TEXT' ) !== false:
 				return 'text';
 		}
@@ -283,7 +292,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		if ( empty( $post ) || ! $post instanceof WP_Post ) {
 			return false;
 		}
-		! is_array( $tags ) and $tags = [ $tags ];
+
+		if ( ! is_array( $tags ) ) {
+			$tags = [ $tags ];
+		}
+
 		$content = $post->post_content;
 		foreach ( $tags as $tag ) {
 			if ( has_shortcode( $content, $tag ) ) {
@@ -303,7 +316,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return bool
 	 */
 	public function lock_process( WP_Framework $app, $name, callable $func, $timeout = 60 ) {
-		$name         .= '__LOCK_PROCESS__';
+		$name         = $name . '__LOCK_PROCESS__';
 		$timeout_name = $name . 'TIMEOUT__';
 		$option       = $app->option;
 		$option->flush();
@@ -314,12 +327,14 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 				return false;
 			}
 		}
+
 		$rand = md5( uniqid() );
 		$option->set( $name, $rand );
 		$option->flush();
-		if ( $option->get( $name ) != $rand ) {
+		if ( $option->get( $name ) !== $rand ) {
 			return false;
 		}
+
 		$option->set( $timeout_name, time() + $timeout );
 		try {
 			$func();
@@ -340,25 +355,27 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function get_active_plugins( $combine = true ) {
 		$combine = $combine ? 1 : 0;
-		if ( ! isset( $this->_active_plugins[ $combine ] ) ) {
+		if ( ! isset( $this->active_plugins[ $combine ] ) ) {
 			$option = get_option( 'active_plugins', [] );
 			if ( is_multisite() ) {
 				$option = array_merge( $option, array_keys( get_site_option( 'active_sitewide_plugins' ) ) );
 				$option = array_unique( $option );
 			}
-			$this->_active_plugins[ $combine ] = $combine ? $this->app->array->combine( $option, null ) : array_values( $option );
+			$this->active_plugins[ $combine ] = $combine ? $this->app->array->combine( $option, null ) : array_values( $option );
 		}
 
-		return $this->_active_plugins[ $combine ];
+		return $this->active_plugins[ $combine ];
 	}
 
 	/**
 	 * @return string
 	 */
 	public function get_active_plugins_hash() {
-		! isset( $this->_active_plugins_hash ) and $this->_active_plugins_hash = sha1( json_encode( $this->get_active_plugins( false ) ) );
+		if ( ! isset( $this->active_plugins_hash ) ) {
+			$this->active_plugins_hash = sha1( wp_json_encode( $this->get_active_plugins( false ) ) );
+		}
 
-		return $this->_active_plugins_hash;
+		return $this->active_plugins_hash;
 	}
 
 	/**
@@ -375,9 +392,11 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return string
 	 */
 	public function get_framework_plugins_hash() {
-		! isset( $this->_framework_plugin_hash ) and $this->_framework_plugin_hash = sha1( json_encode( $this->get_framework_plugins() ) );
+		if ( ! isset( $this->framework_plugin_hash ) ) {
+			$this->framework_plugin_hash = sha1( wp_json_encode( $this->get_framework_plugins() ) );
+		}
 
-		return $this->_framework_plugin_hash;
+		return $this->framework_plugin_hash;
 	}
 
 	/**
@@ -386,14 +405,14 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return bool
 	 */
 	public function is_plugin_active( $plugin ) {
-		return in_array( $plugin, $this->get_active_plugins( false ) );
+		return in_array( $plugin, $this->get_active_plugins( false ), true );
 	}
 
 	/**
 	 * for debug
 	 */
 	public function timer_start() {
-		$this->_tick = microtime( true ) * 1000;
+		$this->tick = microtime( true ) * 1000;
 	}
 
 	/**
@@ -402,15 +421,17 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @param string $format
 	 */
 	public function timer_tick( $format = '%12.8f' ) {
-		if ( ! isset( $this->_tick ) ) {
+		if ( ! isset( $this->tick ) ) {
 			$this->timer_start();
 
 			return;
 		}
 		$now     = microtime( true ) * 1000;
-		$elapsed = $now - $this->_tick;
+		$elapsed = $now - $this->tick;
+		// @codingStandardsIgnoreStart
 		error_log( sprintf( $format, $elapsed ) );
-		$this->_tick = $now;
+		// @codingStandardsIgnoreEnd
+		$this->tick = $now;
 	}
 
 	/**
@@ -431,7 +452,10 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			return wp_raise_memory_limit( $context );
 		}
 
+		// @codingStandardsIgnoreStart
 		ini_set( 'memory_limit', $limit );
+
+		// @codingStandardsIgnoreEnd
 
 		return $limit;
 	}

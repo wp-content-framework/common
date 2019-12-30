@@ -32,6 +32,6 @@ class Data {
 	}
 
 	public function map_filter() {
-		return $this->value % 2 === 1;
+		return 1 === $this->value % 2;
 	}
 }

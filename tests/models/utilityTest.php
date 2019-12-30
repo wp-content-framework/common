@@ -26,58 +26,62 @@ require_once __DIR__ . DS . 'misc' . DS . 'data.php';
  * @package WP_Framework_Common\Tests\Models
  * @group wp_framework
  * @group models
+ * @SuppressWarnings(PHPMD.ExcessiveClassLength)
+ * @SuppressWarnings(PHPMD.ExcessivePublicCount)
+ * @SuppressWarnings(PHPMD.TooManyMethods)
+ * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
 class UtilityTest extends TestCase {
 
 	/**
-	 * @var Utility $_utility
+	 * @var Utility $utility
 	 */
-	private static $_utility;
+	private static $utility;
 
 	/**
-	 * @var Array_Utility $_array
+	 * @var Array_Utility $array
 	 */
-	private static $_array;
+	private static $array;
 
 	/**
-	 * @var File_Utility $_file
+	 * @var File_Utility $file
 	 */
-	private static $_file;
+	private static $file;
 
 	/**
-	 * @var String_Utility $_string
+	 * @var String_Utility $string
 	 */
-	private static $_string;
+	private static $string;
 
 	public static function setUpBeforeClass() {
 		parent::setUpBeforeClass();
-		static::$_utility = Utility::get_instance( static::$app );
-		static::$_array   = Array_Utility::get_instance( static::$app );
-		static::$_file    = File_Utility::get_instance( static::$app );
-		static::$_string  = String_Utility::get_instance( static::$app );
+		static::$utility = Utility::get_instance( static::$app );
+		static::$array   = Array_Utility::get_instance( static::$app );
+		static::$file    = File_Utility::get_instance( static::$app );
+		static::$string  = String_Utility::get_instance( static::$app );
 	}
 
 	public static function tearDownAfterClass() {
 		parent::tearDownAfterClass();
-		static::$_file->delete_upload_dir( static::$app );
+		static::$file->delete_upload_dir( static::$app );
 	}
 
 	/**
-	 * @dataProvider _test_flatten_provider
+	 * @dataProvider provider_test_flatten
 	 *
 	 * @param array $array
 	 * @param bool $preserve_keys
 	 * @param array $expected
 	 */
 	public function test_flatten( $array, $preserve_keys, $expected ) {
-		$this->assertEquals( $expected, static::$_utility->flatten( $array, $preserve_keys ) );
-		$this->assertEquals( $expected, static::$_array->flatten( $array, $preserve_keys ) );
+		$this->assertEquals( $expected, static::$utility->flatten( $array, $preserve_keys ) );
+		$this->assertEquals( $expected, static::$array->flatten( $array, $preserve_keys ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_flatten_provider() {
+	public function provider_test_flatten() {
 		return [
 			[
 				[],
@@ -94,47 +98,73 @@ class UtilityTest extends TestCase {
 			],
 			[
 				[
-					[ 'a' => 'test1', 'b' => 'test2' ],
-					[ 'c' => 'test3', 'd' => 'test4' ],
+					[
+						'a' => 'test1',
+						'b' => 'test2',
+					],
+					[
+						'c' => 'test3',
+						'd' => 'test4',
+					],
 				],
 				false,
 				[ 'test1', 'test2', 'test3', 'test4' ],
 			],
 			[
 				[
-					[ 'a' => 'test1', 'b' => 'test2' ],
-					[ 'c' => 'test3', 'd' => 'test4' ],
+					[
+						'a' => 'test1',
+						'b' => 'test2',
+					],
+					[
+						'c' => 'test3',
+						'd' => 'test4',
+					],
 				],
 				true,
-				[ 'a' => 'test1', 'b' => 'test2', 'c' => 'test3', 'd' => 'test4' ],
+				[
+					'a' => 'test1',
+					'b' => 'test2',
+					'c' => 'test3',
+					'd' => 'test4',
+				],
 			],
 			[
 				[
-					[ 'a' => 'test1', 'b' => 'test2' ],
-					[ 'a' => 'test3', 'b' => 'test4' ],
+					[
+						'a' => 'test1',
+						'b' => 'test2',
+					],
+					[
+						'a' => 'test3',
+						'b' => 'test4',
+					],
 				],
 				true,
-				[ 'a' => 'test3', 'b' => 'test4' ],
+				[
+					'a' => 'test3',
+					'b' => 'test4',
+				],
 			],
 		];
 	}
 
 	/**
-	 * @dataProvider _test_get_array_value_provider
+	 * @dataProvider provider_test_array_value
 	 *
 	 * @param array $expected
 	 * @param mixed $obj
 	 * @param bool $ignore_value
 	 */
 	public function test_get_array_value( $expected, $obj, $ignore_value = true ) {
-		$this->assertEquals( $expected, static::$_utility->get_array_value( $obj, $ignore_value ) );
-		$this->assertEquals( $expected, static::$_array->to_array( $obj, $ignore_value ) );
+		$this->assertEquals( $expected, static::$utility->get_array_value( $obj, $ignore_value ) );
+		$this->assertEquals( $expected, static::$array->to_array( $obj, $ignore_value ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_get_array_value_provider() {
+	public function provider_test_array_value() {
 		return [
 			[
 				[],
@@ -198,20 +228,20 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_array_wrap_provider
+	 * @dataProvider provider_test_array_wrap
 	 *
 	 * @param $value
 	 * @param $expected
 	 */
 	public function test_array_wrap( $value, $expected ) {
-		$this->assertEquals( $expected, static::$_utility->array_wrap( $value ) );
-		$this->assertEquals( $expected, static::$_array->wrap( $value ) );
+		$this->assertEquals( $expected, static::$utility->array_wrap( $value ) );
+		$this->assertEquals( $expected, static::$array->wrap( $value ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_array_wrap_provider() {
+	public function provider_test_array_wrap() {
 		return [
 			[
 				null,
@@ -237,20 +267,20 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_array_exists_provider
+	 * @dataProvider provider_test_array_exists
 	 *
 	 * @param bool $expected
 	 * @param array $array
 	 * @param string $key
 	 */
 	public function test_array_exists( $expected, $array, $key ) {
-		$this->assertEquals( $expected, static::$_array->exists( $array, $key ) );
+		$this->assertEquals( $expected, static::$array->exists( $array, $key ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_array_exists_provider() {
+	public function provider_test_array_exists() {
 		return [
 			[
 				false,
@@ -281,7 +311,7 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_array_get_provider
+	 * @dataProvider provider_test_array_get
 	 *
 	 * @param array $array
 	 * @param string $key
@@ -289,14 +319,14 @@ class UtilityTest extends TestCase {
 	 * @param mixed $expected
 	 */
 	public function test_array_get( $array, $key, $default, $expected ) {
-		$this->assertEquals( $expected, static::$_utility->array_get( $array, $key, $default ) );
-		$this->assertEquals( $expected, static::$_array->get( $array, $key, $default ) );
+		$this->assertEquals( $expected, static::$utility->array_get( $array, $key, $default ) );
+		$this->assertEquals( $expected, static::$array->get( $array, $key, $default ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_array_get_provider() {
+	public function provider_test_array_get() {
 		return [
 			[
 				[],
@@ -352,7 +382,7 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_array_search_provider
+	 * @dataProvider provider_test_array_search
 	 *
 	 * @param mixed $expected
 	 * @param array $array
@@ -360,14 +390,14 @@ class UtilityTest extends TestCase {
 	 * @param array $keys
 	 */
 	public function test_array_search( $expected, $array, $key, $keys = [] ) {
-		$this->assertEquals( $expected, static::$_utility->array_search( $array, $key, ...$keys ) );
-		$this->assertEquals( $expected, static::$_array->search( $array, $key, ...$keys ) );
+		$this->assertEquals( $expected, static::$utility->array_search( $array, $key, ...$keys ) );
+		$this->assertEquals( $expected, static::$array->search( $array, $key, ...$keys ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_array_search_provider() {
+	public function provider_test_array_search() {
 		return [
 			[
 				1,
@@ -435,7 +465,7 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_array_set_provider
+	 * @dataProvider provider_test_array_set
 	 * @depends      test_array_get
 	 *
 	 * @param array $array
@@ -444,16 +474,16 @@ class UtilityTest extends TestCase {
 	 */
 	public function test_array_set( $array, $key, $value ) {
 		$array2 = $array;
-		$array  = static::$_utility->array_set( $array, $key, $value );
-		$this->assertEquals( $value, static::$_utility->array_get( $array, $key ) );
-		$array2 = static::$_array->set( $array2, $key, $value );
-		$this->assertEquals( $value, static::$_array->get( $array2, $key ) );
+		$array  = static::$utility->array_set( $array, $key, $value );
+		$this->assertEquals( $value, static::$utility->array_get( $array, $key ) );
+		$array2 = static::$array->set( $array2, $key, $value );
+		$this->assertEquals( $value, static::$array->get( $array2, $key ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_array_set_provider() {
+	public function provider_test_array_set() {
 		return [
 			[
 				[],
@@ -496,24 +526,24 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_array_delete_provider
+	 * @dataProvider provider_test_array_delete
 	 *
 	 * @param array $array
 	 * @param string $key
 	 * @param string|null $key2
 	 */
 	public function test_array_delete( $array, $key, $key2 = null ) {
-		$array = static::$_array->delete( $array, $key );
-		$this->assertNull( static::$_array->get( $array, $key, null ) );
+		$array = static::$array->delete( $array, $key );
+		$this->assertNull( static::$array->get( $array, $key, null ) );
 		if ( isset( $key2 ) ) {
-			$this->assertNotNull( static::$_array->get( $array, $key2, null ) );
+			$this->assertNotNull( static::$array->get( $array, $key2, null ) );
 		}
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_array_delete_provider() {
+	public function provider_test_array_delete() {
 		return [
 			[
 				[],
@@ -541,7 +571,7 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_pluck_provider
+	 * @dataProvider provider_test_pluck
 	 *
 	 * @param $expected
 	 * @param $array
@@ -550,13 +580,14 @@ class UtilityTest extends TestCase {
 	 * @param $filter
 	 */
 	public function test_pluck( $expected, $array, $key, $default, $filter ) {
-		$this->assertEquals( $expected, static::$_array->pluck( $array, $key, $default, $filter ) );
+		$this->assertEquals( $expected, static::$array->pluck( $array, $key, $default, $filter ) );
 	}
 
 	/**
 	 * @return array
+	 * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
 	 */
-	public function _test_pluck_provider() {
+	public function provider_test_pluck() {
 		return [
 			[
 				[],
@@ -568,10 +599,22 @@ class UtilityTest extends TestCase {
 			[
 				[ null, null, null, null ],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
-					[ 'test1' => 3, 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
+					[
+						'test1' => 3,
+						'test2' => 30,
+					],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				'test',
 				null,
@@ -580,10 +623,22 @@ class UtilityTest extends TestCase {
 			[
 				[],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
-					[ 'test1' => 3, 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
+					[
+						'test1' => 3,
+						'test2' => 30,
+					],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				'test',
 				null,
@@ -592,22 +647,44 @@ class UtilityTest extends TestCase {
 			[
 				[ 1, 2, null, 4 ],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
 					[ 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				'test1',
 				null,
 				false,
 			],
 			[
-				[ 0 => 1, 1 => 2, 3 => 4 ],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
+					0 => 1,
+					1 => 2,
+					3 => 4,
+				],
+				[
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
 					[ 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				'test1',
 				null,
@@ -617,20 +694,21 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_map_provider
+	 * @dataProvider provider_test_map
 	 *
 	 * @param $expected
 	 * @param $array
 	 * @param $callback
 	 */
 	public function test_map( $expected, $array, $callback ) {
-		$this->assertEquals( $expected, static::$_array->map( $array, $callback ) );
+		$this->assertEquals( $expected, static::$array->map( $array, $callback ) );
 	}
 
 	/**
 	 * @return array
+	 * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
 	 */
-	public function _test_map_provider() {
+	public function provider_test_map() {
 		return [
 			[
 				[],
@@ -642,41 +720,91 @@ class UtilityTest extends TestCase {
 			[
 				[ 1, 2, 3, 4 ],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
-					[ 'test1' => 3, 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
+					[
+						'test1' => 3,
+						'test2' => 30,
+					],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				function ( $value ) {
 					return $value['test1'];
 				},
 			],
 			[
-				[ 100 => 1, 200 => 2, 300 => 3, 400 => 4 ],
 				[
-					100 => [ 'test1' => 1, 'test2' => 10 ],
-					200 => [ 'test1' => 2, 'test2' => 20 ],
-					300 => [ 'test1' => 3, 'test2' => 30 ],
-					400 => [ 'test1' => 4, 'test2' => 40 ],
+					100 => 1,
+					200 => 2,
+					300 => 3,
+					400 => 4,
+				],
+				[
+					100 => [
+						'test1' => 1,
+						'test2' => 10,
+					],
+					200 => [
+						'test1' => 2,
+						'test2' => 20,
+					],
+					300 => [
+						'test1' => 3,
+						'test2' => 30,
+					],
+					400 => [
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				function ( $value ) {
 					return $value['test1'];
 				},
 			],
 			[
-				[ 100 => '1/100', 200 => '2/200', 300 => '3/300', 400 => '4/400' ],
 				[
-					100 => [ 'test1' => 1, 'test2' => 10 ],
-					200 => [ 'test1' => 2, 'test2' => 20 ],
-					300 => [ 'test1' => 3, 'test2' => 30 ],
-					400 => [ 'test1' => 4, 'test2' => 40 ],
+					100 => '1/100',
+					200 => '2/200',
+					300 => '3/300',
+					400 => '4/400',
+				],
+				[
+					100 => [
+						'test1' => 1,
+						'test2' => 10,
+					],
+					200 => [
+						'test1' => 2,
+						'test2' => 20,
+					],
+					300 => [
+						'test1' => 3,
+						'test2' => 30,
+					],
+					400 => [
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				function ( $value, $key ) {
 					return $value['test1'] . '/' . $key;
 				},
 			],
 			[
-				[ 'test1' => 1, 'test2' => 2, 'test3' => 3 ],
+				[
+					'test1' => 1,
+					'test2' => 2,
+					'test3' => 3,
+				],
 				[
 					'test1' => new Misc\Data( 1 ),
 					'test2' => new Misc\Data( 2 ),
@@ -688,21 +816,22 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_filter_provider
+	 * @dataProvider provider_test_filter
 	 *
 	 * @param $expected
 	 * @param $array
 	 * @param $callback
 	 */
 	public function test_filter( $expected, $array, $callback ) {
-		$this->assertEquals( $expected, static::$_array->filter( $array, $callback ) );
+		$this->assertEquals( $expected, static::$array->filter( $array, $callback ) );
 	}
 
 	/**
 	 * @return array
+	 * @SuppressWarnings(PHPMD.ExcessiveMethodLength)
 	 */
-	public function _test_filter_provider() {
-		$a = [
+	public function provider_test_filter() {
+		$tmp = [
 			'test1' => new Misc\Data( 1 ),
 			'test2' => new Misc\Data( 2 ),
 			'test3' => new Misc\Data( 3 ),
@@ -718,89 +847,171 @@ class UtilityTest extends TestCase {
 			],
 			[
 				[
-					1 => [ 'test1' => 2, 'test2' => 20 ],
-					3 => [ 'test1' => 4, 'test2' => 40 ],
+					1 => [
+						'test1' => 2,
+						'test2' => 20,
+					],
+					3 => [
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
-					[ 'test1' => 3, 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
+					[
+						'test1' => 3,
+						'test2' => 30,
+					],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				function ( $value ) {
-					return $value['test1'] % 2 === 0;
+					return 0 === $value['test1'] % 2;
 				},
 			],
 			[
 				[
-					200 => [ 'test1' => 2, 'test2' => 20 ],
-					400 => [ 'test1' => 4, 'test2' => 40 ],
+					200 => [
+						'test1' => 2,
+						'test2' => 20,
+					],
+					400 => [
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				[
-					100 => [ 'test1' => 1, 'test2' => 10 ],
-					200 => [ 'test1' => 2, 'test2' => 20 ],
-					300 => [ 'test1' => 3, 'test2' => 30 ],
-					400 => [ 'test1' => 4, 'test2' => 40 ],
+					100 => [
+						'test1' => 1,
+						'test2' => 10,
+					],
+					200 => [
+						'test1' => 2,
+						'test2' => 20,
+					],
+					300 => [
+						'test1' => 3,
+						'test2' => 30,
+					],
+					400 => [
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				function ( $value ) {
-					return $value['test1'] % 2 === 0;
+					return 0 === $value['test1'] % 2;
 				},
 			],
 			[
 				[
-					400 => [ 'test1' => 4, 'test2' => 40 ],
+					400 => [
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				[
-					100 => [ 'test1' => 1, 'test2' => 10 ],
-					200 => [ 'test1' => 2, 'test2' => 20 ],
-					300 => [ 'test1' => 3, 'test2' => 30 ],
-					400 => [ 'test1' => 4, 'test2' => 40 ],
+					100 => [
+						'test1' => 1,
+						'test2' => 10,
+					],
+					200 => [
+						'test1' => 2,
+						'test2' => 20,
+					],
+					300 => [
+						'test1' => 3,
+						'test2' => 30,
+					],
+					400 => [
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				function ( $value, $key ) {
-					return $value['test1'] % 2 == 0 && $key > 200;
+					return 0 === $value['test1'] % 2 && 200 < $key;
 				},
 			],
 			[
-				[ 'test1' => $a['test1'], 'test3' => $a['test3'] ],
-				$a,
+				[
+					'test1' => $tmp['test1'],
+					'test3' => $tmp['test3'],
+				],
+				$tmp,
 				'map_filter',
 			],
 		];
 	}
 
 	/**
-	 * @dataProvider _test_pluck_unique_provider
+	 * @dataProvider provider_test_pluck_unique
 	 *
 	 * @param $expected
 	 * @param $array
 	 * @param $key
 	 */
 	public function test_pluck_unique( $expected, $array, $key ) {
-		$this->assertEquals( $expected, static::$_array->pluck_unique( $array, $key ) );
+		$this->assertEquals( $expected, static::$array->pluck_unique( $array, $key ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_pluck_unique_provider() {
+	public function provider_test_pluck_unique() {
 		return [
 			[
 				[ 1, 2, 3, 4 ],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
-					[ 'test1' => 3, 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
+					[
+						'test1' => 3,
+						'test2' => 30,
+					],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				'test1',
 			],
 			[
-				[ 0 => 1, 1 => 2, 3 => 4 ],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
-					[ 'test1' => 2, 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					0 => 1,
+					1 => 2,
+					3 => 4,
+				],
+				[
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
+					[
+						'test1' => 2,
+						'test2' => 30,
+					],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				'test1',
 			],
@@ -808,7 +1019,7 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_combine_provider
+	 * @dataProvider provider_test_combine
 	 *
 	 * @param $expected
 	 * @param $array
@@ -816,13 +1027,13 @@ class UtilityTest extends TestCase {
 	 * @param $value
 	 */
 	public function test_combine( $expected, $array, $key, $value ) {
-		$this->assertEquals( $expected, static::$_array->combine( $array, $key, $value ) );
+		$this->assertEquals( $expected, static::$array->combine( $array, $key, $value ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_combine_provider() {
+	public function provider_test_combine() {
 		return [
 			[
 				[
@@ -832,26 +1043,62 @@ class UtilityTest extends TestCase {
 					4 => 40,
 				],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
-					[ 'test1' => 3, 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
+					[
+						'test1' => 3,
+						'test2' => 30,
+					],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				'test1',
 				'test2',
 			],
 			[
 				[
-					1 => [ 'test1' => 1, 'test2' => 10 ],
-					2 => [ 'test1' => 2, 'test2' => 20 ],
-					3 => [ 'test1' => 3, 'test2' => 30 ],
-					4 => [ 'test1' => 4, 'test2' => 40 ],
+					1 => [
+						'test1' => 1,
+						'test2' => 10,
+					],
+					2 => [
+						'test1' => 2,
+						'test2' => 20,
+					],
+					3 => [
+						'test1' => 3,
+						'test2' => 30,
+					],
+					4 => [
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				[
-					[ 'test1' => 1, 'test2' => 10 ],
-					[ 'test1' => 2, 'test2' => 20 ],
-					[ 'test1' => 3, 'test2' => 30 ],
-					[ 'test1' => 4, 'test2' => 40 ],
+					[
+						'test1' => 1,
+						'test2' => 10,
+					],
+					[
+						'test1' => 2,
+						'test2' => 20,
+					],
+					[
+						'test1' => 3,
+						'test2' => 30,
+					],
+					[
+						'test1' => 4,
+						'test2' => 40,
+					],
 				],
 				'test1',
 				null,
@@ -876,21 +1123,21 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_replace_provider
+	 * @dataProvider provider_test_replace
 	 *
 	 * @param string $string
 	 * @param array $data
 	 * @param string $expected
 	 */
 	public function test_replace( $string, $data, $expected ) {
-		$this->assertEquals( $expected, static::$_utility->replace( $string, $data ) );
-		$this->assertEquals( $expected, static::$_string->replace( $string, $data ) );
+		$this->assertEquals( $expected, static::$utility->replace( $string, $data ) );
+		$this->assertEquals( $expected, static::$string->replace( $string, $data ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_replace_provider() {
+	public function provider_test_replace() {
 		return [
 			[
 				'test',
@@ -911,20 +1158,20 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_explode_provider
+	 * @dataProvider provider_test_explode
 	 *
 	 * @param string $string
 	 * @param string|array $delimiter
 	 * @param array $expected
 	 */
 	public function test_explode( $string, $delimiter, $expected ) {
-		$this->assertEquals( $expected, static::$_string->explode( $string, $delimiter ) );
+		$this->assertEquals( $expected, static::$string->explode( $string, $delimiter ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_explode_provider() {
+	public function provider_test_explode() {
 		return [
 			[
 				'test',
@@ -950,21 +1197,21 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_starts_with_provider
+	 * @dataProvider provider_test_starts_with
 	 *
 	 * @param $haystack
 	 * @param $needle
 	 * @param $expected
 	 */
 	public function test_starts_with( $haystack, $needle, $expected ) {
-		$this->assertEquals( $expected, static::$_utility->starts_with( $haystack, $needle ) );
-		$this->assertEquals( $expected, static::$_string->starts_with( $haystack, $needle ) );
+		$this->assertEquals( $expected, static::$utility->starts_with( $haystack, $needle ) );
+		$this->assertEquals( $expected, static::$string->starts_with( $haystack, $needle ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_starts_with_provider() {
+	public function provider_test_starts_with() {
 		return [
 			[
 				'abc',
@@ -1015,21 +1262,21 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_ends_with_provider
+	 * @dataProvider provider_test_ends_with
 	 *
 	 * @param $haystack
 	 * @param $needle
 	 * @param $expected
 	 */
 	public function test_ends_with( $haystack, $needle, $expected ) {
-		$this->assertEquals( $expected, static::$_utility->ends_with( $haystack, $needle ) );
-		$this->assertEquals( $expected, static::$_string->ends_with( $haystack, $needle ) );
+		$this->assertEquals( $expected, static::$utility->ends_with( $haystack, $needle ) );
+		$this->assertEquals( $expected, static::$string->ends_with( $haystack, $needle ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_ends_with_provider() {
+	public function provider_test_ends_with() {
 		return [
 			[
 				'abc',
@@ -1080,21 +1327,21 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_snake_provider
+	 * @dataProvider provider_test_snake
 	 *
 	 * @param $expected
 	 * @param $value
 	 * @param string $delimiter
 	 */
 	public function test_snake( $expected, $value, $delimiter = '_' ) {
-		$this->assertEquals( $expected, static::$_utility->snake( $value, $delimiter ) );
-		$this->assertEquals( $expected, static::$_string->snake( $value, $delimiter ) );
+		$this->assertEquals( $expected, static::$utility->snake( $value, $delimiter ) );
+		$this->assertEquals( $expected, static::$string->snake( $value, $delimiter ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_snake_provider() {
+	public function provider_test_snake() {
 		return [
 			[
 				'snake_case',
@@ -1109,20 +1356,20 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_camel_provider
+	 * @dataProvider provider_test_camel
 	 *
 	 * @param $value
 	 * @param $expected
 	 */
 	public function test_camel( $value, $expected ) {
-		$this->assertEquals( $expected, static::$_utility->camel( $value ) );
-		$this->assertEquals( $expected, static::$_string->camel( $value ) );
+		$this->assertEquals( $expected, static::$utility->camel( $value ) );
+		$this->assertEquals( $expected, static::$string->camel( $value ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_camel_provider() {
+	public function provider_test_camel() {
 		return [
 			[
 				'camel-test',
@@ -1136,20 +1383,20 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_studly_provider
+	 * @dataProvider provider_test_studly
 	 *
 	 * @param $value
 	 * @param $expected
 	 */
 	public function test_studly( $value, $expected ) {
-		$this->assertEquals( $expected, static::$_utility->studly( $value ) );
-		$this->assertEquals( $expected, static::$_string->studly( $value ) );
+		$this->assertEquals( $expected, static::$utility->studly( $value ) );
+		$this->assertEquals( $expected, static::$string->studly( $value ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_studly_provider() {
+	public function provider_test_studly() {
 		return [
 			[
 				'studly-test',
@@ -1165,12 +1412,12 @@ class UtilityTest extends TestCase {
 	public function test_lock_process() {
 		$test1 = 0;
 		$test2 = 0;
-		$this->assertTrue( static::$_utility->lock_process( static::$app, 'test_lock_process1', function () use ( &$test1, &$test2 ) {
+		$this->assertTrue( static::$utility->lock_process( static::$app, 'test_lock_process1', function () use ( &$test1, &$test2 ) {
 			$test1 = 1;
-			static::$_utility->lock_process( static::$app, 'test_lock_process2', function () use ( &$test2 ) {
+			static::$utility->lock_process( static::$app, 'test_lock_process2', function () use ( &$test2 ) {
 				$test2 = 2;
 			} );
-			static::$_utility->lock_process( static::$app, 'test_lock_process1', function () use ( &$test1 ) {
+			static::$utility->lock_process( static::$app, 'test_lock_process1', function () use ( &$test1 ) {
 				$test1 = 10;
 			} );
 		} ) );
@@ -1179,8 +1426,8 @@ class UtilityTest extends TestCase {
 	}
 
 	public function test_upload_file_not_exists() {
-		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
-		$this->assertFalse( static::$_file->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertFalse( static::$utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertFalse( static::$file->upload_file_exists( static::$app, 'test/file1.txt' ) );
 	}
 
 	/**
@@ -1188,106 +1435,115 @@ class UtilityTest extends TestCase {
 	 * @throws Exception
 	 */
 	public function test_create_upload_file() {
-		static::$_utility->create_upload_file( static::$app, 'test/file1.txt', 'file test' );
-		static::$_file->create_upload_file( static::$app, 'test/file10.txt', 'file test' );
+		static::$utility->create_upload_file( static::$app, 'test/file1.txt', 'file test' );
+		static::$file->create_upload_file( static::$app, 'test/file10.txt', 'file test' );
 	}
 
 	/**
 	 * @depends test_create_upload_file
 	 */
 	public function test_upload_file_exists() {
-		$this->assertTrue( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
-		$this->assertTrue( static::$_file->upload_file_exists( static::$app, 'test/file10.txt' ) );
+		$this->assertTrue( static::$utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertTrue( static::$file->upload_file_exists( static::$app, 'test/file10.txt' ) );
 	}
 
 	/**
 	 * @depends test_upload_file_exists
 	 */
 	public function test_delete_upload_file() {
-		$this->assertTrue( static::$_utility->delete_upload_file( static::$app, 'test/file1.txt' ) );
-		$this->assertTrue( static::$_file->delete_upload_file( static::$app, 'test/file10.txt' ) );
+		$this->assertTrue( static::$utility->delete_upload_file( static::$app, 'test/file1.txt' ) );
+		$this->assertTrue( static::$file->delete_upload_file( static::$app, 'test/file10.txt' ) );
 	}
 
 	/**
 	 * @depends test_delete_upload_file
 	 */
 	public function test_upload_file_not_exists2() {
-		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
-		$this->assertFalse( static::$_file->upload_file_exists( static::$app, 'test/file10.txt' ) );
+		$this->assertFalse( static::$utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertFalse( static::$file->upload_file_exists( static::$app, 'test/file10.txt' ) );
 	}
 
 	/**
 	 * @depends test_upload_file_not_exists2
 	 */
 	public function test_get_upload_file_contents() {
-		$this->assertFalse( static::$_utility->get_upload_file_contents( static::$app, 'test/file1.txt' ) );
-		$this->assertEquals( 'create test', static::$_utility->get_upload_file_contents( static::$app, 'test/file2.txt', function () {
+		$this->assertFalse( static::$utility->get_upload_file_contents( static::$app, 'test/file1.txt' ) );
+		$this->assertEquals( 'create test', static::$utility->get_upload_file_contents( static::$app, 'test/file2.txt', function () {
 			return 'create test';
 		} ) );
-		$this->assertEquals( 'create test', static::$_utility->get_upload_file_contents( static::$app, 'test/file2.txt' ) );
-		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
-		$this->assertTrue( static::$_utility->upload_file_exists( static::$app, 'test/file2.txt' ) );
+		$this->assertEquals( 'create test', static::$utility->get_upload_file_contents( static::$app, 'test/file2.txt' ) );
+		$this->assertFalse( static::$utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertTrue( static::$utility->upload_file_exists( static::$app, 'test/file2.txt' ) );
 
-		$this->assertFalse( static::$_file->get_upload_file_contents( static::$app, 'test/file10.txt' ) );
-		$this->assertEquals( 'create test', static::$_file->get_upload_file_contents( static::$app, 'test/file20.txt', function () {
+		$this->assertFalse( static::$file->get_upload_file_contents( static::$app, 'test/file10.txt' ) );
+		$this->assertEquals( 'create test', static::$file->get_upload_file_contents( static::$app, 'test/file20.txt', function () {
 			return 'create test';
 		} ) );
-		$this->assertEquals( 'create test', static::$_file->get_upload_file_contents( static::$app, 'test/file20.txt' ) );
-		$this->assertFalse( static::$_file->upload_file_exists( static::$app, 'test/file10.txt' ) );
-		$this->assertTrue( static::$_file->upload_file_exists( static::$app, 'test/file20.txt' ) );
+		$this->assertEquals( 'create test', static::$file->get_upload_file_contents( static::$app, 'test/file20.txt' ) );
+		$this->assertFalse( static::$file->upload_file_exists( static::$app, 'test/file10.txt' ) );
+		$this->assertTrue( static::$file->upload_file_exists( static::$app, 'test/file20.txt' ) );
 	}
 
 	/**
 	 * @depends test_get_upload_file_contents
 	 */
 	public function test_get_upload_file_url() {
-		$this->assertFalse( static::$_utility->get_upload_file_url( static::$app, 'test/file1.txt' ) );
-		$this->assertEquals( static::$app->define->upload_url . '/test/file3.txt', static::$_utility->get_upload_file_url( static::$app, 'test/file3.txt', function () {
+		$this->assertFalse( static::$utility->get_upload_file_url( static::$app, 'test/file1.txt' ) );
+		$this->assertEquals( static::$app->define->upload_url . '/test/file3.txt', static::$utility->get_upload_file_url( static::$app, 'test/file3.txt', function () {
 			return 'create test';
 		} ) );
-		$this->assertEquals( static::$app->define->upload_url . '/test/file3.txt', static::$_utility->get_upload_file_url( static::$app, 'test/file3.txt' ) );
-		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
-		$this->assertTrue( static::$_utility->upload_file_exists( static::$app, 'test/file3.txt' ) );
+		$this->assertEquals( static::$app->define->upload_url . '/test/file3.txt', static::$utility->get_upload_file_url( static::$app, 'test/file3.txt' ) );
+		$this->assertFalse( static::$utility->upload_file_exists( static::$app, 'test/file1.txt' ) );
+		$this->assertTrue( static::$utility->upload_file_exists( static::$app, 'test/file3.txt' ) );
 
-		$this->assertFalse( static::$_file->get_upload_file_url( static::$app, 'test/file10.txt' ) );
-		$this->assertEquals( static::$app->define->upload_url . '/test/file30.txt', static::$_file->get_upload_file_url( static::$app, 'test/file30.txt', function () {
+		$this->assertFalse( static::$file->get_upload_file_url( static::$app, 'test/file10.txt' ) );
+		$this->assertEquals( static::$app->define->upload_url . '/test/file30.txt', static::$file->get_upload_file_url( static::$app, 'test/file30.txt', function () {
 			return 'create test';
 		} ) );
-		$this->assertEquals( static::$app->define->upload_url . '/test/file30.txt', static::$_file->get_upload_file_url( static::$app, 'test/file30.txt' ) );
-		$this->assertFalse( static::$_file->upload_file_exists( static::$app, 'test/file10.txt' ) );
-		$this->assertTrue( static::$_file->upload_file_exists( static::$app, 'test/file30.txt' ) );
+		$this->assertEquals( static::$app->define->upload_url . '/test/file30.txt', static::$file->get_upload_file_url( static::$app, 'test/file30.txt' ) );
+		$this->assertFalse( static::$file->upload_file_exists( static::$app, 'test/file10.txt' ) );
+		$this->assertTrue( static::$file->upload_file_exists( static::$app, 'test/file30.txt' ) );
 	}
 
 	/**
 	 * @depends test_get_upload_file_url
 	 */
 	public function test_delete_upload_dir() {
-		$this->assertTrue( static::$_utility->delete_upload_dir( static::$app ) );
-		$this->assertFalse( static::$_utility->upload_file_exists( static::$app, '' ) );
+		$this->assertTrue( static::$utility->delete_upload_dir( static::$app ) );
+		$this->assertFalse( static::$utility->upload_file_exists( static::$app, '' ) );
 	}
 
 	/**
-	 * @dataProvider _test_sum_provider
+	 * @dataProvider provider_test_sum
 	 *
 	 * @param $expected
 	 * @param $array
 	 * @param $callback
 	 */
 	public function test_sum( $expected, $array, $callback ) {
-		$this->assertEquals( $expected, static::$_array->sum( $array, $callback ) );
+		$this->assertEquals( $expected, static::$array->sum( $array, $callback ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_sum_provider() {
+	public function provider_test_sum() {
 		return [
 			[
 				6,
 				[
-					[ 'a' => 1, 'b' => 0 ],
-					[ 'a' => 2, 'b' => 1 ],
-					[ 'a' => 3, 'b' => 2 ],
+					[
+						'a' => 1,
+						'b' => 0,
+					],
+					[
+						'a' => 2,
+						'b' => 1,
+					],
+					[
+						'a' => 3,
+						'b' => 2,
+					],
 				],
 				function ( $item ) {
 					return $item['a'];
@@ -1296,9 +1552,18 @@ class UtilityTest extends TestCase {
 			[
 				3,
 				[
-					[ 'a' => 1, 'b' => 0 ],
-					[ 'a' => 2, 'b' => 1 ],
-					[ 'a' => 3, 'b' => 2 ],
+					[
+						'a' => 1,
+						'b' => 0,
+					],
+					[
+						'a' => 2,
+						'b' => 1,
+					],
+					[
+						'a' => 3,
+						'b' => 2,
+					],
 				],
 				function ( $item ) {
 					return $item['b'];
@@ -1308,27 +1573,36 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_mul_provider
+	 * @dataProvider provider_test_mul
 	 *
 	 * @param $expected
 	 * @param $array
 	 * @param $callback
 	 */
 	public function test_mul( $expected, $array, $callback ) {
-		$this->assertEquals( $expected, static::$_array->mul( $array, $callback ) );
+		$this->assertEquals( $expected, static::$array->mul( $array, $callback ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_mul_provider() {
+	public function provider_test_mul() {
 		return [
 			[
 				6,
 				[
-					[ 'a' => 1, 'b' => 0 ],
-					[ 'a' => 2, 'b' => 1 ],
-					[ 'a' => 3, 'b' => 2 ],
+					[
+						'a' => 1,
+						'b' => 0,
+					],
+					[
+						'a' => 2,
+						'b' => 1,
+					],
+					[
+						'a' => 3,
+						'b' => 2,
+					],
 				],
 				function ( $item ) {
 					return $item['a'];
@@ -1337,9 +1611,18 @@ class UtilityTest extends TestCase {
 			[
 				0,
 				[
-					[ 'a' => 1, 'b' => 0 ],
-					[ 'a' => 2, 'b' => 1 ],
-					[ 'a' => 3, 'b' => 2 ],
+					[
+						'a' => 1,
+						'b' => 0,
+					],
+					[
+						'a' => 2,
+						'b' => 1,
+					],
+					[
+						'a' => 3,
+						'b' => 2,
+					],
 				],
 				function ( $item ) {
 					return $item['b'];
@@ -1349,27 +1632,36 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_max_provider
+	 * @dataProvider provider_test_max
 	 *
 	 * @param $expected
 	 * @param $array
 	 * @param $callback
 	 */
 	public function test_max( $expected, $array, $callback ) {
-		$this->assertEquals( $expected, static::$_array->max( $array, $callback ) );
+		$this->assertEquals( $expected, static::$array->max( $array, $callback ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_max_provider() {
+	public function provider_test_max() {
 		return [
 			[
 				10,
 				[
-					[ 'a' => 10, 'b' => 0 ],
-					[ 'a' => 2, 'b' => 1 ],
-					[ 'a' => 3, 'b' => 2 ],
+					[
+						'a' => 10,
+						'b' => 0,
+					],
+					[
+						'a' => 2,
+						'b' => 1,
+					],
+					[
+						'a' => 3,
+						'b' => 2,
+					],
 				],
 				function ( $item ) {
 					return $item['a'];
@@ -1378,9 +1670,18 @@ class UtilityTest extends TestCase {
 			[
 				21,
 				[
-					[ 'a' => 1, 'b' => 20 ],
-					[ 'a' => 2, 'b' => 21 ],
-					[ 'a' => 3, 'b' => 12 ],
+					[
+						'a' => 1,
+						'b' => 20,
+					],
+					[
+						'a' => 2,
+						'b' => 21,
+					],
+					[
+						'a' => 3,
+						'b' => 12,
+					],
 				],
 				function ( $item ) {
 					return $item['b'];
@@ -1390,27 +1691,36 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_min_provider
+	 * @dataProvider provider_test_min
 	 *
 	 * @param $expected
 	 * @param $array
 	 * @param $callback
 	 */
 	public function test_min( $expected, $array, $callback ) {
-		$this->assertEquals( $expected, static::$_array->min( $array, $callback ) );
+		$this->assertEquals( $expected, static::$array->min( $array, $callback ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_min_provider() {
+	public function provider_test_min() {
 		return [
 			[
 				2,
 				[
-					[ 'a' => 10, 'b' => 0 ],
-					[ 'a' => 2, 'b' => 1 ],
-					[ 'a' => 3, 'b' => 2 ],
+					[
+						'a' => 10,
+						'b' => 0,
+					],
+					[
+						'a' => 2,
+						'b' => 1,
+					],
+					[
+						'a' => 3,
+						'b' => 2,
+					],
 				],
 				function ( $item ) {
 					return $item['a'];
@@ -1419,9 +1729,18 @@ class UtilityTest extends TestCase {
 			[
 				12,
 				[
-					[ 'a' => 1, 'b' => 20 ],
-					[ 'a' => 2, 'b' => 21 ],
-					[ 'a' => 3, 'b' => 12 ],
+					[
+						'a' => 1,
+						'b' => 20,
+					],
+					[
+						'a' => 2,
+						'b' => 21,
+					],
+					[
+						'a' => 3,
+						'b' => 12,
+					],
 				],
 				function ( $item ) {
 					return $item['b'];
@@ -1431,27 +1750,36 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
-	 * @dataProvider _test_ave_provider
+	 * @dataProvider provider_test_ave
 	 *
 	 * @param $expected
 	 * @param $array
 	 * @param $callback
 	 */
 	public function test_ave( $expected, $array, $callback ) {
-		$this->assertEquals( $expected, static::$_array->ave( $array, $callback ) );
+		$this->assertEquals( $expected, static::$array->ave( $array, $callback ) );
 	}
 
 	/**
 	 * @return array
 	 */
-	public function _test_ave_provider() {
+	public function provider_test_ave() {
 		return [
 			[
 				2,
 				[
-					[ 'a' => 1, 'b' => 0 ],
-					[ 'a' => 2, 'b' => 1 ],
-					[ 'a' => 3, 'b' => 2 ],
+					[
+						'a' => 1,
+						'b' => 0,
+					],
+					[
+						'a' => 2,
+						'b' => 1,
+					],
+					[
+						'a' => 3,
+						'b' => 2,
+					],
 				],
 				function ( $item ) {
 					return $item['a'];
@@ -1460,9 +1788,18 @@ class UtilityTest extends TestCase {
 			[
 				1,
 				[
-					[ 'a' => 1, 'b' => 0 ],
-					[ 'a' => 2, 'b' => 1 ],
-					[ 'a' => 3, 'b' => 2 ],
+					[
+						'a' => 1,
+						'b' => 0,
+					],
+					[
+						'a' => 2,
+						'b' => 1,
+					],
+					[
+						'a' => 3,
+						'b' => 2,
+					],
 				],
 				function ( $item ) {
 					return $item['b'];

@@ -27,42 +27,44 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	use Singleton, Hook, \WP_Framework_Common\Traits\Uninstall, Package;
 
 	/**
-	 * @var array $_options
+	 * @var array $options
 	 */
-	private $_options;
+	private $options;
 
 	/**
-	 * @var array $_site_options
+	 * @var array $site_options
 	 */
-	private $_site_options;
+	private $site_options;
 
 	/**
-	 * @var array $_option_name_cache
+	 * @var array $option_name_cache
 	 */
-	private $_option_name_cache = [];
+	private $option_name_cache = [];
 
 	/**
-	 * @var array $_site_option_name_cache
+	 * @var array $site_option_name_cache
 	 */
-	private $_site_option_name_cache = [];
+	private $site_option_name_cache = [];
 
 	/**
-	 * @var int $_blog_id
+	 * @var int $blog_id
 	 */
-	private $_blog_id;
+	private $blog_id;
 
 	/**
 	 * app deactivated
+	 * @noinspection PhpUnusedPrivateMethodInspection
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
 	 */
-	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function app_deactivated() {
 		$this->delete( '__app_activated' );
 	}
 
 	/**
 	 * app activated
+	 * @noinspection PhpUnusedPrivateMethodInspection
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
 	 */
-	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function app_activated() {
 		$this->set( '__app_activated', true );
 	}
@@ -76,14 +78,16 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 
 	/**
 	 * @param int $new_blog
+	 *
+	 * @noinspection PhpUnusedPrivateMethodInspection
+	 * @SuppressWarnings(PHPMD.UnusedPrivateMethod)
 	 */
-	/** @noinspection PhpUnusedPrivateMethodInspection */
 	private function switch_blog( $new_blog ) {
-		if ( $new_blog === $this->_blog_id ) {
+		if ( $new_blog === $this->blog_id ) {
 			return;
 		}
 
-		$this->_options = [];
+		$this->options = [];
 	}
 
 	/**
@@ -97,17 +101,21 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 			return $this->get_site_options( $group );
 		}
 
-		! isset( $this->_options ) and $this->_options = [];
-		! isset( $group ) and $group = 'default';
-
-		if ( ! isset( $this->_options[ $group ] ) ) {
-			$this->_options[ $group ] = wp_parse_args(
-				$this->get_option( $group ), []
-			);
-			$this->_options[ $group ] = $this->unescape( $this->_options[ $group ] );
+		if ( ! isset( $this->options ) ) {
+			$this->options = [];
+		}
+		if ( ! isset( $group ) ) {
+			$group = 'default';
 		}
 
-		return $this->_options[ $group ];
+		if ( ! isset( $this->options[ $group ] ) ) {
+			$this->options[ $group ] = wp_parse_args(
+				$this->get_option( $group ), []
+			);
+			$this->options[ $group ] = $this->unescape( $this->options[ $group ] );
+		}
+
+		return $this->options[ $group ];
 	}
 
 	/**
@@ -116,17 +124,21 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return array
 	 */
 	private function get_site_options( $group ) {
-		! isset( $this->_site_options ) and $this->_site_options = [];
-		! isset( $group ) and $group = 'default';
-
-		if ( ! isset( $this->_site_options[ $group ] ) ) {
-			$this->_site_options[ $group ] = wp_parse_args(
-				$this->get_site_option( $group ), []
-			);
-			$this->_site_options[ $group ] = $this->unescape( $this->_site_options[ $group ] );
+		if ( ! isset( $this->site_options ) ) {
+			$this->site_options = [];
+		}
+		if ( ! isset( $group ) ) {
+			$group = 'default';
 		}
 
-		return $this->_site_options[ $group ];
+		if ( ! isset( $this->site_options[ $group ] ) ) {
+			$this->site_options[ $group ] = wp_parse_args(
+				$this->get_site_option( $group ), []
+			);
+			$this->site_options[ $group ] = $this->unescape( $this->site_options[ $group ] );
+		}
+
+		return $this->site_options[ $group ];
 	}
 
 	/**
@@ -146,14 +158,16 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @param bool $common
 	 */
 	public function flush( $group = null, $common = false ) {
-		! isset( $group ) and $group = 'default';
+		if ( ! isset( $group ) ) {
+			$group = 'default';
+		}
 		if ( $common && is_multisite() ) {
-			if ( isset( $this->_site_options[ $group ] ) ) {
-				unset( $this->_site_options[ $group ] );
+			if ( isset( $this->site_options[ $group ] ) ) {
+				unset( $this->site_options[ $group ] );
 			}
 		} else {
-			if ( isset( $this->_options[ $group ] ) ) {
-				unset( $this->_options[ $group ] );
+			if ( isset( $this->options[ $group ] ) ) {
+				unset( $this->options[ $group ] );
 			}
 		}
 	}
@@ -197,16 +211,18 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return string
 	 */
 	public function get_option_name( $group = null ) {
-		! isset( $group ) and $group = 'default';
-		if ( ! isset( $this->_option_name_cache[ $group ] ) ) {
+		if ( ! isset( $group ) ) {
+			$group = 'default';
+		}
+		if ( ! isset( $this->option_name_cache[ $group ] ) ) {
 			if ( 'default' === $group ) {
-				$this->_option_name_cache[ $group ] = $this->apply_filters( 'get_option_name', $this->get_slug( 'option_name', '_options' ) );
+				$this->option_name_cache[ $group ] = $this->apply_filters( 'get_option_name', $this->get_slug( 'option_name', '_options' ) );
 			} else {
-				$this->_option_name_cache[ $group ] = $this->apply_filters( 'get_group_option_name', $this->get_group_option_name_prefix() . $group, $group );
+				$this->option_name_cache[ $group ] = $this->apply_filters( 'get_group_option_name', $this->get_group_option_name_prefix() . $group, $group );
 			}
 		}
 
-		return $this->_option_name_cache[ $group ];
+		return $this->option_name_cache[ $group ];
 	}
 
 	/**
@@ -222,16 +238,18 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 * @return string
 	 */
 	public function get_site_option_name( $group = null ) {
-		! isset( $group ) and $group = 'default';
-		if ( ! isset( $this->_site_option_name_cache[ $group ] ) ) {
+		if ( ! isset( $group ) ) {
+			$group = 'default';
+		}
+		if ( ! isset( $this->site_option_name_cache[ $group ] ) ) {
 			if ( 'default' === $group ) {
-				$this->_site_option_name_cache[ $group ] = $this->apply_filters( 'get_site_option_name', $this->get_slug( 'site_option_name', '_options' ) );
+				$this->site_option_name_cache[ $group ] = $this->apply_filters( 'get_site_option_name', $this->get_slug( 'site_option_name', '_options' ) );
 			} else {
-				$this->_site_option_name_cache[ $group ] = $this->apply_filters( 'get_group_site_option_name', $this->get_group_site_option_name_prefix() . $group, $group );
+				$this->site_option_name_cache[ $group ] = $this->apply_filters( 'get_group_site_option_name', $this->get_group_site_option_name_prefix() . $group, $group );
 			}
 		}
 
-		return $this->_site_option_name_cache[ $group ];
+		return $this->site_option_name_cache[ $group ];
 	}
 
 	/**
@@ -409,19 +427,31 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	}
 
 	/**
+	 * @param string $prefix
+	 *
+	 * @return string
+	 */
+	private function escape_prefix( $prefix ) {
+		return str_replace( [ '\\', '%', '_' ], [ '\\\\', '\%', '\_' ], $prefix ) . '%';
+	}
+
+	/**
 	 * @param null|string $group_prefix
 	 *
 	 * @return array
 	 */
 	private function get_group_options( $group_prefix = null ) {
 		$prefix = $this->get_group_option_name_prefix();
-		isset( $group_prefix ) and $prefix .= $group_prefix;
+		if ( isset( $group_prefix ) ) {
+			$prefix .= $group_prefix;
+		}
 
-		/** @noinspection SqlResolve */
+		// @codingStandardsIgnoreStart
 		return $this->app->array->pluck_unique( $this->wpdb()->get_results( $this->wpdb()->prepare(
 			"SELECT option_name FROM {$this->get_wp_table('options')} WHERE option_name LIKE %s",
-			str_replace( [ '\\', '%', '_' ], [ '\\\\', '\%', '\_' ], $prefix ) . '%'
+			$this->escape_prefix( $prefix )
 		) ), 'option_name' );
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
@@ -431,13 +461,16 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 */
 	private function get_group_site_options( $group_prefix = null ) {
 		$prefix = $this->get_group_site_option_name_prefix();
-		isset( $group_prefix ) and $prefix .= $group_prefix;
+		if ( isset( $group_prefix ) ) {
+			$prefix .= $group_prefix;
+		}
 
-		/** @noinspection SqlResolve */
+		// @codingStandardsIgnoreStart
 		return $this->app->array->pluck_unique( $this->wpdb()->get_results( $this->wpdb()->prepare(
-			"SELECT meta_key FROM {$this->get_wp_table('sitemeta')} WHERE meta_key LIKE %s",
-			str_replace( [ '\\', '%', '_' ], [ '\\\\', '\%', '\_' ], $prefix ) . '%'
+			"SELECT meta_key FROM {$this->get_wp_table( 'sitemeta' )} WHERE meta_key LIKE %s",
+			$this->escape_prefix( $prefix )
 		) ), 'meta_key' );
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**

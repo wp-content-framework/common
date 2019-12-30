@@ -39,15 +39,8 @@ class Deprecated implements Singleton {
 		$class = trim( $class, '\\' );
 		$map   = $this->app->get_config( 'deprecated' );
 		if ( ! empty( $map ) && is_array( $map ) ) {
-			$_class = $this->app->array->search( $map, $class, '\\' . $class, null );
-			if ( ! $_class ) {
-				foreach ( $map as $k => $v ) {
-					if ( class_exists( $k ) && is_subclass_of( $class, $k ) ) {
-						$_class = $v;
-						break;
-					}
-				}
-			}
+			$_class = $this->find_class( $class, $map );
+
 			if ( $_class && $class !== $_class && class_exists( $_class ) && is_subclass_of( $_class, '\WP_Framework_Core\Interfaces\Singleton' ) ) {
 				/** @var Singleton $_class */
 				$_instance = $_class::get_instance( $this->app );
@@ -68,6 +61,36 @@ class Deprecated implements Singleton {
 			}
 		}
 
+		$this->not_found( $class, $name );
+
+		return null;
+	}
+
+	/**
+	 * @param string $class
+	 * @param array $map
+	 *
+	 * @return mixed
+	 */
+	private function find_class( $class, array $map ) {
+		$_class = $this->app->array->search( $map, $class, '\\' . $class, null );
+		if ( ! $_class ) {
+			foreach ( $map as $k => $v ) {
+				if ( class_exists( $k ) && is_subclass_of( $class, $k ) ) {
+					$_class = $v;
+					break;
+				}
+			}
+		}
+
+		return $_class;
+	}
+
+	/**
+	 * @param string $class
+	 * @param string $name
+	 */
+	private function not_found( $class, $name ) {
 		$messages = [
 			'致命的なバグが発生しました。',
 			'お手数ですがエラーを報告いただけると助かります。',
@@ -78,12 +101,15 @@ class Deprecated implements Singleton {
 				$messages[] = '<a href="' . esc_url( 'https://github.com/' . $github_repo . '/issues' ) . '" target="_blank">GitHub</a>';
 			}
 		} catch ( Exception $e ) {
+			// @codingStandardsIgnoreStart
+			error_log( $e->getMessage() );
+			// @codingStandardsIgnoreEnd
 		}
 		$messages[] = sprintf( '<pre>you cannot access %s->%s</pre>', $class, $name );
+		// @codingStandardsIgnoreStart
 		$messages[] = '<pre>' . print_r( $this->app->utility->get_debug_backtrace(), true ) . '</pre>';
 		WP_Framework::wp_die( $messages, __FILE__, __LINE__ );
-
-		return null;
+		// @codingStandardsIgnoreEnd
 	}
 
 	/**
@@ -93,7 +119,7 @@ class Deprecated implements Singleton {
 	 * @return mixed
 	 */
 	public function __call( $name, array $args ) {
-		WP_Framework::wp_die( sprintf( 'you cannot access %s', $name ), __FILE__, __LINE__ );
+		WP_Framework::wp_die( sprintf( 'you cannot access %s', esc_html( $name ) ), __FILE__, __LINE__ );
 
 		return null;
 	}

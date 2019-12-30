@@ -26,24 +26,24 @@ class String_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	use Singleton, Package;
 
 	/**
-	 * @var string[] $_replace_time
+	 * @var string[] $replace_time_cache
 	 */
-	private $_replace_time;
+	private $replace_time_cache;
 
 	/**
-	 * @var string[][] $_snake_cache
+	 * @var string[][] $snake_cache
 	 */
-	private $_snake_cache = [];
+	private $snake_cache = [];
 
 	/**
-	 * @var string[] $_camel_cache
+	 * @var string[] $camel_cache
 	 */
-	private $_camel_cache = [];
+	private $camel_cache = [];
 
 	/**
-	 * @var string[] $_studly_cache
+	 * @var string[] $studly_cache
 	 */
-	private $_studly_cache = [];
+	private $studly_cache = [];
 
 	/**
 	 * @return bool
@@ -72,8 +72,8 @@ class String_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return string
 	 */
 	public function replace_time( $string ) {
-		if ( ! isset( $this->_replace_time ) ) {
-			$this->_replace_time = [];
+		if ( ! isset( $this->replace_time_cache ) ) {
+			$this->replace_time_cache = [];
 			foreach (
 				[
 					'Y',
@@ -90,11 +90,11 @@ class String_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 					's',
 				] as $t
 			) {
-				$this->_replace_time[ $t ] = date_i18n( $t );
+				$this->replace_time_cache[ $t ] = date_i18n( $t );
 			}
 		}
 
-		return $this->replace( $string, $this->_replace_time );
+		return $this->replace( $string, $this->replace_time_cache );
 	}
 
 	/**
@@ -172,7 +172,7 @@ class String_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function contains( $haystack, $needles ) {
 		foreach ( (array) $needles as $needle ) {
-			if ( $needle !== '' && mb_strpos( $haystack, $needle ) !== false ) {
+			if ( '' !== $needle && mb_strpos( $haystack, $needle ) !== false ) {
 				return true;
 			}
 		}
@@ -195,11 +195,11 @@ class String_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return string
 	 */
 	public function camel( $value ) {
-		if ( ! isset( $this->_camel_cache[ $value ] ) ) {
-			$this->_camel_cache[ $value ] = lcfirst( $this->studly( $value ) );
+		if ( ! isset( $this->camel_cache[ $value ] ) ) {
+			$this->camel_cache[ $value ] = lcfirst( $this->studly( $value ) );
 		}
 
-		return $this->_camel_cache[ $value ];
+		return $this->camel_cache[ $value ];
 	}
 
 	/**
@@ -208,12 +208,12 @@ class String_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return string
 	 */
 	public function studly( $value ) {
-		if ( ! isset( $this->_studly_cache[ $value ] ) ) {
-			$_value                        = ucwords( str_replace( [ '-', '_' ], ' ', $value ) );
-			$this->_studly_cache[ $value ] = str_replace( ' ', '', $_value );
+		if ( ! isset( $this->studly_cache[ $value ] ) ) {
+			$_value                       = ucwords( str_replace( [ '-', '_' ], ' ', $value ) );
+			$this->studly_cache[ $value ] = str_replace( ' ', '', $_value );
 		}
 
-		return $this->_studly_cache[ $value ];
+		return $this->studly_cache[ $value ];
 	}
 
 	/**
@@ -223,16 +223,16 @@ class String_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return string
 	 */
 	public function snake( $value, $delimiter = '_' ) {
-		if ( ! isset( $this->_snake_cache[ $value ][ $delimiter ] ) ) {
+		if ( ! isset( $this->snake_cache[ $value ][ $delimiter ] ) ) {
 			$_value = $value;
 			if ( ! ctype_lower( $_value ) ) {
 				$_value = preg_replace( '/\s+/u', '', ucwords( $_value ) );
 				$_value = $this->lower( preg_replace( '/(.)(?=[A-Z])/u', '$1' . $delimiter, $_value ) );
 			}
-			$this->_snake_cache[ $value ][ $delimiter ] = $_value;
+			$this->snake_cache[ $value ][ $delimiter ] = $_value;
 		}
 
-		return $this->_snake_cache[ $value ][ $delimiter ];
+		return $this->snake_cache[ $value ][ $delimiter ];
 	}
 
 	/**
@@ -252,7 +252,11 @@ class String_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function strip_tags( $message, $override_allowed_html = null ) {
 		$allowed_html = [
-			'a'      => [ 'href' => true, 'target' => true, 'rel' => true ],
+			'a'      => [
+				'href'   => true,
+				'target' => true,
+				'rel'    => true,
+			],
 			'b'      => [],
 			'br'     => [],
 			'sub'    => [],
