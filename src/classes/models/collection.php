@@ -12,6 +12,7 @@ namespace WP_Framework_Common\Classes\Models;
 
 use ArrayAccess;
 use ArrayIterator;
+use Countable;
 use IteratorAggregate;
 use Traversable;
 use WP_Framework;
@@ -26,7 +27,7 @@ if ( ! defined( 'WP_CONTENT_FRAMEWORK' ) ) {
  * @SuppressWarnings(PHPMD.TooManyMethods)
  * @SuppressWarnings(PHPMD.TooManyPublicMethods)
  */
-class Collection implements ArrayAccess, IteratorAggregate {
+class Collection implements ArrayAccess, Countable, IteratorAggregate {
 
 	/**
 	 * @var WP_Framework $app
