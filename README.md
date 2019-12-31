@@ -41,6 +41,5 @@
 |use_filesystem_credentials|ファイルシステム認証を使用するかどうかを設定 \[default = false]<br>KUSANAGI等のファイルシステム認証が必要な環境で有効にすると正しく動作するようになる場合があります|
 
 # Author
-
-[GitHub (Technote)](https://github.com/technote-space)
-[Blog](https://technote.space)
+- [GitHub (Technote)](https://github.com/technote-space)
+- [Blog](https://technote.space)
