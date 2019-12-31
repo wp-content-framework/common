@@ -102,19 +102,19 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param array|object $array
-	 * @param string|array $key
+	 * @param string|int|array $key
 	 *
 	 * @return bool
 	 */
 	public function exists( $array, $key ) {
 		$array = $this->to_array( $array );
 
-		if ( is_string( $key ) ) {
+		if ( is_string( $key ) || is_int( $key ) ) {
 			if ( array_key_exists( $key, $array ) ) {
 				return true;
 			}
 
-			if ( strpos( $key, '.' ) === false ) {
+			if ( is_int( $key ) || strpos( $key, '.' ) === false ) {
 				return false;
 			}
 			$keys = explode( '.', $key );
@@ -136,7 +136,18 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param array|object $array
-	 * @param string|array|null $key
+	 * @param mixed $value
+	 * @param bool $strict
+	 *
+	 * @return mixed
+	 */
+	public function search_key( $array, $value, $strict = false ) {
+		return array_search( $value, $this->to_array( $array ), $strict ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+	}
+
+	/**
+	 * @param array|object $array
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -148,12 +159,12 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 			return $array;
 		}
 
-		if ( is_string( $key ) ) {
+		if ( is_string( $key ) || is_int( $key ) ) {
 			if ( array_key_exists( $key, $array ) ) {
 				return $array[ $key ];
 			}
 
-			if ( strpos( $key, '.' ) === false ) {
+			if ( is_int( $key ) || strpos( $key, '.' ) === false ) {
 				return $this->app->utility->value( $default );
 			}
 			$keys = explode( '.', $key );
@@ -322,12 +333,40 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param array|object $array
+	 * @param string|callable $callback
+	 * @param mixed $default
+	 *
+	 * @return mixed
+	 */
+	public function first( $array, $callback = null, $default = null ) {
+		$array = $this->to_array( $array );
+
+		if ( is_null( $callback ) ) {
+			if ( empty( $array ) ) {
+				return $this->app->utility->value( $default );
+			}
+			foreach ( $array as $value ) {
+				return $value;
+			}
+		}
+
+		foreach ( $array as $key => $value ) {
+			if ( $this->is_closure( $callback ) ? $this->call_closure( $callback, $value, $key ) : ( is_string( $callback ) && method_exists( $value, $callback ) ? $value->$callback( $key ) : false ) ) {
+				return $value;
+			}
+		}
+
+		return $this->app->utility->value( $default );
+	}
+
+	/**
+	 * @param array|object $array
 	 * @param string $key
 	 *
 	 * @return array
 	 */
 	public function pluck_unique( $array, $key ) {
-		return array_unique( $this->pluck( $array, $key, null, true ) );
+		return array_values( array_unique( $this->pluck( $array, $key, null, true ) ) );
 	}
 
 	/**
@@ -341,7 +380,7 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		$array = $this->to_array( $array );
 		if ( isset( $key ) ) {
 			$keys   = $this->pluck( $array, $key );
-			$values = empty( $value ) ? $array : $this->pluck( $array, $value );
+			$values = is_null( $value ) ? $array : $this->pluck( $array, $value );
 		} else {
 			$keys   = array_unique( $array );
 			$values = $keys;
@@ -422,6 +461,11 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 * @return float
 	 */
 	public function ave( $array, $extractor ) {
+		$array = $this->to_array( $array );
+		if ( empty( $array ) ) {
+			return 0;
+		}
+
 		return (float) $this->sum( $array, $extractor ) / count( $array );
 	}
 }

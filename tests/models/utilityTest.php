@@ -311,6 +311,56 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
+	 * @dataProvider provider_test_array_search_key
+	 *
+	 * @param mixed $expected
+	 * @param array $array
+	 * @param mixed $value
+	 * @param bool $strict
+	 */
+	public function test_array_search_key( $expected, $array, $value, $strict ) {
+		$this->assertEquals( $expected, static::$array->search_key( $array, $value, $strict ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function provider_test_array_search_key() {
+		return [
+			[
+				false,
+				[],
+				'test1',
+				false,
+			],
+			[
+				false,
+				[],
+				'test2',
+				true,
+			],
+			[
+				'test3',
+				[ 'test3' => 3 ],
+				3,
+				true,
+			],
+			[
+				false,
+				[ 4 => '4' ],
+				4,
+				true,
+			],
+			[
+				4,
+				[ 4 => '4' ],
+				4,
+				false,
+			],
+		];
+	}
+
+	/**
 	 * @dataProvider provider_test_array_get
 	 *
 	 * @param array $array
@@ -952,6 +1002,56 @@ class UtilityTest extends TestCase {
 	}
 
 	/**
+	 * @dataProvider provider_test_first
+	 *
+	 * @param $expected
+	 * @param $array
+	 * @param $callback
+	 * @param $default
+	 */
+	public function test_first( $expected, $array, $callback, $default ) {
+		$this->assertEquals( $expected, static::$array->first( $array, $callback, $default ) );
+	}
+
+	/**
+	 * @return array
+	 */
+	public function provider_test_first() {
+		return [
+			[
+				null,
+				[],
+				function () {
+					return false;
+				},
+				null,
+			],
+			[
+				null,
+				[ 1, 2, 3, 4 ],
+				function () {
+					return false;
+				},
+				null,
+			],
+			[
+				2,
+				[ 1, 2, 3, 4 ],
+				function ( $value ) {
+					return 0 === $value % 2;
+				},
+				null,
+			],
+			[
+				1,
+				[ 1, 2, 3, 4 ],
+				null,
+				null,
+			],
+		];
+	}
+
+	/**
 	 * @dataProvider provider_test_pluck_unique
 	 *
 	 * @param $expected
@@ -993,7 +1093,7 @@ class UtilityTest extends TestCase {
 				[
 					0 => 1,
 					1 => 2,
-					3 => 4,
+					2 => 4,
 				],
 				[
 					[
