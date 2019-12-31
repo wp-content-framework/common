@@ -109,7 +109,7 @@ class File_Utility implements \WP_Framework_Core\Interfaces\Singleton, \WP_Frame
 			return $this->fs()->$name( ...$args );
 		}
 
-		WP_Framework::wp_die( sprintf( 'you cannot access file->%s', esc_html( $name ) ), __FILE__, __LINE__ );
+		WP_Framework::kill( sprintf( 'you cannot access file->%s', esc_html( $name ) ), __FILE__, __LINE__ );
 
 		return null;
 	}

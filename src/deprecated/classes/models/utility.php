@@ -90,7 +90,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 				return $this->app->editor->{$name}( ...$args );
 		}
 
-		WP_Framework::wp_die( sprintf( 'you cannot access utility->%s', esc_html( $name ) ), __FILE__, __LINE__ );
+		WP_Framework::kill( sprintf( 'you cannot access utility->%s', esc_html( $name ) ), __FILE__, __LINE__ );
 
 		return null;
 	}

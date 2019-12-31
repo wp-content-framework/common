@@ -108,7 +108,7 @@ class Deprecated implements Singleton {
 		$messages[] = sprintf( '<pre>you cannot access %s->%s</pre>', $class, $name );
 		// @codingStandardsIgnoreStart
 		$messages[] = '<pre>' . print_r( $this->app->utility->get_debug_backtrace(), true ) . '</pre>';
-		WP_Framework::wp_die( $messages, __FILE__, __LINE__ );
+		WP_Framework::kill( $messages, __FILE__, __LINE__ );
 		// @codingStandardsIgnoreEnd
 	}
 
@@ -119,7 +119,7 @@ class Deprecated implements Singleton {
 	 * @return mixed
 	 */
 	public function __call( $name, array $args ) {
-		WP_Framework::wp_die( sprintf( 'you cannot access %s', esc_html( $name ) ), __FILE__, __LINE__ );
+		WP_Framework::kill( sprintf( 'you cannot access %s', esc_html( $name ) ), __FILE__, __LINE__ );
 
 		return null;
 	}
