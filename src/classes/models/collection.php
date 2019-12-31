@@ -234,11 +234,21 @@ class Collection implements ArrayAccess, IteratorAggregate {
 	}
 
 	/**
+	 * @param mixed $value
+	 * @param bool $strict
+	 *
+	 * @return bool
+	 */
+	public function exists( $value, $strict = false ) {
+		return false !== $this->app->array->search_key( $this->items, $value, $strict );
+	}
+
+	/**
 	 * @param string|int|array $key
 	 *
 	 * @return bool
 	 */
-	public function exists( $key ) {
+	public function has( $key ) {
 		return $this->app->array->exists( $this->items, $key );
 	}
 
@@ -250,6 +260,16 @@ class Collection implements ArrayAccess, IteratorAggregate {
 	 */
 	public function get( $key, $default = null ) {
 		return $this->app->array->get( $this->items, $key, $default );
+	}
+
+	/**
+	 * @param callable $callback
+	 * @param mixed $default
+	 *
+	 * @return mixed
+	 */
+	public function first( $callback = null, $default = null ) {
+		return $this->app->array->first( $this->items, $callback, $default );
 	}
 
 	/**

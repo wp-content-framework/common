@@ -255,10 +255,17 @@ class CollectionTest extends TestCase {
 	}
 
 	public function test_exists() {
-		$this->assertEquals( true, $this->collection1->exists( '10' ) );
 		$this->assertEquals( true, $this->collection1->exists( 10 ) );
-		$this->assertEquals( false, $this->collection1->exists( '11' ) );
+		$this->assertEquals( true, $this->collection1->exists( 'test2' ) );
+		$this->assertEquals( false, $this->collection1->exists( 10, true ) );
 		$this->assertEquals( false, $this->collection1->exists( 11 ) );
+	}
+
+	public function test_has() {
+		$this->assertEquals( true, $this->collection1->has( '10' ) );
+		$this->assertEquals( true, $this->collection1->has( 10 ) );
+		$this->assertEquals( false, $this->collection1->has( '11' ) );
+		$this->assertEquals( false, $this->collection1->has( 11 ) );
 	}
 
 	public function test_get() {
@@ -266,6 +273,16 @@ class CollectionTest extends TestCase {
 		$this->assertEquals( '10', $this->collection1->get( 10 ) );
 		$this->assertEquals( null, $this->collection1->get( '11' ) );
 		$this->assertEquals( null, $this->collection1->get( 11 ) );
+	}
+
+	public function test_first() {
+		$this->assertEquals( 1, $this->collection1->first() );
+		$this->assertEquals( 'test2', $this->collection1->first( function ( $value ) {
+			return is_string( $value );
+		} ) );
+		$this->assertEquals( 'test', $this->collection1->first( function () {
+			return false;
+		}, 'test' ) );
 	}
 
 	public function test_search() {

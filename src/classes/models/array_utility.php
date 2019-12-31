@@ -136,6 +136,17 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 
 	/**
 	 * @param array|object $array
+	 * @param mixed $value
+	 * @param bool $strict
+	 *
+	 * @return mixed
+	 */
+	public function search_key( $array, $value, $strict = false ) {
+		return array_search( $value, $this->to_array( $array ), $strict ); // phpcs:ignore WordPress.PHP.StrictInArray.MissingTrueStrict
+	}
+
+	/**
+	 * @param array|object $array
 	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
@@ -318,6 +329,34 @@ class Array_Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		}
 
 		return $array;
+	}
+
+	/**
+	 * @param array|object $array
+	 * @param string|callable $callback
+	 * @param mixed $default
+	 *
+	 * @return mixed
+	 */
+	public function first( $array, $callback = null, $default = null ) {
+		$array = $this->to_array( $array );
+
+		if ( is_null( $callback ) ) {
+			if ( empty( $array ) ) {
+				return $this->app->utility->value( $default );
+			}
+			foreach ( $array as $value ) {
+				return $value;
+			}
+		}
+
+		foreach ( $array as $key => $value ) {
+			if ( $this->is_closure( $callback ) ? $this->call_closure( $callback, $value, $key ) : ( is_string( $callback ) && method_exists( $value, $callback ) ? $value->$callback( $key ) : false ) ) {
+				return $value;
+			}
+		}
+
+		return $this->app->utility->value( $default );
 	}
 
 	/**
