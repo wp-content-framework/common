@@ -55,7 +55,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -80,7 +80,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -105,7 +105,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -130,7 +130,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -164,7 +164,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -174,7 +174,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
