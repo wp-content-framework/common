@@ -55,7 +55,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -80,7 +80,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -105,7 +105,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -130,13 +130,22 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
 	 */
 	public function file( $key = null, $default = null ) {
 		return func_num_args() === 0 ? $_FILES : $this->app->array->get( $_FILES, $key, $default );
+	}
+
+	/**
+	 * @param string|int|array|null $key
+	 *
+	 * @return bool
+	 */
+	public function is_uploaded_file( $key ) {
+		return $this->app->array->exists( $_FILES, $key ) && is_uploaded_file( $this->file( $key ) );
 	}
 
 	/**
@@ -155,7 +164,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
@@ -165,7 +174,7 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
-	 * @param string $key
+	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
 	 * @return mixed
