@@ -26,6 +26,11 @@
     "wp-coding-standards/wpcs": "^2.2",
     "phpcompatibility/phpcompatibility-wp": "^2.1"
   },
+  "autoload": {},
+  "license": "GPL-2.0+",
+  "config": {
+    "process-timeout": 1200
+  },
   "scripts": {
     "prepare": [
       "mkdir -p ./fixtures/.git",
@@ -41,8 +46,5 @@
     "phpcbf": "WORKSPACE=${WORKSPACE:-$(cd $(dirname $0); pwd)} bash ./fixtures/bin/php/phpcbf.sh",
     "phpunit": "WORKSPACE=${WORKSPACE:-$(cd $(dirname $0); pwd)} bash ./fixtures/bin/php/phpunit.sh",
     "packages": "WORKSPACE=${WORKSPACE:-$(cd $(dirname $0); pwd)} bash ./fixtures/bin/packages.sh"
-  },
-  "autoload": {
-  },
-  "license": "GPL-2.0+"
+  }
 }
