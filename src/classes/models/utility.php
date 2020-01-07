@@ -372,7 +372,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function get_active_plugins_hash() {
 		if ( ! isset( $this->active_plugins_hash ) ) {
-			$this->active_plugins_hash = sha1( wp_json_encode( $this->get_active_plugins( false ) ) );
+			$this->active_plugins_hash = sha1( $this->json_encode( $this->get_active_plugins( false ) ) );
 		}
 
 		return $this->active_plugins_hash;
@@ -393,7 +393,7 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 	 */
 	public function get_framework_plugins_hash() {
 		if ( ! isset( $this->framework_plugin_hash ) ) {
-			$this->framework_plugin_hash = sha1( wp_json_encode( $this->get_framework_plugins() ) );
+			$this->framework_plugin_hash = sha1( $this->json_encode( $this->get_framework_plugins() ) );
 		}
 
 		return $this->framework_plugin_hash;
@@ -458,5 +458,20 @@ class Utility implements \WP_Framework_Core\Interfaces\Singleton {
 		// @codingStandardsIgnoreEnd
 
 		return $limit;
+	}
+
+	/**
+	 * @param $data
+	 * @param int $options
+	 * @param int $depth
+	 *
+	 * @return string|false
+	 */
+	public function json_encode( $data, $options = 0, $depth = 512 ) {
+		if ( function_exists( 'wp_json_encode' ) ) {
+			return @wp_json_encode( $data, $options, $depth ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		}
+
+		return @json_encode( $data, $options, $depth ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged,WordPress.WP.AlternativeFunctions.json_encode_json_encode
 	}
 }
