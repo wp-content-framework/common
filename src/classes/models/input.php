@@ -174,6 +174,21 @@ class Input implements \WP_Framework_Core\Interfaces\Singleton {
 	}
 
 	/**
+	 * @param string $key
+	 * @param mixed $value
+	 */
+	public function set_cookie( $key, $value ) {
+		$_COOKIE[ $key ] = $value;
+	}
+
+	/**
+	 * @param string $key
+	 */
+	public function delete_cookie( $key ) {
+		unset( $_COOKIE[ $key ] );
+	}
+
+	/**
 	 * @param string|int|array|null $key
 	 * @param mixed $default
 	 *
