@@ -1,6 +1,6 @@
 on:
   schedule:
-    - cron: 0 17 * * 6
+    - cron: 0 17 * * 5
   pull_request:
     types: [opened, synchronize, reopened, closed]
   repository_dispatch:
@@ -11,7 +11,7 @@ name: Update dependencies
 env:
   CI: 1
   GITHUB_ACTION: 1
-  TRAVIS_BUILD_DIR: ${{ github.workspace }}
+  WORKSPACE: ${{ github.workspace }}
 
 jobs:
   update:
@@ -22,10 +22,9 @@ jobs:
         uses: technote-space/create-pr-action@v1
         with:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          GLOBAL_INSTALL_PACKAGES: npm-check-updates
           EXECUTE_COMMANDS: |
-            composer bin:download
-            composer bin:update
+            composer prepare
+            composer packages
           COMMIT_MESSAGE: 'chore: update dependencies'
           PR_BRANCH_NAME: 'chore-update-${PR_ID}'
           PR_TITLE: 'chore: update dependencies (${PR_MERGE_REF})'
