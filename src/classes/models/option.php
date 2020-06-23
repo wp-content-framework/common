@@ -67,6 +67,10 @@ class Option implements \WP_Framework_Core\Interfaces\Singleton, \WP_Framework_C
 	 */
 	private function app_activated() {
 		$this->set( '__app_activated', true );
+		$version = $this->get( 'last_upgrade_version' );
+		if ( empty( $version ) ) {
+			$this->set( 'last_upgrade_version', $this->app->get_plugin_version() );
+		}
 	}
 
 	/**
